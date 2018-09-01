@@ -34,26 +34,23 @@ import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
-import javax.script.Invocable;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 
 /**
  * @author ammar
@@ -85,18 +82,6 @@ class Local {
     List<String> version_manifest_versions_id = new ArrayList<>();
     List<String> version_manifest_versions_type = new ArrayList<>();
     List<String> version_manifest_versions_url = new ArrayList<>();
-
-    public List<String> getAPIMetaList(String OS) {
-        List<String> meta = new ArrayList<>();
-        try {
-            for (String line : Files.readAllLines(Paths.get(Utils.getMineCraft_APIMeta(OS)))) {
-                Collections.addAll(meta, line.split(":"));
-            }
-        } catch (IOException ex) {
-            logger.warn("API Meta does not exist!", ex);
-        }
-        return meta;
-    }
 
     public void fixLauncherProfiles(String OS) {
         //this is where we will check if file is available or not. 
