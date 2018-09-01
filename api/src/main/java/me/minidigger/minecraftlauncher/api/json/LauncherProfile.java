@@ -15,6 +15,14 @@ import java.util.UUID;
  * @author Mark Vainomaa
  */
 public class LauncherProfile {
+    /*
+     * This is written against:
+     * * name -> 1.6.89-j
+     * * format -> 21
+     * * profilesFormat -> 1
+     *
+     * Profile was generated using latest Mojang Java based launcher
+     */
     @SerializedName("clientToken")
     private UUID clientToken;
 
