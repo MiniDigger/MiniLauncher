@@ -28,11 +28,8 @@ package me.minidigger.minecraftlauncher.launcher.gui;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -69,6 +66,8 @@ import javafx.util.Duration;
 import me.minidigger.minecraftlauncher.launcher.LauncherMain;
 import me.minidigger.minecraftlauncher.launcher.LauncherSettings;
 import me.minidigger.minecraftlauncher.launcher.Status;
+import me.minidigger.minecraftlauncher.launcher.tasks.AvatarLoaderTask;
+import me.minidigger.minecraftlauncher.launcher.tasks.VersionCheckerTask;
 
 /**
  * @author ammar
@@ -125,8 +124,8 @@ public class LauncherMainController extends AbstractGUIController {
         setTextBoxMax();
         runBackground();
 
-        new Thread(this::loadPlayerAvatar).start();
-        new Thread(this::checkLatestVersion).start();
+        new AvatarLoaderTask((image) -> playerAvatarImage.setImage(image)).start();
+        new VersionCheckerTask((status) -> launcherStatus.setText(status)).start();
 
         username.setText(LauncherSettings.playerUsername);
 
@@ -184,7 +183,8 @@ public class LauncherMainController extends AbstractGUIController {
         launch.setDisable(true);
         version.setDisable(true);
         username.setDisable(true);
-        new Thread(this::loadPlayerAvatar).start();
+
+        new AvatarLoaderTask((image) -> playerAvatarImage.setImage(image)).start();
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(() -> {
@@ -293,14 +293,6 @@ public class LauncherMainController extends AbstractGUIController {
         }
     }
 
-    private void loadPlayerAvatar() {
-        Image image = new Image("http://minotar.net/avatar/" + LauncherSettings.playerUsername + "/100");
-        if (!image.isError()) //incase someone adds random shit or changes URL. Will show steve not a blank area.
-        {
-            playerAvatarImage.setImage(image);
-        }
-    }
-
     private void setToolTips() {
         Image infoIMG = new Image(getClass().getResourceAsStream("/images/m_info.png"));
 
@@ -359,31 +351,6 @@ public class LauncherMainController extends AbstractGUIController {
         rotateBackground.play();
     }
 
-    private void checkLatestVersion() {
-        try {
-            Platform.runLater(() -> launcherStatus.setText("Status: Checking launcher version."));
-            URL versionLastesturl = new URL(LauncherSettings.updateURL);
-            URLConnection con = versionLastesturl.openConnection();
-            con.setUseCaches(false); //had to as it was caching it.
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(versionLastesturl.openStream()));
-            String line;
-
-            while ((line = in.readLine()) != null) {
-                if (LauncherSettings.launcherVersion.equals(line)) {
-                    //TODO better update check, check semver
-                    Platform.runLater(() -> launcherStatus.setText("Status: Your launcher is up to date!"));
-                } else {
-                    Platform.runLater(() -> launcherStatus.setText("Status: Your launcher is outdated! Please update it."));
-                }
-            }
-            in.close();
-
-        } catch (IOException e) {
-            Platform.runLater(() -> launcherStatus.setText("Status: Unable to check for latest version!"));
-        }
-    }
-
     private void setTextBoxMax() {
         username.lengthProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.intValue() > oldValue.intValue()) {
@@ -425,7 +392,7 @@ public class LauncherMainController extends AbstractGUIController {
             Platform.runLater(() -> launcherStatus.setText("Status: Minecraft started, now closing launcher. Have fun!"));
             System.exit(0);
         } else {
-            new Thread(this::checkLatestVersion).start();
+            new VersionCheckerTask((status) -> launcherStatus.setText(status)).start();
         }
 
         username.setDisable(false);
