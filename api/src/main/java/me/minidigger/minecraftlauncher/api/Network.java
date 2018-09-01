@@ -43,8 +43,7 @@ class Network {
     //all web urls come here...
     public final String https_libraries_minecraft_net = "https://libraries.minecraft.net";
     public final String http_resources_download_minecraft_net = "http://resources.download.minecraft.net";
-    //TODO this s3 url needs to be replaced
-    public final String https_s3_amazonaws_com_Minecraft_Download_versions = "https://s3.amazonaws.com/Minecraft.Download/versions";
+    public final String minecraftVersionsJson = "https://launchermeta.mojang.com/mc/game/version_manifest.json";
     public final String https_api_mojang_com_users_profiles_minecraft = "https://api.mojang.com/users/profiles/minecraft";
     //TODO wtf is api meta for?
     public final String https_raw_githubusercontent_com = "https://raw.githubusercontent.com/ammarx/TagAPI_3/master/api_meta?time=" + (Math.random() * 100);
@@ -134,7 +133,7 @@ class Network {
     public void downloadMinecraftJar(String OS, String version, Boolean ForceDownload) {
         try {
             Utils utils = new Utils();
-            URL url = new URL(https_s3_amazonaws_com_Minecraft_Download_versions + "/" + version + "/" + version + ".jar");
+            URL url = new URL(minecraftVersionsJson + "/" + version + "/" + version + ".jar");
             File file = new File(utils.getMineCraft_Versions_X_X_jar_Location(OS, version));
             if (ForceDownload) {
                 FileUtils.copyURLToFile(url, file);
