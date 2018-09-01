@@ -26,9 +26,12 @@
 
 package me.minidigger.minecraftlauncher.api;
 
+import me.minidigger.minecraftlauncher.api.events.LauncherEventHandler;
 import net.kyori.nbt.CompoundTag;
 import net.kyori.nbt.ListTag;
 import net.kyori.nbt.TagIO;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
@@ -51,6 +54,17 @@ public class LauncherAPI {
     private final static Logger logger = LoggerFactory.getLogger(LauncherAPI.class);
     private final static Marker downloadMarker = MarkerFactory.getMarker("DOWNLOAD");
     private final static Marker runMarker = MarkerFactory.getMarker("RUN");
+
+    private LauncherEventHandler eventHandler = LauncherEventHandler.DUMMY;
+
+    @NonNull
+    public LauncherEventHandler getEventHandler() {
+        return eventHandler;
+    }
+
+    public void setEventHandler(@Nullable LauncherEventHandler eventHandler) {
+        this.eventHandler = eventHandler != null ? eventHandler : LauncherEventHandler.DUMMY;
+    }
 
     public String getAPIVersion() {
         return "v0.10-alpha";
@@ -751,6 +765,7 @@ public class LauncherAPI {
         }
 
         //incase the url is empty.. we have to assume that the user has old path system.
+        eventHandler.onDownload(LauncherEventHandler.Downloadable.LAUNCHER_META);
         for (int i = 0; i < local.version_manifest_versions_id.size(); i++) {
             logger.info(downloadMarker,"ID: " + local.version_manifest_versions_id.get(i));
             logger.info(downloadMarker,"TYPE: " + local.version_manifest_versions_type.get(i));
@@ -799,6 +814,7 @@ public class LauncherAPI {
 
         }
         ///************************************************************
+        eventHandler.onDownload(LauncherEventHandler.Downloadable.LIBRARIES);
         for (int i = 0; i < local.version_url_list.size(); i++) {
             logger.info(downloadMarker,"Downloading: " + local.version_url_list.get(i));
             try {
@@ -823,6 +839,7 @@ public class LauncherAPI {
         local.readJson_objects_KEY(utils.getMineCraftAssetsIndexes_X_json(OperatingSystemToUse, local.readJson_assetIndex_id(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse))));
         local.readJson_objects_KEY_hash(utils.getMineCraftAssetsIndexes_X_json(OperatingSystemToUse, local.readJson_assetIndex_id(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse))));
 
+        eventHandler.onDownload(LauncherEventHandler.Downloadable.ASSETS);
         for (int i = 0; i < local.objects_hash.size(); i++) {
             logger.info(downloadMarker,"HASH: " + local.objects_hash.get(i));
             logger.info(downloadMarker,"FOLDER: " + local.objects_hash.get(i).substring(0, 2));
@@ -835,6 +852,7 @@ public class LauncherAPI {
 
         }
 
+        eventHandler.onDownload(LauncherEventHandler.Downloadable.MINECRAFT);
         logger.info(downloadMarker,"DOWNLOADING MINECRAFT JAR " + VersionToUse);
         if (MOD_jar == null) {
             network.downloadMinecraftJar(OperatingSystemToUse, VersionToUse, ForceDownload);
@@ -845,6 +863,7 @@ public class LauncherAPI {
         }
 
         //would have tp edit this line as we also need natives paths!
+        eventHandler.onDownload(LauncherEventHandler.Downloadable.NATIVES);
         logger.info(downloadMarker,"Getting NATIVES URL");
         local.readJson_libraries_downloads_classifiers_natives_X(utils.getMineCraft_Versions_X_X_json(OperatingSystemToUse, VersionToUse), OperatingSystemToUse);
         logger.info(downloadMarker,"Getting NATIVES PATH");
@@ -861,6 +880,7 @@ public class LauncherAPI {
             utils.jarExtract(OperatingSystemToUse, local.version_path_list_natives.get(i), utils.getMineCraft_Versions_X_Natives_Location(OperatingSystemToUse, VersionToUse));
 
         }
+        eventHandler.onDownloadComplete();
         logger.info(downloadMarker,"Download Complete!");
     }
 

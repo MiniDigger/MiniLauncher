@@ -55,6 +55,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import me.minidigger.minecraftlauncher.api.LauncherAPI;
+import me.minidigger.minecraftlauncher.api.events.LauncherEventHandler;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -306,73 +308,13 @@ public class LauncherOptionsController implements Initializable {
 
         }
         LauncherAPI API = new LauncherAPI();
+        API.setEventHandler(new OptionsGUIEventHandler());
         ExecutorService executor = Executors.newCachedThreadPool();
         executor.submit(() -> {
             API.downloadMinecraft((String) optionsSelectVersion.getValue(), optionsSelectVersionForce.isSelected());
             return null;
         });
         executor.shutdown();
-
-        // TODO: this is shit, really shit.
-        Thread t = new Thread(() -> {
-            while (true) {
-                try {
-
-                    Platform.runLater(() -> {
-
-                        if (LauncherSettings.showDebugStatus) {
-                            optionStatus.setText(API.getLog());
-                        } else {
-                            if (API.getLog().startsWith("[dl] URL: https://launchermeta")) {
-                                this.setStatus(LauncherSettings.Status.DOWNLOADING_LM);
-                            }
-                            if (API.getLog().startsWith("[dl] DOWNLOADING...HASH:")) {
-                                this.setStatus(LauncherSettings.Status.DOWNLOADING);
-                            }
-                            if (API.getLog().startsWith("[dl] DOWNLOADING MINECRAFT JAR")) {
-                                this.setStatus(LauncherSettings.Status.DOWNLOADING_M);
-                            }
-                            if (API.getLog().startsWith("[dl] Downloading: https://libraries")) {
-                                this.setStatus(LauncherSettings.Status.DOWNLOADING_L);
-                            }
-                            if (API.getLog().startsWith("[dl] Getting NATIVES URL")) {
-                                this.setStatus(LauncherSettings.Status.FINALIZING);
-                            }
-                        }
-
-                    });
-
-                    Thread.sleep(10);
-
-                    if (API.getLog().equals("[dl] Download Complete!")) {
-                        Platform.runLater(() -> {
-                            this.setStatus(LauncherSettings.Status.DOWNLOAD_COMPLETE);
-                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                            alert.setTitle("Minecraft Launcher - Success");
-                            alert.setHeaderText("Download Complete.");
-                            alert.initStyle(StageStyle.UTILITY);
-                            DialogPane dialogPane = alert.getDialogPane();
-                            dialogPane.getStylesheets().add("/css/purple.css");
-                            alert.setContentText("Version: " + optionsSelectVersion.getValue() + " has been downloaded & installed!");
-                            this.setStatus(LauncherSettings.Status.IDLE);
-                            optionsSelectVersionInstall.setDisable(false);
-                            optionsExit.setDisable(false);
-                            optionsClose.setDisable(false);
-                            optionsSelectVersion.setDisable(false);
-                            optionsSelectFastStart.setSelected(false);
-                            LauncherSettings.refreshVersionList = true;
-                            LauncherSettings.fastStartUp = false;
-                            alert.showAndWait();
-
-                        });
-                        return;
-                    }
-                } catch (Exception e) {
-                }
-            }
-
-        });
-        t.start();
     }
 
     @FXML
@@ -459,7 +401,7 @@ public class LauncherOptionsController implements Initializable {
 
     }
 
-    private void setStatus(LauncherSettings.Status status) {
+    void setStatus(LauncherSettings.Status status) {
         optionStatus.setText("Status: " + status);
     }
 
@@ -712,5 +654,54 @@ public class LauncherOptionsController implements Initializable {
     @FXML
     private void _optionsSelectFastStart(ActionEvent event) {
         LauncherSettings.fastStartUp = !LauncherSettings.fastStartUp;
+    }
+
+    private final class OptionsGUIEventHandler implements LauncherEventHandler {
+        @Override
+        public void onDownload(@NonNull Downloadable downloadable) {
+            // TODO: direct log message passing is not supported
+            Platform.runLater(() -> {
+                switch(downloadable) {
+                    case ASSETS:
+                        setStatus(LauncherSettings.Status.DOWNLOADING);
+                        break;
+                    case LAUNCHER_META:
+                        setStatus(LauncherSettings.Status.DOWNLOADING_LM);
+                        break;
+                    case LIBRARIES:
+                        setStatus(LauncherSettings.Status.DOWNLOADING_L);
+                        break;
+                    case MINECRAFT:
+                        setStatus(LauncherSettings.Status.DOWNLOADING_M);
+                        break;
+                    case NATIVES:
+                        setStatus(LauncherSettings.Status.FINALIZING);
+                        break;
+                }
+            });
+        }
+
+        @Override
+        public void onDownloadComplete() {
+            Platform.runLater(() -> {
+                setStatus(LauncherSettings.Status.DOWNLOAD_COMPLETE);
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Minecraft Launcher - Success");
+                alert.setHeaderText("Download Complete.");
+                alert.initStyle(StageStyle.UTILITY);
+                DialogPane dialogPane = alert.getDialogPane();
+                dialogPane.getStylesheets().add("/css/purple.css");
+                alert.setContentText("Version: " + optionsSelectVersion.getValue() + " has been downloaded & installed!");
+                setStatus(LauncherSettings.Status.IDLE);
+                optionsSelectVersionInstall.setDisable(false);
+                optionsExit.setDisable(false);
+                optionsClose.setDisable(false);
+                optionsSelectVersion.setDisable(false);
+                optionsSelectFastStart.setSelected(false);
+                LauncherSettings.refreshVersionList = true;
+                LauncherSettings.fastStartUp = false;
+                alert.showAndWait();
+            });
+        }
     }
 }
