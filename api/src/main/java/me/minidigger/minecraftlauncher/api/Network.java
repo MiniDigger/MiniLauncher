@@ -1,11 +1,11 @@
 package me.minidigger.minecraftlauncher.api;
 
-import java.io.File;
-import java.net.URL;
 import org.apache.commons.io.FileUtils;
 
+import java.io.File;
+import java.net.URL;
+
 /**
- *
  * @author ammar
  */
 class Network {
@@ -61,7 +61,7 @@ class Network {
                 FileUtils.copyURLToFile(url, file);
             }
         } catch (Exception e) {
-           e.printStackTrace();
+            e.printStackTrace();
         }
     }
 

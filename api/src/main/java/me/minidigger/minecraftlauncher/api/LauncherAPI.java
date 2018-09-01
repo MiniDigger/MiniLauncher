@@ -3,6 +3,7 @@ package me.minidigger.minecraftlauncher.api;
 import com.minecraft.moonlake.nbt.NBTTagCompound;
 import com.minecraft.moonlake.nbt.NBTTagList;
 import com.minecraft.moonlake.nbt.NBTUtil;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,7 +15,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 /**
- *
  * @author ammar
  */
 public class LauncherAPI {
@@ -159,20 +159,20 @@ public class LauncherAPI {
         String OperatingSystemToUse = utils.getOS();
         return utils.getMineCraftServerDatNBTIP(OperatingSystemToUse);
     }
-    
+
     public List<String> getServersNameList() {
         Utils utils = new Utils();
         String OperatingSystemToUse = utils.getOS();
-        return utils.getMineCraftServerDatNBTName(OperatingSystemToUse);    
+        return utils.getMineCraftServerDatNBTName(OperatingSystemToUse);
     }
-    
+
     public void addServerToServersDat(String Name, String IP) {
         Utils utils = new Utils();
         String OperatingSystemToUse = utils.getOS();
         NBTTagCompound root = new NBTTagCompound();
         NBTTagList<NBTTagCompound> server = new NBTTagList<>("servers");
         NBTTagCompound data = new NBTTagCompound();
-        
+
         List<String> names = new ArrayList<>(utils.getMineCraftServerDatNBTName(OperatingSystemToUse));
         List<String> ips = new ArrayList<>(utils.getMineCraftServerDatNBTIP(OperatingSystemToUse));
         data.setString("name", Name);
@@ -196,7 +196,7 @@ public class LauncherAPI {
             e.printStackTrace();
         }
     }
-    
+
     public void syncVersions() {
         Utils utils = new Utils();
         Local local = new Local();
@@ -231,7 +231,7 @@ public class LauncherAPI {
         }
     }
 
-    private void injectNetty(){
+    private void injectNetty() {
         Utils utils = new Utils();
         String OperatingSystemToUse = utils.getOS();
         try {
@@ -239,14 +239,14 @@ public class LauncherAPI {
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
-        
+
         try {
             utils.injectPatchy(OperatingSystemToUse);
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
     }
-    
+
     public void runMinecraft(String UsernameToUse, String VersionToUse, Boolean HashCheck, Boolean injectNetty) {
         Utils utils = new Utils();
         Local local = new Local();
@@ -261,7 +261,7 @@ public class LauncherAPI {
         if (injectNetty) {
             injectNetty();
         }
-        
+
         //declaration for mods
         String MOD_inheritsFrom = null;
         String MOD_jar = null;
@@ -404,7 +404,7 @@ public class LauncherAPI {
             this.setErrorLogs("Error reading objects KEY_hash" + e);
 
         }
-        
+
         if (HashCheck) {
             try {
                 for (int i = 0; i < local.objects_hash.size(); i++) {
@@ -421,7 +421,7 @@ public class LauncherAPI {
 
             }
         }
-        
+
 
         this.setRunLogs("Getting NATIVES URL");
         local.readJson_libraries_downloads_classifiers_natives_X(utils.getMineCraft_Versions_X_X_json(OperatingSystemToUse, VersionToUse), OperatingSystemToUse);
@@ -446,8 +446,8 @@ public class LauncherAPI {
         int Height = this.getHeight();
         String JavaPath = this.getJavaPath();
         String JVMArgument = this.getJVMArgument();
-        
-        
+
+
         String mainClass;
         if (MOD_mainClass == null) {
             mainClass = local.readJson_mainClass(utils.getMineCraft_Versions_X_X_json(OperatingSystemToUse, VersionToUse));
@@ -514,10 +514,10 @@ public class LauncherAPI {
             String netty_mod = "";
             String netty = "";
 
-            
+
             try {
-                 Map<String, String> patchyMAP = new HashMap<>(utils.getMineCraftLibrariesComMojangPatchy_jar(OperatingSystemToUse));
-                 for (Map.Entry<String, String> entry : patchyMAP.entrySet()) {
+                Map<String, String> patchyMAP = new HashMap<>(utils.getMineCraftLibrariesComMojangPatchy_jar(OperatingSystemToUse));
+                for (Map.Entry<String, String> entry : patchyMAP.entrySet()) {
                     String key = entry.getKey();
                     String value = entry.getValue();
 
@@ -535,7 +535,7 @@ public class LauncherAPI {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-            
+
             try {
                 Map<String, String> nettyMAP = new HashMap<>(utils.getMineCraftLibrariesComMojangNetty_jar(OperatingSystemToUse));
                 for (Map.Entry<String, String> entry : nettyMAP.entrySet()) {
@@ -549,7 +549,7 @@ public class LauncherAPI {
                     }
 
                     System.out.println("KEY:::::" + key);
-                    System.out.println("VALUE:::::" + value);  
+                    System.out.println("VALUE:::::" + value);
                 }
                 HalfLibraryArgument = HalfLibraryArgument.replace(netty, netty_mod);
                 FullLibraryArgument = FullLibraryArgument.replace(netty, netty_mod);
@@ -557,11 +557,11 @@ public class LauncherAPI {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-            
+
         }
-        
+
         //argument patch netty and patchy ends here
-        
+
         String[] HalfArgument = local.generateMinecraftArguments(OperatingSystemToUse, Username, versionName, gameDirectory, AssetsRoot, assetsIdexId, authuuid, "aeef7bc935f9420eb6314dea7ad7e1e5", "{\"twitch_access_token\":[\"emoitqdugw2h8un7psy3uo84uwb8raq\"]}", "mojang", VersionType, GameAssets, AuthSession);
         //System.out.println("HalfArgument: " + HalfArgument);
         for (String HalfArgsVal : HalfArgument) {
@@ -590,7 +590,7 @@ public class LauncherAPI {
             String javaPathArr[] = {JavaPath};
             //merge javapath back to cmds
             cmds = Stream.concat(Arrays.stream(javaPathArr), Arrays.stream(cmds)).toArray(String[]::new);
-            
+
             String[] finalArgs = Stream.concat(Arrays.stream(cmds), Arrays.stream(HalfArgument)).toArray(String[]::new);
             for (String finalArgs_ : finalArgs) {
                 this.setRunLogs(finalArgs_);
@@ -617,23 +617,25 @@ public class LauncherAPI {
     }
 
     private String jvmArgument = "";
-     public void setJVMArgument(String jvmArgument_) {
+
+    public void setJVMArgument(String jvmArgument_) {
         jvmArgument = jvmArgument_;
     }
 
     private String getJVMArgument() {
         return jvmArgument;
     }
-    
+
     private String javaPath = "java";
-     public void setJavaPath(String javaPath_) {
+
+    public void setJavaPath(String javaPath_) {
         javaPath = javaPath_;
     }
 
     private String getJavaPath() {
         return javaPath;
     }
-    
+
     private int width = 854;
 
     public void setWidth(int width_) {
@@ -643,7 +645,7 @@ public class LauncherAPI {
     private int getWidth() {
         return width;
     }
-    
+
     private int height = 480;
 
     public void setHeight(int height_) {
@@ -653,7 +655,7 @@ public class LauncherAPI {
     private int getHeight() {
         return height;
     }
-    
+
     private int memory = 1024;
 
     public void setMemory(int memory_) {
@@ -666,14 +668,14 @@ public class LauncherAPI {
 
     private int minMemory = 1024;
 
-   public void setMinMemory(int memory_) {
+    public void setMinMemory(int memory_) {
         minMemory = memory_;
     }
 
     private int getMinMemory() {
         return minMemory;
     }
-    
+
     private String versionData = "#ammarbless";
 
     public void setVersionData(String versionData_) {

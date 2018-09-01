@@ -1,5 +1,11 @@
 package me.minidigger.minecraftlauncher.api;
 
+import org.apache.commons.io.FileUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,14 +26,8 @@ import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import org.apache.commons.io.FileUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 /**
- *
  * @author ammar
  */
 class Local {
@@ -140,7 +140,7 @@ class Local {
                 profiles_lastVersionId.add(lastVersionId);
             }
         } catch (IOException | ParseException ex) {
-           ex.printStackTrace();
+            ex.printStackTrace();
         }
 
     }
@@ -530,7 +530,7 @@ class Local {
             JSONObject jsonObject = (JSONObject) jsonParser.parse(reader);
             JSONObject jsonArgs = (JSONObject) jsonObject.get("arguments");
             String args = jsonArgs.get("game").toString();
-            args = args.replaceAll("\\[","").replaceAll("\\]","").replaceAll(",", "").replaceAll("\"\"", " ").replaceAll("\"", "");
+            args = args.replaceAll("\\[", "").replaceAll("\\]", "").replaceAll(",", "").replaceAll("\"\"", " ").replaceAll("\"", "");
             String[] argsF = args.split("\\{rules");
             return (argsF[0]);
 
@@ -539,7 +539,7 @@ class Local {
         }
         return "N/A";
     }
-    
+
     public String readJson_minecraftArguments(String path) {
         try {
             FileReader reader = new FileReader(path);
@@ -597,12 +597,11 @@ class Local {
         Local local = new Local();
         Utils utils = new Utils();
         String cmdArgs = local.readJson_minecraftArguments(utils.getMineCraft_Versions_X_X_json(OS, version_name));
-        if (cmdArgs==null) 
-        {
+        if (cmdArgs == null) {
             //run v2
             cmdArgs = local.readJson_minecraftArguments_v2(utils.getMineCraft_Versions_X_X_json(OS, version_name));
         }
-        
+
         //the arguments can start with -- or $
         cmdArgs = cmdArgs.replaceAll(" +", " ");
         //the above will change it to single space.
@@ -678,7 +677,7 @@ class Local {
         return ("-Xms" + Memory + " -Xmx" + Memory + " -XX:HeapDumpPath=MojangTricksIntelDriversForPerformance_javaw.exe_minecraft.exe.heapdump -Djava.library.path=" + NativesDir + " -cp " + FullLibraryArgument + " " + mainClass + " " + HalfArgument);
 
     }
-    
+
     public String generateLibrariesPath(String _OS, String _name) {
         try {
             String fileName = _name;

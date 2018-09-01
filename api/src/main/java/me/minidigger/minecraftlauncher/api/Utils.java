@@ -1,44 +1,44 @@
 package me.minidigger.minecraftlauncher.api;
 
-import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Locale;
-import org.apache.commons.io.FileUtils;
-import java.security.SecureRandom;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.util.Set;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-import java.util.Enumeration;
 import com.alemcode.HexEditor.HexEditor;
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URI;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-import org.apache.commons.io.FileUtils;
-import static org.zeroturnaround.zip.commons.FileUtils.copy;
 import com.minecraft.moonlake.nbt.NBTBase;
 import com.minecraft.moonlake.nbt.NBTTagCompound;
 import com.minecraft.moonlake.nbt.NBTUtil;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+
+import org.apache.commons.io.FileUtils;
+
+import java.io.BufferedWriter;
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.math.BigInteger;
+import java.net.URI;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import static org.zeroturnaround.zip.commons.FileUtils.copy;
+
 /**
- *
  * @author ammar
  */
 class Utils {
@@ -52,8 +52,8 @@ class Utils {
                 return (System.getProperty("user.home") + "/.minecraft");
             case "Mac":
                 return (System.getProperty("user.home") + "/Library/Application Support/minecraft");
-                default:
-                    return "N/A";
+            default:
+                return "N/A";
         }
     }
 
@@ -64,7 +64,7 @@ class Utils {
     public String getMineCraft_ServersDat(String OS) {
         return (getMineCraftLocation(OS) + "/servers.dat");
     }
-    
+
     public String getMineCraftVersionsLocation(String OS) {
         return (getMineCraftLocation(OS) + "/versions");
     }
@@ -92,7 +92,7 @@ class Utils {
     public String getMineCraftTmpIoNettyBootstrapBootstrap_class(String OS) {
         return (getMineCraftTmpIoNettyBootstrapLocation(OS) + "/Bootstrap.class");
     }
-    
+
     public Map<String, String> getMineCraftLibrariesComMojangNetty_jar(String OS) {
         Map<String, String> results = new HashMap<>();
 
@@ -130,7 +130,7 @@ class Utils {
         }
         return ip;
     }
-    
+
     public List<String> getMineCraftServerDatNBTName(String OS) {
         Utils utils = new Utils();
         List<String> name = new ArrayList<>();
@@ -148,11 +148,11 @@ class Utils {
         }
         return name;
     }
-    
+
     public void injectPatchy(String OS) {
         Utils utils = new Utils();
         Map<String, String> map = new HashMap<>(utils.getMineCraftLibrariesComMojangPatchy_jar(OS));
-        
+
         for (Map.Entry<String, String> entry : map.entrySet()) {
             try {
                 File file_to_delete = new File(entry.getKey());
@@ -163,8 +163,8 @@ class Utils {
                 System.out.println(ex);
             }
         }
-        
-        
+
+
         for (Map.Entry<String, String> entry : map.entrySet()) {
             if (!entry.getValue().startsWith("mod_")) {
                 System.out.println(entry.getKey());
@@ -232,11 +232,11 @@ class Utils {
             }
         }
     }
-    
+
     public void injectNetty(String OS) {
         Utils utils = new Utils();
         Map<String, String> map = new HashMap<>(utils.getMineCraftLibrariesComMojangNetty_jar(OS));
-        
+
         for (Map.Entry<String, String> entry : map.entrySet()) {
             try {
                 File file_to_delete = new File(entry.getKey());
@@ -247,10 +247,10 @@ class Utils {
                 ex.printStackTrace();
             }
         }
-        
+
         for (Map.Entry<String, String> entry : map.entrySet()) {
-                if (!entry.getValue().startsWith("mod_")) {
-                       System.out.println(entry.getKey());
+            if (!entry.getValue().startsWith("mod_")) {
+                System.out.println(entry.getKey());
                 //time to extract all files inside.
                 try {
                     utils.extractJarContent(utils.getMineCraftTmpLocation(OS), entry.getKey());
@@ -351,7 +351,7 @@ class Utils {
 
         // fist get all directories,
         // then make those directory on the destination Path
-        for (Enumeration<JarEntry> enums = jar.entries(); enums.hasMoreElements();) {
+        for (Enumeration<JarEntry> enums = jar.entries(); enums.hasMoreElements(); ) {
             JarEntry entry = enums.nextElement();
 
             String fileName = destinationDir + File.separator + entry.getName();
@@ -364,7 +364,7 @@ class Utils {
         }
 
         //now create all files
-        for (Enumeration<JarEntry> enums = jar.entries(); enums.hasMoreElements();) {
+        for (Enumeration<JarEntry> enums = jar.entries(); enums.hasMoreElements(); ) {
             JarEntry entry = enums.nextElement();
 
             String fileName = destinationDir + File.separator + entry.getName();
@@ -413,8 +413,7 @@ class Utils {
         return (results);
     }
 
-    
-    
+
     public String getMineCraft_Version_Manifest_json(String OS) {
         return (getMineCraftLocation(OS) + "/version_manifest.json");
 
@@ -522,7 +521,8 @@ class Utils {
 
             while ((nread = fis.read(dataBytes)) != -1) {
                 md.update(dataBytes, 0, nread);
-            };
+            }
+            ;
 
             byte[] mdbytes = md.digest();
 
