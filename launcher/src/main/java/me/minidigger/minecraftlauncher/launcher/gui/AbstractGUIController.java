@@ -23,16 +23,16 @@ public abstract class AbstractGUIController implements Initializable, LauncherEv
         Platform.runLater(() -> {
             switch(downloadable) {
                 case ASSETS:
-                    setStatus(Status.DOWNLOADING);
+                    setStatus(Status.DOWNLOADING_GAME_ASSETS);
                     break;
                 case LAUNCHER_META:
-                    setStatus(Status.DOWNLOADING_LM);
+                    setStatus(Status.DOWNLOADING_LAUNCHER_META);
                     break;
                 case LIBRARIES:
-                    setStatus(Status.DOWNLOADING_L);
+                    setStatus(Status.DOWNLOADING_LIBRARIES);
                     break;
                 case MINECRAFT:
-                    setStatus(Status.DOWNLOADING_M);
+                    setStatus(Status.DOWNLOADING_MINECRAFT);
                     break;
                 case NATIVES:
                     setStatus(Status.FINALIZING);
