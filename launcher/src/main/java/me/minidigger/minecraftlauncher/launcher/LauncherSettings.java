@@ -195,23 +195,26 @@ public class LauncherSettings {
 
     public static void setTheme(Scene sceneOptions) {
         sceneOptions.getStylesheets().clear();
-        if (LauncherSettings.selectedTheme.equals("purple") || LauncherSettings.selectedTheme.equals("")) {
-            sceneOptions.getStylesheets().add("/css/purple.css");
-        }
-        if (LauncherSettings.selectedTheme.equals("red")) {
-            sceneOptions.getStylesheets().add("/css/red.css");
-        }
-        if (LauncherSettings.selectedTheme.equals("green")) {
-            sceneOptions.getStylesheets().add("/css/green.css");
-        }
-        if (LauncherSettings.selectedTheme.equals("blue")) {
-            sceneOptions.getStylesheets().add("/css/blue.css");
-        }
-        if (LauncherSettings.selectedTheme.equals("gray")) {
-            sceneOptions.getStylesheets().add("/css/gray.css");
-        }
-        if (LauncherSettings.selectedTheme.equals("white")) {
-            sceneOptions.getStylesheets().add("/css/white.css");
+        switch(LauncherSettings.selectedTheme) {
+            case "red":
+                sceneOptions.getStylesheets().add("/css/red.css");
+                break;
+            case "green":
+                sceneOptions.getStylesheets().add("/css/green.css");
+                break;
+            case "blue":
+                sceneOptions.getStylesheets().add("/css/blue.css");
+                break;
+            case "gray":
+                sceneOptions.getStylesheets().add("/css/gray.css");
+                break;
+            case "white":
+                sceneOptions.getStylesheets().add("/css/white.css");
+                break;
+            case "purple":
+            default:
+                sceneOptions.getStylesheets().add("/css/purple.css");
+                break;
         }
     }
 }
