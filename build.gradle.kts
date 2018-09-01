@@ -1,3 +1,5 @@
+import org.gradle.api.JavaVersion.VERSION_1_8
+
 plugins {
     kotlin("jvm") version "1.2.61"
     id("net.minecrell.licenser") version "0.3"
@@ -20,6 +22,13 @@ subprojects {
     apply(plugin = "kotlin")
     apply(plugin = "net.minecrell.licenser")
     apply(plugin = "com.github.johnrengelman.shadow")
+
+    java.sourceCompatibility = VERSION_1_8
+    java.targetCompatibility = VERSION_1_8
+
+    val compileJava by tasks.getting(JavaCompile::class) {
+        options.compilerArgs.add("-proc:none")
+    }
 
     license {
         header = rootProject.file("LICENSE")
