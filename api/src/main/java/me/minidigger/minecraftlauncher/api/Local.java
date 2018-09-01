@@ -31,6 +31,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -57,6 +59,7 @@ import javax.script.ScriptException;
  * @author ammar
  */
 class Local {
+    private final static Logger logger = LoggerFactory.getLogger(Local.class);
 
     List<String> versions_json_path_list = new ArrayList<>(); //gets the path of all json files
     List<String> versions_list = new ArrayList<>();           //just gets the versions available on the system
@@ -91,7 +94,7 @@ class Local {
                 Collections.addAll(meta, line.split(":"));
             }
         } catch (IOException ex) {
-            System.out.println("API Meta does not exist!");
+            logger.warn("API Meta does not exist!", ex);
         }
         return meta;
     }
@@ -115,9 +118,9 @@ class Local {
                 BufferedWriter bw = new BufferedWriter(fw);
                 bw.write(content);
                 bw.close();
-                System.out.println("LauncherProfiles.json Created!");
+                logger.info("LauncherProfiles.json Created!");
             } else {
-                System.out.println("LauncherProfiles.json not created! File exists!");
+                logger.debug("LauncherProfiles.json not created! File exists!");
             }
 
         } catch (IOException e) {
@@ -209,7 +212,7 @@ class Local {
             file.close();
 
         } catch (Exception e) {
-            //e.printStackTrace();
+            logger.warn("Failed to write launcher profiles", e);
         }
     }
 
@@ -221,10 +224,9 @@ class Local {
             JSONArray versions = (JSONArray) jsonObject.get("versions");
             for (JSONObject version : (Iterable<JSONObject>) versions) {
                 version_manifest_versions_id.add((String) version.get("id"));
-                //System.out.println(versions_.get("id"));
             }
         } catch (IOException | ParseException e) {
-            //System.out.print(e);
+            logger.warn("Failed to parse version ids", e);
         }
     }
 
@@ -236,10 +238,9 @@ class Local {
             JSONArray versions = (JSONArray) jsonObject.get("versions");
             for (JSONObject version : (Iterable<JSONObject>) versions) {
                 version_manifest_versions_type.add((String) version.get("type"));
-                //System.out.println(versions_.get("id"));
             }
         } catch (IOException | ParseException e) {
-            //System.out.print(e);
+            logger.warn("Failed to parse version types", e);
         }
     }
 
@@ -251,10 +252,9 @@ class Local {
             JSONArray versions = (JSONArray) jsonObject.get("versions");
             for (JSONObject version : (Iterable<JSONObject>) versions) {
                 version_manifest_versions_url.add((String) version.get("url"));
-                //System.out.println(versions_.get("id"));
             }
         } catch (IOException | ParseException e) {
-            //System.out.print(e);
+            logger.warn("Failed to parse version urls", e);
         }
     }
 
@@ -268,7 +268,7 @@ class Local {
                 version_name_list.add((String) version.get("name"));
             }
         } catch (IOException | ParseException e) {
-            //System.out.print(e);
+            logger.warn("Failed to parse library names", e);
         }
     }
 
@@ -290,7 +290,7 @@ class Local {
                 }
             }
         } catch (IOException | ParseException e) {
-            //System.out.print(e);
+            logger.warn("Failed to parse library download urls", e);
         }
 
     }
@@ -313,7 +313,7 @@ class Local {
                 }
             }
         } catch (IOException | ParseException e) {
-            //System.out.print(e);
+            logger.warn("Failed to parse library download paths", e);
         }
 
     }
@@ -329,11 +329,10 @@ class Local {
             } else if (natives_OS.equals("Mac")) {
                 natives_OS = natives_OS.replace("Mac", "natives-osx");
             } else {
-                System.out.print("N/A");
+                logger.warn("Unknown OS!");
                 //I DON'T KNOW THIS OS!
             }
             String content = new Scanner(new File(path)).useDelimiter("\\Z").next();
-            //System.out.println(content);
             ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
             try {
 
@@ -358,7 +357,7 @@ class Local {
 
             version_url_list_natives.addAll(Arrays.asList(result.toString().split("\n")));
         } catch (FileNotFoundException | ScriptException | NoSuchMethodException ex) {
-            System.out.println(ex.getMessage());
+            logger.warn("Failed to parse native library classifiers", ex);
         }
     }
 
@@ -372,11 +371,10 @@ class Local {
             } else if (natives_OS.equals("Mac")) {
                 natives_OS = natives_OS.replace("Mac", "natives-osx");
             } else {
-                System.out.print("N/A");
+                logger.warn("Unknown OS!");
                 //I DON'T KNOW THIS OS!
             }
             String content = new Scanner(new File(path)).useDelimiter("\\Z").next();
-            //System.out.println(content);
             ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
             try {
 
@@ -401,7 +399,7 @@ class Local {
 
             version_path_list_natives.addAll(Arrays.asList(result.toString().split("\n")));
         } catch (FileNotFoundException | ScriptException | NoSuchMethodException ex) {
-            System.out.println(ex.getMessage());
+            logger.warn("Failed to parse native library classifiers", ex);
         }
     }
 
@@ -410,7 +408,6 @@ class Local {
         try {
 
             String content = new Scanner(new File(path)).useDelimiter("\\Z").next();
-            //System.out.println(content);
             ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
             try {
 
@@ -434,7 +431,7 @@ class Local {
 
             version_name_list_natives.addAll(Arrays.asList(result.toString().split("\n")));
         } catch (FileNotFoundException | ScriptException | NoSuchMethodException ex) {
-            System.out.println(ex.getMessage());
+            logger.warn("Failed to parse native library classifiers", ex);
         }
     }
 
@@ -454,7 +451,7 @@ class Local {
                 objects_KEY.add(fileName);
             }
         } catch (IOException | ParseException ex) {
-            ex.printStackTrace();
+            logger.warn("Failed to parse JSON", ex);
         }
 
     }
@@ -478,7 +475,7 @@ class Local {
                 objects_hash.add(fileHash);
             }
         } catch (IOException | ParseException ex) {
-            ex.printStackTrace();
+            logger.warn("Failed to parse JSON", ex);
         }
 
     }
@@ -492,7 +489,7 @@ class Local {
             return (String) (structure.get("url"));
 
         } catch (IOException | ParseException e) {
-            System.out.print(e);
+            logger.warn("Failed to parse JSON", e);
         }
         return "N/A";
     }
@@ -506,7 +503,7 @@ class Local {
             return (String) (structure.get("id"));
 
         } catch (IOException | ParseException e) {
-            System.out.print(e);
+            logger.warn("Failed to parse JSON", e);
         }
         return "N/A";
     }
@@ -526,7 +523,7 @@ class Local {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.warn("Failed to parse JSON", e);
         }
     }
 
@@ -545,7 +542,7 @@ class Local {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.warn("Failed to parse JSON", e);
         }
     }
 
@@ -561,7 +558,7 @@ class Local {
             return (argsF[0]);
 
         } catch (IOException | ParseException e) {
-            System.out.print(e);
+            logger.warn("Failed to parse JSON", e);
         }
         return "N/A";
     }
@@ -574,7 +571,7 @@ class Local {
             return (String) (jsonObject.get("minecraftArguments"));
 
         } catch (IOException | ParseException e) {
-            System.out.print(e);
+            logger.warn("Failed to parse JSON", e);
         }
         return "N/A";
     }
@@ -587,7 +584,7 @@ class Local {
             return (String) (jsonObject.get("assets"));
 
         } catch (IOException | ParseException e) {
-            System.out.print(e);
+            logger.warn("Failed to parse JSON", e);
         }
         return "N/A";
     }
@@ -600,7 +597,7 @@ class Local {
             return (String) (jsonObject.get("id"));
 
         } catch (IOException | ParseException e) {
-            System.out.print(e);
+            logger.warn("Failed to parse JSON", e);;
         }
         return "N/A";
     }
@@ -613,7 +610,7 @@ class Local {
             return (String) (jsonObject.get("mainClass"));
 
         } catch (IOException | ParseException e) {
-            System.out.print(e);
+            logger.warn("Failed to parse JSON", e);
         }
         return "N/A";
     }
@@ -728,7 +725,7 @@ class Local {
             return (compileSplit);
 
         } catch (Exception e) {
-            System.out.println(e);
+            logger.warn("Failed to generate libraries path", e);
         }
         return "N/A";
     }
@@ -742,7 +739,7 @@ class Local {
             } else if (natives_OS.equals("Mac")) {
                 natives_OS = natives_OS.replace("Mac", "natives-osx");
             } else {
-                System.out.print("N/A");
+                logger.warn("Unknown OS!");
                 //I DON'T KNOW THIS OS!
             }
             String fileName = _name;
@@ -787,7 +784,7 @@ class Local {
             for (JSONObject version : (Iterable<JSONObject>) versions) {
                 version_name_list.add((String) version.get("name"));
                 if (version.get("url") == null) {
-                    System.out.println("Can't resolve: url Attempting to fix!");
+                    logger.error("Can't resolve url. Attempting to fix!");
                     HALF_URL_version_url_list.add(network.https_libraries_minecraft_net);
                 } else {
                     HALF_URL_version_url_list.add((String) version.get("url"));
@@ -795,7 +792,7 @@ class Local {
                 }
             }
         } catch (IOException | ParseException e) {
-            //System.out.print(e);
+            logger.warn("Failed to parse JSON", e);
         }
     }
 
@@ -807,7 +804,7 @@ class Local {
             return (String) (jsonObject.get("inheritsFrom"));
 
         } catch (IOException | ParseException e) {
-            System.out.print(e);
+            logger.warn("Failed to parse JSON", e);
         }
         return "N/A";
     }
@@ -820,7 +817,7 @@ class Local {
             return (String) (jsonObject.get("jar"));
 
         } catch (IOException | ParseException e) {
-            System.out.print(e);
+            logger.warn("Failed to parse JSON", e);
         }
         return "N/A";
     }

@@ -24,35 +24,6 @@
  * SOFTWARE.
  */
 
-<<<<<<< Updated upstream
-=======
-/*
- * MIT License
- *
- * Copyright (c) 2018 Ammar Ahmad
- * Copyright (c) 2018 Martin Benndorf
- * Copyright (c) 2018 Mark Vainomaa
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
->>>>>>> Stashed changes
 package me.minidigger.minecraftlauncher.launcher;
 
 import java.awt.*;
@@ -84,6 +55,10 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import me.minidigger.minecraftlauncher.api.LauncherAPI;
+import me.minidigger.minecraftlauncher.api.events.LauncherEventHandler;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * FXML Controller class
@@ -91,6 +66,7 @@ import me.minidigger.minecraftlauncher.api.LauncherAPI;
  * @author Mathew
  */
 public class LauncherOptionsController implements Initializable {
+    private final static Logger logger = LoggerFactory.getLogger(LauncherOptionsController.class);
 
     @FXML
     private Button optionsExit;
@@ -115,7 +91,7 @@ public class LauncherOptionsController implements Initializable {
     @FXML
     private TextField optionsRamAllocationMax;
     @FXML
-    private ComboBox optionsSelectVersion;
+    private ComboBox<String> optionsSelectVersion;
     @FXML
     private Button optionsSelectVersionInstall;
     @FXML
@@ -135,7 +111,7 @@ public class LauncherOptionsController implements Initializable {
     @FXML
     private RadioButton optionsDebugMode;
     @FXML
-    private ComboBox themeType;
+    private ComboBox<String> themeType;
     @FXML
     private RadioButton useThemeType;
     @FXML
@@ -185,9 +161,9 @@ public class LauncherOptionsController implements Initializable {
         ExecutorService executor1 = Executors.newCachedThreadPool();
         executor1.submit(() -> {
             if (API.getUpdateStatus().equals("0")) {
-                System.out.println("You are running the latest API version");
+                logger.info("You are running the latest API version");
             } else {
-                System.out.println("You are " + API.getUpdateStatus() + " versions behind");
+                logger.info("You are " + API.getUpdateStatus() + " versions behind");
             }
             return null;
         });
@@ -208,10 +184,10 @@ public class LauncherOptionsController implements Initializable {
             }
             if (!API.getInstalledVersionsList().isEmpty()) {
 
-                for (Object ob_ : API.getInstalledVersionsList()) {
+                for (String ob_ : API.getInstalledVersionsList()) {
                     if (!VersionHashTable.containsKey(ob_)) {
                         optionsSelectVersion.getItems().addAll(ob_);
-                        VersionHashTable.put((String) ob_, "Unknown");
+                        VersionHashTable.put(ob_, "Unknown");
                     }
                 }
 
@@ -219,7 +195,7 @@ public class LauncherOptionsController implements Initializable {
             optionsSelectVersion.setDisable(false);
             optionsSelectVersionInstall.setDisable(false);
             try {
-                Platform.runLater(() -> optionStatus.setText("Status: Idle"));
+                Platform.runLater(() -> setStatus(LauncherSettings.Status.IDLE));
             } catch (Exception e) {
             }
             return null;
@@ -326,80 +302,19 @@ public class LauncherOptionsController implements Initializable {
         optionsSelectVersion.setDisable(true);
 
         if (optionsSelectVersionForce.isSelected()) {
-            System.out.println("Selected!");
+            logger.info("Selected!");
         } else {
-            System.out.println("NOT Selected!");
+            logger.info("NOT Selected!");
 
         }
         LauncherAPI API = new LauncherAPI();
+        API.setEventHandler(new OptionsGUIEventHandler());
         ExecutorService executor = Executors.newCachedThreadPool();
         executor.submit(() -> {
             API.downloadMinecraft((String) optionsSelectVersion.getValue(), optionsSelectVersionForce.isSelected());
             return null;
         });
         executor.shutdown();
-
-        Thread t = new Thread(() -> {
-            while (true) {
-                try {
-
-                    Platform.runLater(() -> {
-
-                        if (LauncherSettings.showDebugStatus) {
-                            optionStatus.setText(API.getLog());
-                        } else {
-                            if (API.getLog().startsWith("[dl] URL: https://launchermeta")) {
-                                optionStatus.setText("Status: " + LauncherSettings.Status.DOWNLOADING_LM);
-                            }
-                            if (API.getLog().startsWith("[dl] DOWNLOADING...HASH:")) {
-                                optionStatus.setText("Status: " + LauncherSettings.Status.DOWNLOADING);
-                            }
-                            if (API.getLog().startsWith("[dl] DOWNLOADING MINECRAFT JAR")) {
-                                optionStatus.setText("Status: " + LauncherSettings.Status.DOWNLOADING_M);
-                            }
-                            if (API.getLog().startsWith("[dl] Downloading: https://libraries")) {
-                                optionStatus.setText("Status: " + LauncherSettings.Status.DOWNLOADING_L);
-                            }
-                            if (API.getLog().startsWith("[dl] Getting NATIVES URL")) {
-                                optionStatus.setText("Status: " + LauncherSettings.Status.FINALIZING);
-                            }
-                        }
-
-                    });
-
-                    Thread.sleep(10);
-
-                    if (API.getLog().equals("[dl] Download Complete!")) {
-                        Platform.runLater(() -> {
-                            optionStatus.setText("Status: " + LauncherSettings.Status.DOWNLOAD_COMPLETE);
-                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                            alert.setTitle("Minecraft Launcher - Success");
-                            alert.setHeaderText("Download Complete.");
-                            alert.initStyle(StageStyle.UTILITY);
-                            DialogPane dialogPane = alert.getDialogPane();
-                            dialogPane.getStylesheets().add("/css/purple.css");
-                            alert.setContentText("Version: " + optionsSelectVersion.getValue() + " has been downloaded & installed!");
-                            ;
-                            optionStatus.setText("Status: " + LauncherSettings.Status.IDLE);
-                            optionsSelectVersionInstall.setDisable(false);
-                            optionsExit.setDisable(false);
-                            optionsClose.setDisable(false);
-                            optionsSelectVersion.setDisable(false);
-                            optionsSelectFastStart.setSelected(false);
-                            LauncherSettings.refreshVersionList = true;
-                            LauncherSettings.fastStartUp = false;
-                            alert.showAndWait();
-                            API.dumpLogs();
-
-                        });
-                        return;
-                    }
-                } catch (Exception e) {
-                }
-            }
-
-        });
-        t.start();
     }
 
     @FXML
@@ -484,6 +399,10 @@ public class LauncherOptionsController implements Initializable {
             optionsKeepLauncherOpen.setSelected(true);
         }
 
+    }
+
+    void setStatus(LauncherSettings.Status status) {
+        optionStatus.setText("Status: " + status);
     }
 
     @FXML
@@ -735,5 +654,54 @@ public class LauncherOptionsController implements Initializable {
     @FXML
     private void _optionsSelectFastStart(ActionEvent event) {
         LauncherSettings.fastStartUp = !LauncherSettings.fastStartUp;
+    }
+
+    private final class OptionsGUIEventHandler implements LauncherEventHandler {
+        @Override
+        public void onDownload(@NonNull Downloadable downloadable) {
+            // TODO: direct log message passing is not supported
+            Platform.runLater(() -> {
+                switch(downloadable) {
+                    case ASSETS:
+                        setStatus(LauncherSettings.Status.DOWNLOADING);
+                        break;
+                    case LAUNCHER_META:
+                        setStatus(LauncherSettings.Status.DOWNLOADING_LM);
+                        break;
+                    case LIBRARIES:
+                        setStatus(LauncherSettings.Status.DOWNLOADING_L);
+                        break;
+                    case MINECRAFT:
+                        setStatus(LauncherSettings.Status.DOWNLOADING_M);
+                        break;
+                    case NATIVES:
+                        setStatus(LauncherSettings.Status.FINALIZING);
+                        break;
+                }
+            });
+        }
+
+        @Override
+        public void onDownloadComplete() {
+            Platform.runLater(() -> {
+                setStatus(LauncherSettings.Status.DOWNLOAD_COMPLETE);
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Minecraft Launcher - Success");
+                alert.setHeaderText("Download Complete.");
+                alert.initStyle(StageStyle.UTILITY);
+                DialogPane dialogPane = alert.getDialogPane();
+                dialogPane.getStylesheets().add("/css/purple.css");
+                alert.setContentText("Version: " + optionsSelectVersion.getValue() + " has been downloaded & installed!");
+                setStatus(LauncherSettings.Status.IDLE);
+                optionsSelectVersionInstall.setDisable(false);
+                optionsExit.setDisable(false);
+                optionsClose.setDisable(false);
+                optionsSelectVersion.setDisable(false);
+                optionsSelectFastStart.setSelected(false);
+                LauncherSettings.refreshVersionList = true;
+                LauncherSettings.fastStartUp = false;
+                alert.showAndWait();
+            });
+        }
     }
 }

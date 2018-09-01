@@ -26,9 +26,16 @@
 
 package me.minidigger.minecraftlauncher.api;
 
-import com.minecraft.moonlake.nbt.NBTTagCompound;
-import com.minecraft.moonlake.nbt.NBTTagList;
-import com.minecraft.moonlake.nbt.NBTUtil;
+import me.minidigger.minecraftlauncher.api.events.LauncherEventHandler;
+import net.kyori.nbt.CompoundTag;
+import net.kyori.nbt.ListTag;
+import net.kyori.nbt.TagIO;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,6 +51,20 @@ import java.util.stream.Stream;
  * @author ammar
  */
 public class LauncherAPI {
+    private final static Logger logger = LoggerFactory.getLogger(LauncherAPI.class);
+    private final static Marker downloadMarker = MarkerFactory.getMarker("DOWNLOAD");
+    private final static Marker runMarker = MarkerFactory.getMarker("RUN");
+
+    private LauncherEventHandler eventHandler = LauncherEventHandler.DUMMY;
+
+    @NonNull
+    public LauncherEventHandler getEventHandler() {
+        return eventHandler;
+    }
+
+    public void setEventHandler(@Nullable LauncherEventHandler eventHandler) {
+        this.eventHandler = eventHandler != null ? eventHandler : LauncherEventHandler.DUMMY;
+    }
 
     public String getAPIVersion() {
         return "v0.10-alpha";
@@ -71,72 +92,8 @@ public class LauncherAPI {
         return String.valueOf(versionBehind);
     }
 
-    private String runLogs;
-
-    //run logs getter/setter
-    private String getRunLogs() {
-        return runLogs; //run logs
-    }
-
-    private void setRunLogs(String runLogs_) {
-        System.out.println(runLogs_);
-        this.setLog("[rl] " + runLogs_);
-        runLogs = "[rl] " + runLogs_;
-    }
-
-    private String downloadLogs;
-
-    //download logs getter/setter
-    private String getDownloadLogs() {
-        return downloadLogs; //download logs
-    }
-
-    private void setDownloadLogs(String downloadLogs_) {
-        System.out.println(downloadLogs_);
-        this.setLog("[dl] " + downloadLogs_);
-        downloadLogs = "[dl] " + downloadLogs_;
-    }
-
-    private String errorLogs;
-
-    //last error logs getter/setter
-    private String getErrorLogs() {
-        return errorLogs;
-    }
-
-    private void setErrorLogs(String errorLogs_) {
-        System.out.println(errorLogs_);
-        this.setLog("[el] " + errorLogs_);
-        errorLogs = "[el] " + errorLogs_;
-    }
-
-    private String log;
-
-    //interface for log
     public String getLog() {
-        return log;
-    }
-
-    private void setLog(String log_) {
-        this.setLogs(log_);
-        log = log_;
-    }
-
-    //interface for full logs
-    private List<String> logs = new ArrayList<>();
-
-    public List<String> getLogs() {
-        return logs;
-    }
-
-    private void setLogs(String logs_) {
-        logs.add(logs_);
-    }
-
-    public void dumpLogs() {
-        Utils utils = new Utils();
-        String OperatingSystemToUse = utils.getOS();
-        utils.writeLogs(OperatingSystemToUse, (ArrayList) logs);
+        return "";
     }
 
     public List<String> getInstallableVersionsList() {
@@ -195,29 +152,29 @@ public class LauncherAPI {
     public void addServerToServersDat(String Name, String IP) {
         Utils utils = new Utils();
         String OperatingSystemToUse = utils.getOS();
-        NBTTagCompound root = new NBTTagCompound();
-        NBTTagList<NBTTagCompound> server = new NBTTagList<>("servers");
-        NBTTagCompound data = new NBTTagCompound();
+        CompoundTag root = new CompoundTag();
+        ListTag servers = new ListTag();
+        CompoundTag data = new CompoundTag();
 
         List<String> names = new ArrayList<>(utils.getMineCraftServerDatNBTName(OperatingSystemToUse));
         List<String> ips = new ArrayList<>(utils.getMineCraftServerDatNBTIP(OperatingSystemToUse));
-        data.setString("name", Name);
-        data.setString("ip", IP);
-        server.add(data);
+        data.putString("name", Name);
+        data.putString("ip", IP);
+        servers.add(data);
         try {
             for (int i = 0; i < ips.size(); i++) {
-                data = new NBTTagCompound();
-                data.setString("name", names.get(i));
-                data.setString("ip", ips.get(i));
-                server.add(data);
+                data = new CompoundTag();
+                data.putString("name", names.get(i));
+                data.putString("ip", ips.get(i));
+                servers.add(data);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        root.put(server);
-        //System.out.println(root.toString());
+        root.put("servers", servers);
+        //logger.debug(root.toString());
         try {
-            NBTUtil.writeFile(root, new File(utils.getMineCraft_ServersDat(OperatingSystemToUse)), false);
+            TagIO.writePath(root, new File(utils.getMineCraft_ServersDat(OperatingSystemToUse)).toPath());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -250,7 +207,6 @@ public class LauncherAPI {
             for (Object n : union) {
                 //add these versions to the system.
                 if (n != null) {
-                    System.out.println(n);
                     local.writeJson_launcher_profiles(OperatingSystemToUse, n.toString() + "_Cracked_" + utils.nextSessionId(), n.toString());
                 }
             }
@@ -263,13 +219,13 @@ public class LauncherAPI {
         try {
             utils.injectNetty(OperatingSystemToUse);
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
+            logger.warn("Failed to inject Netty", ex);
         }
 
         try {
             utils.injectPatchy(OperatingSystemToUse);
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
+            logger.warn("Failed to inject Mojang Patchy", ex);
         }
     }
 
@@ -297,16 +253,17 @@ public class LauncherAPI {
         String MOD_id = null;
         //check if it is vanilla or not
         if (local.checkIfVanillaMC(VersionToUse).equals(true)) {
-            this.setRunLogs("Vanilla Minecraft found!");
+            
+            logger.info(runMarker, "Vanilla Minecraft found!");
         } else {
-            this.setRunLogs("Modded Minecraft found!");
+            logger.info(runMarker, "Modded Minecraft found!");
             local.MOD_readJson_libraries_name_PLUS_url(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse));
             for (int i = 0; i < local.version_name_list.size(); i++) {
-                this.setRunLogs(local.version_name_list.get(i));
-                this.setRunLogs(local.HALF_URL_version_url_list.get(i));
+                logger.info(runMarker, local.version_name_list.get(i));
+                logger.info(runMarker, local.HALF_URL_version_url_list.get(i));
             }
 
-            this.setRunLogs("Fixing url using name.");
+            logger.info(runMarker, "Fixing url using name.");
             for (int i = 0; i < local.version_name_list.size(); i++) {
                 local.version_path_list.add(local.generateLibrariesPath(OperatingSystemToUse, local.version_name_list.get(i)));
 
@@ -317,38 +274,38 @@ public class LauncherAPI {
             }
 
             MOD_inheritsFrom = local.readJson_inheritsFrom(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse));
-            this.setRunLogs("inheritsFrom: " + MOD_inheritsFrom);
+            logger.info(runMarker, "inheritsFrom: " + MOD_inheritsFrom);
 
             MOD_jar = local.readJson_jar(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse));
-            this.setRunLogs("jar: " + MOD_jar);
+            logger.info(runMarker, "jar: " + MOD_jar);
 
             MOD_assets = local.readJson_assets(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse));
-            this.setRunLogs("assets: " + MOD_assets);
+            logger.info(runMarker, "assets: " + MOD_assets);
 
             MOD_minecraftArguments = local.readJson_minecraftArguments(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse));
-            this.setRunLogs("minecraftArguments: " + MOD_minecraftArguments);
+            logger.info(runMarker, "minecraftArguments: " + MOD_minecraftArguments);
 
             MOD_mainClass = local.readJson_mainClass(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse));
-            this.setRunLogs("mainClass: " + MOD_mainClass);
+            logger.info(runMarker, "mainClass: " + MOD_mainClass);
 
             MOD_id = local.readJson_id(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse));
-            this.setRunLogs("id: " + MOD_id);
+            logger.info(runMarker, "id: " + MOD_id);
         }
 
         if (MOD_inheritsFrom == null) {
-            this.setRunLogs("Using: " + VersionToUse);
+            logger.info(runMarker, "Using: " + VersionToUse);
 
         } else {
             VersionToUse = MOD_inheritsFrom;
-            this.setRunLogs("Using: " + VersionToUse);
+            logger.info(runMarker, "Using: " + VersionToUse);
 
         }
 
         //incase the url is empty.. we have to assume that the user has old path system.
         for (int i = 0; i < local.version_manifest_versions_id.size(); i++) {
-            this.setRunLogs(local.version_manifest_versions_id.get(i));
-            this.setRunLogs(local.version_manifest_versions_type.get(i));
-            this.setRunLogs(local.version_manifest_versions_url.get(i));
+            logger.info(runMarker, local.version_manifest_versions_id.get(i));
+            logger.info(runMarker, local.version_manifest_versions_type.get(i));
+            logger.info(runMarker, local.version_manifest_versions_url.get(i));
         }
 
         //download 1.7.10.json_libs
@@ -366,100 +323,100 @@ public class LauncherAPI {
             }
 
         } catch (Exception e) {
-            this.setErrorLogs("Something went wrong downloadVersionJson" + e);
+            logger.error("Something went wrong downloadVersionJson" + e);
         }
 
-        this.setRunLogs(utils.getMineCraftLocation(OperatingSystemToUse));
+        logger.info(runMarker, utils.getMineCraftLocation(OperatingSystemToUse));
 
         local.generateVersionJsonPathList(utils.getMineCraftVersionsLocation(OperatingSystemToUse));
         local.generateVersionList(utils.getMineCraftVersionsLocation(OperatingSystemToUse));
 
         for (int i = 0; i < local.versions_json_path_list.size(); i++) {
-            this.setRunLogs(local.versions_json_path_list.get(i));
+            logger.info(runMarker, local.versions_json_path_list.get(i));
         }
 
         for (int i = 0; i < local.versions_list.size(); i++) {
-            this.setRunLogs(local.versions_list.get(i));
+            logger.info(runMarker, local.versions_list.get(i));
         }
 
-        this.setRunLogs(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse));
+        logger.info(runMarker, utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse));
 
         try {
             local.readJson_libraries_downloads_artifact_url(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse));
 
         } catch (Exception ex) {
-            this.setErrorLogs("Unable to get libraries_downloads_artifact_url " + ex);
+            logger.error("Unable to get libraries_downloads_artifact_url " + ex);
         }
         try {
             local.readJson_libraries_downloads_artifact_path(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse));
 
         } catch (Exception ex) {
-            this.setErrorLogs("Unable to get libraries_downloads_artifact_path " + ex);
+            logger.error("Unable to get libraries_downloads_artifact_path " + ex);
         }
         try {
             local.readJson_libraries_name(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse));
 
         } catch (Exception ex) {
-            this.setErrorLogs("Unable to get libraries_name " + ex);
+            logger.error("Unable to get libraries_name " + ex);
         }
 
         try {
-            this.setRunLogs(local.readJson_assetIndex_url(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse)));
+            logger.info(runMarker, local.readJson_assetIndex_url(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse)));
 
         } catch (Exception ex) {
-            this.setErrorLogs("Unable to get assetIndex_url" + ex);
+            logger.error("Unable to get assetIndex_url" + ex);
         }
         try {
-            this.setRunLogs(local.readJson_assetIndex_id(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse)));
+            logger.info(runMarker, local.readJson_assetIndex_id(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse)));
         } catch (Exception ex) {
-            this.setErrorLogs("Unable to get assetIndex_id" + ex);
+            logger.error("Unable to get assetIndex_id" + ex);
         }
 
-        this.setRunLogs(utils.getMineCraftAssetsIndexes_X_json(OperatingSystemToUse, VersionToUse));
+        logger.info(runMarker, utils.getMineCraftAssetsIndexes_X_json(OperatingSystemToUse, VersionToUse));
 
         try {
             local.readJson_objects_KEY(utils.getMineCraftAssetsIndexes_X_json(OperatingSystemToUse, local.readJson_assetIndex_id(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse))));
 
         } catch (Exception e) {
-            this.setErrorLogs("Error reading objects KEY" + e);
+            logger.error("Error reading objects KEY" + e);
         }
         try {
             local.readJson_objects_KEY_hash(utils.getMineCraftAssetsIndexes_X_json(OperatingSystemToUse, local.readJson_assetIndex_id(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse))));
 
         } catch (Exception e) {
-            this.setErrorLogs("Error reading objects KEY_hash" + e);
+            logger.error("Error reading objects KEY_hash" + e);
 
         }
 
         if (HashCheck) {
             try {
                 for (int i = 0; i < local.objects_hash.size(); i++) {
-                    this.setRunLogs("HASH: " + local.objects_hash.get(i));
-                    this.setRunLogs("FOLDER: " + local.objects_hash.get(i).substring(0, 2));
-                    this.setRunLogs("KEY: " + local.objects_KEY.get(i));
+                    logger.info(runMarker, "HASH: " + local.objects_hash.get(i));
+                    logger.info(runMarker, "FOLDER: " + local.objects_hash.get(i).substring(0, 2));
+                    logger.info(runMarker, "KEY: " + local.objects_KEY.get(i));
                     utils.copyToVirtual(OperatingSystemToUse, local.objects_hash.get(i).substring(0, 2), local.objects_hash.get(i), local.objects_KEY.get(i));
                     //generate virtual folder as well.
 
                 }
 
             } catch (Exception e) {
-                this.setErrorLogs("Error reading objects KEY + KEY_hash" + e);
+                logger.error("Error reading objects KEY + KEY_hash" + e);
 
             }
         }
 
 
-        this.setRunLogs("Getting NATIVES URL");
+        logger.info(runMarker, "Getting NATIVES URL");
         local.readJson_libraries_downloads_classifiers_natives_X(utils.getMineCraft_Versions_X_X_json(OperatingSystemToUse, VersionToUse), OperatingSystemToUse);
-        this.setRunLogs("Getting NATIVES PATH");
+        logger.info(runMarker, "Getting NATIVES PATH");
         local.readJson_libraries_downloads_classifiers_natives_Y(utils.getMineCraft_Versions_X_X_json(OperatingSystemToUse, VersionToUse), OperatingSystemToUse);
 
         for (int i = 0; i < local.version_url_list_natives.size(); i++) {
-            this.setRunLogs("NATIVE URL: " + local.version_url_list_natives.get(i));
+            logger.info(runMarker, "NATIVE URL: " + local.version_url_list_natives.get(i));
             //extract them here..
-            this.setRunLogs("Extracting...");
-            this.setRunLogs(local.version_url_list_natives.get(i));
-            this.setRunLogs(utils.getMineCraft_Versions_X_Natives_Location(OperatingSystemToUse, VersionToUse));
+            logger.info(runMarker, "Extracting...");
+            logger.info(runMarker, local.version_url_list_natives.get(i));
+            logger.info(runMarker, utils.getMineCraft_Versions_X_Natives_Location(OperatingSystemToUse, VersionToUse));
 
             utils.jarExtract(OperatingSystemToUse, local.version_path_list_natives.get(i), utils.getMineCraft_Versions_X_Natives_Location(OperatingSystemToUse, VersionToUse));
 
@@ -518,21 +475,21 @@ public class LauncherAPI {
         String AuthSession = "OFFLINE";
 
         String GameAssets = utils.getMineCraftAssetsVirtualLegacyLocation(OperatingSystemToUse);
-        System.out.println("NativesPath: " + NativesDir);
+        logger.debug("NativesPath: " + NativesDir);
 
         for (int i = 0; i < local.version_path_list.size(); i++) {
             local.libraries_path.add(utils.setMineCraft_librariesLocation(OperatingSystemToUse, local.version_path_list.get(i)));
-            System.out.println(local.libraries_path.get(i));
+            logger.debug(local.libraries_path.get(i));
         }
 
         String HalfLibraryArgument = local.generateLibrariesArguments(OperatingSystemToUse);
         String FullLibraryArgument = local.generateLibrariesArguments(OperatingSystemToUse) + utils.getArgsDiv(OperatingSystemToUse) + MinecraftJar;
-        System.out.println("HalfLibraryArgument: " + HalfLibraryArgument);
-        System.out.println("FullLibraryArgument: " + FullLibraryArgument);
+        logger.debug("HalfLibraryArgument: " + HalfLibraryArgument);
+        logger.debug("FullLibraryArgument: " + FullLibraryArgument);
 
         //argument patch for netty and patchy comes here
         if (injectNetty) {
-            System.out.println("Netty/Patchy Patch Detected!");
+            logger.debug("Netty/Patchy Patch Detected!");
 
             String patchy_mod = "";
             String patchy = "";
@@ -553,8 +510,8 @@ public class LauncherAPI {
                         patchy = value;
                     }
 
-                    System.out.println("KEY:::::" + key);
-                    System.out.println("VALUE:::::" + value);
+                    logger.debug("KEY:::::" + key);
+                    logger.debug("VALUE:::::" + value);
                 }
                 HalfLibraryArgument = HalfLibraryArgument.replace(patchy, patchy_mod);
                 FullLibraryArgument = FullLibraryArgument.replace(patchy, patchy_mod);
@@ -574,8 +531,8 @@ public class LauncherAPI {
                         netty = value;
                     }
 
-                    System.out.println("KEY:::::" + key);
-                    System.out.println("VALUE:::::" + value);
+                    logger.debug("KEY:::::" + key);
+                    logger.debug("VALUE:::::" + value);
                 }
                 HalfLibraryArgument = HalfLibraryArgument.replace(netty, netty_mod);
                 FullLibraryArgument = FullLibraryArgument.replace(netty, netty_mod);
@@ -589,20 +546,20 @@ public class LauncherAPI {
         //argument patch netty and patchy ends here
 
         String[] HalfArgument = local.generateMinecraftArguments(OperatingSystemToUse, Username, versionName, gameDirectory, AssetsRoot, assetsIdexId, authuuid, "aeef7bc935f9420eb6314dea7ad7e1e5", "{\"twitch_access_token\":[\"emoitqdugw2h8un7psy3uo84uwb8raq\"]}", "mojang", VersionType, GameAssets, AuthSession);
-        //System.out.println("HalfArgument: " + HalfArgument);
+        //logger.debug("HalfArgument: " + HalfArgument);
         for (String HalfArgsVal : HalfArgument) {
-            System.out.println("HalfArg: " + HalfArgsVal);
+            logger.debug("HalfArg: " + HalfArgsVal);
         }
-        System.out.println("Minecraft.jar: " + MinecraftJar);
+        logger.debug("Minecraft.jar: " + MinecraftJar);
 
-        this.setRunLogs("username: " + Username);
-        this.setRunLogs("version number: " + versionName);
-        this.setRunLogs("game directory: " + gameDirectory);
-        this.setRunLogs("assets root directory: " + AssetsRoot);
-        this.setRunLogs("assets Index Id: " + assetsIdexId);
-        this.setRunLogs("assets legacy directory: " + GameAssets);
+        logger.info(runMarker, "username: " + Username);
+        logger.info(runMarker, "version number: " + versionName);
+        logger.info(runMarker, "game directory: " + gameDirectory);
+        logger.info(runMarker, "assets root directory: " + AssetsRoot);
+        logger.info(runMarker, "assets Index Id: " + assetsIdexId);
+        logger.info(runMarker, "assets legacy directory: " + GameAssets);
         //won't be using this
-        //this.setRunLogs(local.generateRunnableArguments(Xmx, NativesDir, FullLibraryArgument, mainClass, HalfArgument));
+        //logger.info(runMarker, local.generateRunnableArguments(Xmx, NativesDir, FullLibraryArgument, mainClass, HalfArgument));
 
         try {
             String cmds[] = {"-Xms" + Xms + "M", "-Xmx" + Xmx + "M", "-XX:HeapDumpPath=MojangTricksIntelDriversForPerformance_javaw.exe_minecraft.exe.heapdump", "-Djava.library.path=" + NativesDir, "-cp", FullLibraryArgument, mainClass, "--width", String.valueOf(Width), "--height", String.valueOf(Height)};
@@ -619,9 +576,9 @@ public class LauncherAPI {
 
             String[] finalArgs = Stream.concat(Arrays.stream(cmds), Arrays.stream(HalfArgument)).toArray(String[]::new);
             for (String finalArgs_ : finalArgs) {
-                this.setRunLogs(finalArgs_);
+                logger.info(runMarker, finalArgs_);
             }
-            this.setRunLogs("Starting game... Please wait....");
+            logger.info(runMarker, "Starting game... Please wait....");
             Process process = Runtime.getRuntime().exec(finalArgs);
 
             try {
@@ -629,11 +586,11 @@ public class LauncherAPI {
                 //process.waitFor();
                 if (process.exitValue() != 0) {
                     //something went wrong.
-                    this.setErrorLogs("Minecraft Corruption found!");
+                    logger.error("Minecraft Corruption found!");
                 }
 
             } catch (Exception ex) {
-                this.setRunLogs("Minecraft Initialized!");
+                logger.info(runMarker, "Minecraft Initialized!");
                 //nothing to print.. everythimg went fine.
             }
 
@@ -715,7 +672,7 @@ public class LauncherAPI {
     public void downloadVersionManifest() {
         Utils utils = new Utils();
         Network network = new Network();
-        System.out.println("Downloading: version_manifest.json");
+        logger.debug("Downloading: version_manifest.json");
         String OperatingSystemToUse = utils.getOS();
         network.downloadVersionManifest(utils.getMineCraft_Version_Manifest_json(OperatingSystemToUse));
 
@@ -725,7 +682,7 @@ public class LauncherAPI {
         Utils utils = new Utils();
         Network network = new Network();
         String OperatingSystemToUse = utils.getOS();
-        System.out.println("Downloading: " + UsernameToUse + ".json");
+        logger.debug("Downloading: " + UsernameToUse + ".json");
         network.downloadProfile(OperatingSystemToUse, UsernameToUse);
 
     }
@@ -735,7 +692,7 @@ public class LauncherAPI {
         Local local = new Local();
         Network network = new Network();
         String OperatingSystemToUse = utils.getOS();
-        this.setDownloadLogs("Downlaoding: " + VersionToUse);
+        logger.info(downloadMarker,"Downlaoding: " + VersionToUse);
 
         //add version in launcher_profiles.json
         local.writeJson_launcher_profiles(OperatingSystemToUse, "_Cracked_" + utils.nextSessionId() + "_" + VersionToUse, VersionToUse);
@@ -754,17 +711,17 @@ public class LauncherAPI {
         String MOD_id;
         //check if it is vanilla or not
         if (local.checkIfVanillaMC(VersionToUse).equals(true)) {
-            this.setRunLogs("Vanilla Minecraft found!");
+            logger.info(runMarker, "Vanilla Minecraft found!");
 
         } else {
-            this.setRunLogs("Modded Minecraft found!");
+            logger.info(runMarker, "Modded Minecraft found!");
             local.MOD_readJson_libraries_name_PLUS_url(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse));
             for (int i = 0; i < local.version_name_list.size(); i++) {
-                System.out.println(local.version_name_list.get(i));
-                System.out.println(local.HALF_URL_version_url_list.get(i));
+                logger.debug(local.version_name_list.get(i));
+                logger.debug(local.HALF_URL_version_url_list.get(i));
             }
 
-            this.setDownloadLogs("Fixing url using name.");
+            logger.info(downloadMarker,"Fixing url using name.");
             for (int i = 0; i < local.version_name_list.size(); i++) {
                 local.version_path_list.add(local.generateLibrariesPath(OperatingSystemToUse, local.version_name_list.get(i)));
 
@@ -774,44 +731,45 @@ public class LauncherAPI {
                 local.version_url_list.add(local.HALF_URL_version_url_list.get(i) + "/" + local.version_path_list.get(i));
             }
             for (int i = 0; i < local.version_name_list.size(); i++) {
-                this.setDownloadLogs("Downloading: " + local.version_url_list.get(i));
+                logger.info(downloadMarker,"Downloading: " + local.version_url_list.get(i));
                 network.downloadLibraries(OperatingSystemToUse, local.version_url_list.get(i), local.version_path_list.get(i), ForceDownload);
 
             }
 
             MOD_inheritsFrom = local.readJson_inheritsFrom(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse));
-            this.setDownloadLogs("inheritsFrom: " + MOD_inheritsFrom);
+            logger.info(downloadMarker,"inheritsFrom: " + MOD_inheritsFrom);
 
             MOD_jar = local.readJson_jar(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse));
-            this.setDownloadLogs("jar: " + MOD_jar);
+            logger.info(downloadMarker,"jar: " + MOD_jar);
 
             MOD_assets = local.readJson_assets(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse));
-            this.setDownloadLogs("assets: " + MOD_assets);
+            logger.info(downloadMarker,"assets: " + MOD_assets);
 
             MOD_minecraftArguments = local.readJson_minecraftArguments(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse));
-            this.setDownloadLogs("minecraftArguments: " + MOD_minecraftArguments);
+            logger.info(downloadMarker,"minecraftArguments: " + MOD_minecraftArguments);
 
             MOD_mainClass = local.readJson_mainClass(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse));
-            this.setDownloadLogs("mainClass: " + MOD_mainClass);
+            logger.info(downloadMarker,"mainClass: " + MOD_mainClass);
 
             MOD_id = local.readJson_id(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse));
-            this.setDownloadLogs("id: " + MOD_id);
+            logger.info(downloadMarker,"id: " + MOD_id);
         }
 
         if (MOD_inheritsFrom == null) {
-            this.setDownloadLogs("Using: " + VersionToUse);
+            logger.info(downloadMarker,"Using: " + VersionToUse);
 
         } else {
             VersionToUse = MOD_inheritsFrom;
-            this.setDownloadLogs("Using: " + VersionToUse);
+            logger.info(downloadMarker,"Using: " + VersionToUse);
 
         }
 
         //incase the url is empty.. we have to assume that the user has old path system.
+        eventHandler.onDownload(LauncherEventHandler.Downloadable.LAUNCHER_META);
         for (int i = 0; i < local.version_manifest_versions_id.size(); i++) {
-            this.setDownloadLogs("ID: " + local.version_manifest_versions_id.get(i));
-            this.setDownloadLogs("TYPE: " + local.version_manifest_versions_type.get(i));
-            this.setDownloadLogs("URL: " + local.version_manifest_versions_url.get(i));
+            logger.info(downloadMarker,"ID: " + local.version_manifest_versions_id.get(i));
+            logger.info(downloadMarker,"TYPE: " + local.version_manifest_versions_type.get(i));
+            logger.info(downloadMarker,"URL: " + local.version_manifest_versions_url.get(i));
         }
 
         //download 1.7.10.json_libs
@@ -826,10 +784,10 @@ public class LauncherAPI {
             }
 
         } catch (Exception e) {
-            this.setErrorLogs("Something went wrong getting version json" + e);
+            logger.error("Something went wrong getting version json" + e);
         }
 
-        this.setRunLogs(utils.getMineCraftLocation(OperatingSystemToUse));
+        logger.info(runMarker, utils.getMineCraftLocation(OperatingSystemToUse));
 
         local.generateVersionJsonPathList(utils.getMineCraftVersionsLocation(OperatingSystemToUse));
         local.generateVersionList(utils.getMineCraftVersionsLocation(OperatingSystemToUse));
@@ -838,31 +796,32 @@ public class LauncherAPI {
             local.readJson_libraries_downloads_artifact_url(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse));
 
         } catch (Exception ex) {
-            this.setErrorLogs("Exception" + ex);
+            logger.error("Exception" + ex);
 
         }
         try {
             local.readJson_libraries_downloads_artifact_path(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse));
 
         } catch (Exception ex) {
-            this.setErrorLogs("Exception" + ex);
+            logger.error("Exception" + ex);
 
         }
         try {
             local.readJson_libraries_name(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse));
 
         } catch (Exception ex) {
-            this.setErrorLogs("Exception" + ex);
+            logger.error("Exception" + ex);
 
         }
         ///************************************************************
+        eventHandler.onDownload(LauncherEventHandler.Downloadable.LIBRARIES);
         for (int i = 0; i < local.version_url_list.size(); i++) {
-            this.setDownloadLogs("Downloading: " + local.version_url_list.get(i));
+            logger.info(downloadMarker,"Downloading: " + local.version_url_list.get(i));
             try {
                 network.downloadLibraries(OperatingSystemToUse, local.version_url_list.get(i), local.version_path_list.get(i), ForceDownload);
 
             } catch (Exception ex) {
-                this.setErrorLogs("Due to: " + ex + " " + local.generateLibrariesPath(OperatingSystemToUse, local.version_name_list.get(i)));
+                logger.error("Due to: " + ex + " " + local.generateLibrariesPath(OperatingSystemToUse, local.version_name_list.get(i)));
                 local.version_path_list.add(local.generateLibrariesPath(OperatingSystemToUse, local.version_name_list.get(i)));
                 network.downloadLibraries(OperatingSystemToUse, local.version_url_list.get(i), local.generateLibrariesPath(OperatingSystemToUse, local.version_name_list.get(i)), ForceDownload);
 
@@ -870,29 +829,31 @@ public class LauncherAPI {
         }
 
         //this may need to be edited!*************//
-        this.setRunLogs(local.readJson_assetIndex_url(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse)));
-        this.setRunLogs(local.readJson_assetIndex_id(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse)));
+        logger.info(runMarker, local.readJson_assetIndex_url(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse)));
+        logger.info(runMarker, local.readJson_assetIndex_id(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse)));
         //get assets index id!
         network.downloadLaunchermeta(OperatingSystemToUse, local.readJson_assetIndex_url(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse)), local.readJson_assetIndex_id(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse)), ForceDownload);
 
-        this.setRunLogs(utils.getMineCraftAssetsIndexes_X_json(OperatingSystemToUse, VersionToUse));
+        logger.info(runMarker, utils.getMineCraftAssetsIndexes_X_json(OperatingSystemToUse, VersionToUse));
 
         local.readJson_objects_KEY(utils.getMineCraftAssetsIndexes_X_json(OperatingSystemToUse, local.readJson_assetIndex_id(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse))));
         local.readJson_objects_KEY_hash(utils.getMineCraftAssetsIndexes_X_json(OperatingSystemToUse, local.readJson_assetIndex_id(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse))));
 
+        eventHandler.onDownload(LauncherEventHandler.Downloadable.ASSETS);
         for (int i = 0; i < local.objects_hash.size(); i++) {
-            this.setDownloadLogs("HASH: " + local.objects_hash.get(i));
-            this.setDownloadLogs("FOLDER: " + local.objects_hash.get(i).substring(0, 2));
-            this.setDownloadLogs("KEY: " + local.objects_KEY.get(i));
+            logger.info(downloadMarker,"HASH: " + local.objects_hash.get(i));
+            logger.info(downloadMarker,"FOLDER: " + local.objects_hash.get(i).substring(0, 2));
+            logger.info(downloadMarker,"KEY: " + local.objects_KEY.get(i));
 
-            this.setDownloadLogs("DOWNLOADING..." + "HASH: " + local.objects_hash.get(i));
+            logger.info(downloadMarker,"DOWNLOADING..." + "HASH: " + local.objects_hash.get(i));
             network.downloadAssetsObjects(OperatingSystemToUse, local.objects_hash.get(i).substring(0, 2), local.objects_hash.get(i));
             utils.copyToVirtual(OperatingSystemToUse, local.objects_hash.get(i).substring(0, 2), local.objects_hash.get(i), local.objects_KEY.get(i));
             //generate virtual folder as well.
 
         }
 
-        this.setDownloadLogs("DOWNLOADING MINECRAFT JAR " + VersionToUse);
+        eventHandler.onDownload(LauncherEventHandler.Downloadable.MINECRAFT);
+        logger.info(downloadMarker,"DOWNLOADING MINECRAFT JAR " + VersionToUse);
         if (MOD_jar == null) {
             network.downloadMinecraftJar(OperatingSystemToUse, VersionToUse, ForceDownload);
 
@@ -902,23 +863,25 @@ public class LauncherAPI {
         }
 
         //would have tp edit this line as we also need natives paths!
-        this.setDownloadLogs("Getting NATIVES URL");
+        eventHandler.onDownload(LauncherEventHandler.Downloadable.NATIVES);
+        logger.info(downloadMarker,"Getting NATIVES URL");
         local.readJson_libraries_downloads_classifiers_natives_X(utils.getMineCraft_Versions_X_X_json(OperatingSystemToUse, VersionToUse), OperatingSystemToUse);
-        this.setDownloadLogs("Getting NATIVES PATH");
+        logger.info(downloadMarker,"Getting NATIVES PATH");
         local.readJson_libraries_downloads_classifiers_natives_Y(utils.getMineCraft_Versions_X_X_json(OperatingSystemToUse, VersionToUse), OperatingSystemToUse);
 
         for (int i = 0; i < local.version_url_list_natives.size(); i++) {
-            this.setDownloadLogs("NATIVE URL: " + local.version_url_list_natives.get(i));
+            logger.info(downloadMarker,"NATIVE URL: " + local.version_url_list_natives.get(i));
             network.downloadLibraries(OperatingSystemToUse, local.version_url_list_natives.get(i), local.version_path_list_natives.get(i), ForceDownload);
             //extract them here..
-            this.setRunLogs("Extracting...");
-            this.setRunLogs(local.version_url_list_natives.get(i));
-            this.setRunLogs(utils.getMineCraft_Versions_X_Natives_Location(OperatingSystemToUse, VersionToUse));
+            logger.info(runMarker, "Extracting...");
+            logger.info(runMarker, local.version_url_list_natives.get(i));
+            logger.info(runMarker, utils.getMineCraft_Versions_X_Natives_Location(OperatingSystemToUse, VersionToUse));
 
             utils.jarExtract(OperatingSystemToUse, local.version_path_list_natives.get(i), utils.getMineCraft_Versions_X_Natives_Location(OperatingSystemToUse, VersionToUse));
 
         }
-        this.setDownloadLogs("Download Complete!");
+        eventHandler.onDownloadComplete();
+        logger.info(downloadMarker,"Download Complete!");
     }
 
 }
