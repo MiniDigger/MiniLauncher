@@ -69,11 +69,4 @@ public enum Status {
             return "Extracting & Installing Files";
         }
     },
-    APILOG {
-        @Override
-        public String toString() {
-            LauncherAPI API = new LauncherAPI();
-            return API.getLog();
-        }
-    },
 }

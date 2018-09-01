@@ -66,10 +66,6 @@ public class LauncherAPI {
         this.eventHandler = eventHandler != null ? eventHandler : new LauncherEventHandler() { };
     }
 
-    public String getLog() {
-        return "";
-    }
-
     public List<String> getInstallableVersionsList() {
         Local local = new Local();
         String OperatingSystemToUse = Utils.getOS();
