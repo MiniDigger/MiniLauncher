@@ -785,7 +785,7 @@ class Local {
                 version_name_list.add((String) version.get("name"));
                 if (version.get("url") == null) {
                     logger.error("Can't resolve url. Attempting to fix!");
-                    HALF_URL_version_url_list.add(network.https_libraries_minecraft_net);
+                    HALF_URL_version_url_list.add(network.minecraftLibrariesUrl);
                 } else {
                     HALF_URL_version_url_list.add((String) version.get("url"));
 

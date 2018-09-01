@@ -39,17 +39,15 @@ import java.net.URL;
 class Network {
     private final static Logger logger = LoggerFactory.getLogger(Network.class);
 
-    //this function needs to change in order to make it dynamic
-    //all web urls come here...
-    public final String https_libraries_minecraft_net = "https://libraries.minecraft.net";
-    public final String http_resources_download_minecraft_net = "http://resources.download.minecraft.net";
-    public final String minecraftVersionsJson = "https://launchermeta.mojang.com/mc/game/version_manifest.json";
-    public final String https_api_mojang_com_users_profiles_minecraft = "https://api.mojang.com/users/profiles/minecraft";
+    public final String minecraftLibrariesUrl = "https://libraries.minecraft.net";
+    public final String minecraftAssetsUrl = "http://resources.download.minecraft.net";
+    public final String minecraftVersionsJsonUrl = "https://launchermeta.mojang.com/mc/game/version_manifest.json";
+    public final String minecraftProfilesUrl = "https://api.mojang.com/users/profiles/minecraft";
 
     public void downloadProfile(String OS, String _username) {
         try {
             Utils utils = new Utils();
-            URL url = new URL(https_api_mojang_com_users_profiles_minecraft + "/" + _username);
+            URL url = new URL(minecraftProfilesUrl + "/" + _username);
             File file = new File(utils.getMineCraftLocation(OS) + "/" + _username + ".json");
             if (file.exists()) {
                 //do not download..
@@ -83,7 +81,7 @@ class Network {
         //resources.download.minecraft.net/4b/4b90ff3a9b1486642bc0f15da0045d83a91df82e
         try {
             Utils utils = new Utils();
-            URL url = new URL(http_resources_download_minecraft_net + "/" + folder + "/" + _hash);
+            URL url = new URL(minecraftAssetsUrl + "/" + folder + "/" + _hash);
             File file = new File(utils.getMineCraftAssetsObjectsLocation(OS) + "/" + folder + "/" + _hash);
             if (file.exists() && utils.getSHA_1(file.toString()).equals(_hash)) {
                 //do not download..
@@ -119,7 +117,7 @@ class Network {
     public void downloadMinecraftJar(String OS, String version, Boolean ForceDownload) {
         try {
             Utils utils = new Utils();
-            URL url = new URL(minecraftVersionsJson + "/" + version + "/" + version + ".jar");
+            URL url = new URL(minecraftVersionsJsonUrl + "/" + version + "/" + version + ".jar");
             File file = new File(utils.getMineCraft_Versions_X_X_jar_Location(OS, version));
             if (ForceDownload) {
                 FileUtils.copyURLToFile(url, file);
