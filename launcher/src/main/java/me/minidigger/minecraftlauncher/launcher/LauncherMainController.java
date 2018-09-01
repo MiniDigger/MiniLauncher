@@ -256,7 +256,6 @@ public class LauncherMainController implements Initializable {
 
                         if (!LauncherSettings.keepLauncherOpen) {
                             Platform.runLater(() -> launcherStatus.setText("Status: Minecraft started, now closing launcher. Have fun!"));
-                            API.dumpLogs();
                             System.exit(0);
                         } else {
                             new Thread(this::checkLatestVersion).start();
@@ -275,7 +274,6 @@ public class LauncherMainController implements Initializable {
                             DialogPane dialogPane = alert.getDialogPane();
                             dialogPane.getStylesheets().add("/css/purple.css");
                             alert.showAndWait();
-                            API.dumpLogs();
                             username.setDisable(false);
                             options.setDisable(false);
                             launch.setDisable(false);
