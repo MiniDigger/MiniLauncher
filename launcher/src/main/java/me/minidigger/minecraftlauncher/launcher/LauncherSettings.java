@@ -35,11 +35,14 @@ import java.util.Properties;
 
 import javafx.scene.Scene;
 import me.minidigger.minecraftlauncher.api.LauncherAPI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Mathew
  */
 public class LauncherSettings {
+    private final static Logger logger = LoggerFactory.getLogger(LauncherSettings.class);
 
     static public final String updateURL = "https://raw.githubusercontent.com/MiniDigger/MinecraftLauncher/master/_html_/latestVersion";
     static public final String serverIP = "localhost";
@@ -254,13 +257,13 @@ public class LauncherSettings {
             }
 
         } catch (IOException ex) {
-            System.out.println("File not found" + ex);
+            logger.warn("File not found", ex);
         } finally {
             if (input != null) {
                 try {
                     input.close();
                 } catch (IOException e) {
-                    System.out.println("File not found" + e);
+                    logger.warn("File not found", e);
                 }
             }
         }

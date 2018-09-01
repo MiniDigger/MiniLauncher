@@ -55,6 +55,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import me.minidigger.minecraftlauncher.api.LauncherAPI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * FXML Controller class
@@ -62,6 +64,7 @@ import me.minidigger.minecraftlauncher.api.LauncherAPI;
  * @author Mathew
  */
 public class LauncherOptionsController implements Initializable {
+    private final static Logger logger = LoggerFactory.getLogger(LauncherOptionsController.class);
 
     @FXML
     private Button optionsExit;
@@ -156,9 +159,9 @@ public class LauncherOptionsController implements Initializable {
         ExecutorService executor1 = Executors.newCachedThreadPool();
         executor1.submit(() -> {
             if (API.getUpdateStatus().equals("0")) {
-                System.out.println("You are running the latest API version");
+                logger.info("You are running the latest API version");
             } else {
-                System.out.println("You are " + API.getUpdateStatus() + " versions behind");
+                logger.info("You are " + API.getUpdateStatus() + " versions behind");
             }
             return null;
         });
@@ -297,9 +300,9 @@ public class LauncherOptionsController implements Initializable {
         optionsSelectVersion.setDisable(true);
 
         if (optionsSelectVersionForce.isSelected()) {
-            System.out.println("Selected!");
+            logger.info("Selected!");
         } else {
-            System.out.println("NOT Selected!");
+            logger.info("NOT Selected!");
 
         }
         LauncherAPI API = new LauncherAPI();
@@ -310,6 +313,7 @@ public class LauncherOptionsController implements Initializable {
         });
         executor.shutdown();
 
+        // TODO: this is shit, really shit.
         Thread t = new Thread(() -> {
             while (true) {
                 try {
@@ -360,7 +364,6 @@ public class LauncherOptionsController implements Initializable {
                             LauncherSettings.refreshVersionList = true;
                             LauncherSettings.fastStartUp = false;
                             alert.showAndWait();
-                            API.dumpLogs();
 
                         });
                         return;

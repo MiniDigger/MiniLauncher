@@ -30,6 +30,8 @@ import net.kyori.nbt.CompoundTag;
 import net.kyori.nbt.Tag;
 import net.kyori.nbt.TagIO;
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedWriter;
 import java.io.Closeable;
@@ -66,6 +68,7 @@ import static org.zeroturnaround.zip.commons.FileUtils.copy;
  * @author ammar
  */
 class Utils {
+    private final static Logger logger = LoggerFactory.getLogger(Utils.class);
 
     //String versions_linux = getMineCraftLocation("Linux") + "/versions";
     public String getMineCraftLocation(String OS) {
@@ -331,7 +334,7 @@ class Utils {
             return (sb.toString());
 
         } catch (NoSuchAlgorithmException | IOException ex) {
-            System.out.println(ex);
+            logger.warn("Failed to get SHA1", ex);
             return "N/A";
         }
 
@@ -370,7 +373,7 @@ class Utils {
                 }
             }
         } catch (Exception e) {
-            System.out.println(e);
+            logger.warn("Failed to extract JAR {}", _jarFile, e);
         }
     }
 
@@ -391,7 +394,7 @@ class Utils {
             FileUtils.copyFile(source, dest);
 
         } catch (Exception ex) {
-            System.out.println("File Exists! " + ex.getMessage());
+            logger.warn("Failed to copy", ex);
         }
 
     }
@@ -436,32 +439,5 @@ class Utils {
             }
         }
         return result;
-    }
-
-    public void writeLogs(String OS, ArrayList list) {
-        try {
-            Utils utils = new Utils();
-            //get the entire list and append it to string
-
-            File file = new File(utils.getMineCraft_Launcherlogs_txt(OS));
-
-            //recreate the file no matter what
-            file.createNewFile();
-
-            FileWriter fw = new FileWriter(file.getAbsoluteFile());
-            BufferedWriter bw = new BufferedWriter(fw);
-            StringBuilder content = new StringBuilder("Logs: \n");
-            for (Object item : list) {
-                content.append(item).append("\n");
-            }
-
-            bw.write(content.toString());
-            bw.close();
-
-            System.out.println("Done");
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

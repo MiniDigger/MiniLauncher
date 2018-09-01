@@ -27,6 +27,8 @@
 package me.minidigger.minecraftlauncher.api;
 
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.URL;
@@ -35,6 +37,7 @@ import java.net.URL;
  * @author ammar
  */
 class Network {
+    private final static Logger logger = LoggerFactory.getLogger(Network.class);
 
     //this function needs to change in order to make it dynamic
     //all web urls come here...
@@ -54,7 +57,7 @@ class Network {
             FileUtils.copyURLToFile(url, file);
 
         } catch (Exception e) {
-            System.out.print(e);
+            logger.warn("Failed to fetch API meta",e );
         }
     }
 
@@ -65,12 +68,12 @@ class Network {
             File file = new File(utils.getMineCraftLocation(OS) + "/" + _username + ".json");
             if (file.exists()) {
                 //do not download..
-                System.out.println("File Exists!");
+                logger.debug("Profile for user {} already exists", _username);
             } else {
                 FileUtils.copyURLToFile(url, file);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.warn("Failed to download profile for {}", _username, e);
         }
     }
 
@@ -82,12 +85,12 @@ class Network {
             if (ForceDownload) {
                 FileUtils.copyURLToFile(url, file);
             } else if (file.exists()) {
-                System.out.println("File Exists! - Skipping download");
+                logger.debug("File Exists! - Skipping download");
             } else {
                 FileUtils.copyURLToFile(url, file);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.warn("Failed to download libraries", e);
         }
     }
 
@@ -99,14 +102,14 @@ class Network {
             File file = new File(utils.getMineCraftAssetsObjectsLocation(OS) + "/" + folder + "/" + _hash);
             if (file.exists() && utils.getSHA_1(file.toString()).equals(_hash)) {
                 //do not download..
-                System.out.println("File Exists!");
-                System.out.println("Hash Verified!");
+                logger.debug("File Exists!");
+                logger.debug("Hash Verified!");
             } else {
                 //System.out.println("Calculated Hash:" + utils.getSHA_1(file.toString()));
                 FileUtils.copyURLToFile(url, file);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.warn("Failed to download assets", e);
         }
     }
 
@@ -119,12 +122,12 @@ class Network {
                 FileUtils.copyURLToFile(url, file);
             } else if (file.exists()) {
                 //do not download..
-                System.out.println("File Exists! - Skipping download");
+                logger.debug("File Exists! - Skipping download");
             } else {
                 FileUtils.copyURLToFile(url, file);
             }
         } catch (Exception e) {
-            System.out.print(e);
+            logger.warn("Failed to download launcher meta", e);
         }
     }
 
@@ -137,12 +140,12 @@ class Network {
                 FileUtils.copyURLToFile(url, file);
             } else if (file.exists()) {
                 //do not download..
-                System.out.println("File Exists! - Skipping download");
+                logger.debug("File Exists! - Skipping download");
             } else {
                 FileUtils.copyURLToFile(url, file);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.warn("Failed to download Minecraft jar", e);
         }
     }
 
@@ -152,7 +155,7 @@ class Network {
             File file = new File(_filepath);
             FileUtils.copyURLToFile(url, file);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.warn("Failed to download version manifest", e);
         }
     }
 
@@ -170,7 +173,7 @@ class Network {
             FileUtils.copyURLToFile(url, file);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.warn("Failed to download version json", e);
         }
     }
 }
