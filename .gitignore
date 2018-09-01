@@ -1,2 +1,16 @@
-/logs/
-.script.js
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+# IntelliJ IDEA
+*.iml
+.idea/
+out/
+
+# Maven
+target/
+dependency-reduced-pom.xml
+
+# Gradle
+!gradle-wrapper.jar
+.gradle/
+build/
