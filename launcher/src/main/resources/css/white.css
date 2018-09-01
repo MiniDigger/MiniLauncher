@@ -1,0 +1,151 @@
+/*
+ * This is an adjustment of the original modena.css for a consistent dark theme.
+ * Original modena.css here: https://gist.github.com/maxd/63691840fc372f22f470.
+ */
+
+/* Redefine base colors */
+.root {
+    -fx-base: rgb(50, 50, 50);
+    -fx-background: rgb(50, 50, 50);
+
+    /* make controls (buttons, thumb, etc.) slightly lighter */
+    -fx-color: derive(-fx-base, 10%);
+
+    /* text fields and table rows background */
+    -fx-control-inner-background: rgb(20, 20, 20);
+    /* version of -fx-control-inner-background for alternative rows */
+    -fx-control-inner-background-alt: derive(-fx-control-inner-background, 2.5%);
+
+    /* text colors depending on background's brightness */
+    -fx-light-text-color: rgb(220, 220, 220);
+    -fx-mid-text-color: rgb(100, 100, 100);
+    -fx-dark-text-color: rgb(20, 20, 20);
+
+    /* A bright blue for highlighting/accenting objects.  For example: selected
+     * text; selected items in menus, lists, trees, and tables; progress bars */
+    -fx-accent: rgb(0, 80, 100);
+
+    /* color of non-focused yet selected elements */
+    -fx-selection-bar-non-focused: rgb(50, 50, 50);
+
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+/* Fix derived prompt color for text fields */
+.text-input {
+    -fx-prompt-text-fill: derive(-fx-control-inner-background, +50%);
+}
+
+/* Keep prompt invisible when focused (above color fix overrides it) */
+.text-input:focused {
+    -fx-prompt-text-fill: transparent;
+}
+
+/* Fix scroll bar buttons arrows colors */
+.scroll-bar > .increment-button > .increment-arrow,
+.scroll-bar > .decrement-button > .decrement-arrow {
+    -fx-background-color: -fx-mark-highlight-color, rgb(220, 220, 220);
+}
+
+.scroll-bar > .increment-button:hover > .increment-arrow,
+.scroll-bar > .decrement-button:hover > .decrement-arrow {
+    -fx-background-color: -fx-mark-highlight-color, rgb(240, 240, 240);
+}
+
+.scroll-bar > .increment-button:pressed > .increment-arrow,
+.scroll-bar > .decrement-button:pressed > .decrement-arrow {
+    -fx-background-color: -fx-mark-highlight-color, rgb(255, 255, 255);
+}
+
+.exit_button {
+    -fx-background-image: url("../images/exitButton.png");
+}
+
+.minimize_button {
+    -fx-background-image: url("../images/minimizeButton.png");
+}
+
+.top_title_bar {
+    -fx-background-image: url("../images/brightSquares.png");
+    -fx-background-color: #ffffff;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.8), 10, 0, 0, 0);
+
+}
+
+.side_title_bar {
+    -fx-background-image: url("../images/brightSquares.png");
+    -fx-background-color: #ffffff;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.8), 10, 0, 0, 0);
+}
+
+.main_scene {
+    -fx-background-image: url("../images/background_3.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-attachment: fixed;
+    -fx-background-position: center;
+    -fx-background-size: cover;
+}
+
+.colorOverlay {
+    -fx-background-color: rgba(255, 255, 255, 0.5);
+}
+
+.main_username {
+    -fx-background-color: #dadada;
+    -fx-color: #ffffff;
+
+}
+
+.main_login_area {
+    -fx-shape: "M0 6 C0 0 0 0 6 0 L58 0 C64 0 64 0 64 6 L64 58 C64 64 64 64 60 64 L6 64 C0 64 0 64 0 60 Z";
+    -fx-background-image: url("../images/brightSquares.png");
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+    -fx-border-color: #ffffff;
+    -fx-padding: 2px 7px 0px 7px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.8), 10, 0, 0, 0);
+    -fx-light-text-color: #000000 /*-fx-background-color: rgba(98, 37, 156, 0.57);
+    -fx-border-style: solid;
+    -fx-border-radius: 6px;
+    -fx-border-color: #452665;
+    -fx-padding: 0px 5px 0px 5px;*/
+}
+
+#version .combo-box-popup > .list-view {
+    -fx-pref-width: 200;
+}
+
+#optionsSelectVersion .combo-box-popup > .list-view {
+    -fx-pref-width: 285;
+}
+
+#themeType .combo-box-popup > .list-view {
+    -fx-pref-width: 150;
+}
+
+.label-black {
+    -fx-light-text-color: #000000;
+}
+
+.avatar_image {
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.8), 10, 0, 0, 0);
+}
+
+/*.combo-box .arrow-button  {
+    -fx-opacity: 0.0;
+    -fx-cursor: text;
+}*/
+
+.tooltip {
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.8), 10, 0, 0, 0);
+    -fx-border-radius: 6px;
+    -fx-font-size: 10px;
+}
+
+.whiteTextTheme {
+    -fx-light-text-color: rgb(220, 220, 220);
+    -fx-mid-text-color: rgb(100, 100, 100);
+    -fx-dark-text-color: rgb(20, 20, 20);
+}
