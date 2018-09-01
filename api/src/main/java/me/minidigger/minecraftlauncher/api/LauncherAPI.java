@@ -55,7 +55,7 @@ public class LauncherAPI {
     private final static Marker downloadMarker = MarkerFactory.getMarker("DOWNLOAD");
     private final static Marker runMarker = MarkerFactory.getMarker("RUN");
 
-    private LauncherEventHandler eventHandler = LauncherEventHandler.DUMMY;
+    private LauncherEventHandler eventHandler = new LauncherEventHandler() { };
 
     @NonNull
     public LauncherEventHandler getEventHandler() {
@@ -63,7 +63,7 @@ public class LauncherAPI {
     }
 
     public void setEventHandler(@Nullable LauncherEventHandler eventHandler) {
-        this.eventHandler = eventHandler != null ? eventHandler : LauncherEventHandler.DUMMY;
+        this.eventHandler = eventHandler != null ? eventHandler : new LauncherEventHandler() { };
     }
 
     public String getLog() {
@@ -217,7 +217,6 @@ public class LauncherAPI {
         String MOD_id = null;
         //check if it is vanilla or not
         if (local.checkIfVanillaMC(VersionToUse).equals(true)) {
-            
             logger.info(runMarker, "Vanilla Minecraft found!");
         } else {
             logger.info(runMarker, "Modded Minecraft found!");
@@ -340,19 +339,18 @@ public class LauncherAPI {
 
         try {
             local.readJson_objects_KEY(Utils.getMineCraftAssetsIndexes_X_json(OperatingSystemToUse, local.readJson_assetIndex_id(Utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse))));
-
         } catch (Exception e) {
             logger.error("Error reading objects KEY" + e);
         }
         try {
             local.readJson_objects_KEY_hash(Utils.getMineCraftAssetsIndexes_X_json(OperatingSystemToUse, local.readJson_assetIndex_id(Utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse))));
-
         } catch (Exception e) {
             logger.error("Error reading objects KEY_hash" + e);
 
         }
 
         if (HashCheck) {
+            eventHandler.onGameStart(LauncherEventHandler.StartStatus.VALIDATING);
             try {
                 for (int i = 0; i < local.objects_hash.size(); i++) {
                     logger.info(runMarker, "HASH: " + local.objects_hash.get(i));
@@ -369,6 +367,7 @@ public class LauncherAPI {
             }
         }
 
+        eventHandler.onGameStart(LauncherEventHandler.StartStatus.DOWNLOADING_NATIVES);
 
         logger.info(runMarker, "Getting NATIVES URL");
         local.readJson_libraries_downloads_classifiers_natives_X(Utils.getMineCraft_Versions_X_X_json(OperatingSystemToUse, VersionToUse), OperatingSystemToUse);
@@ -383,7 +382,6 @@ public class LauncherAPI {
             logger.info(runMarker, Utils.getMineCraft_Versions_X_Natives_Location(OperatingSystemToUse, VersionToUse));
 
             Utils.jarExtract(OperatingSystemToUse, local.version_path_list_natives.get(i), Utils.getMineCraft_Versions_X_Natives_Location(OperatingSystemToUse, VersionToUse));
-
         }
 
         //String HalfArgumentTemplate = local.readJson_minecraftArguments(Utils.getMineCraft_Versions_X_X_json(OperatingSystemToUse, VersionToUse));
@@ -430,7 +428,6 @@ public class LauncherAPI {
         String MinecraftJar;
         if (MOD_jar == null) {
             MinecraftJar = Utils.getMineCraft_Versions_X_X_jar(OperatingSystemToUse, VersionToUse);
-
         } else {
             MinecraftJar = Utils.getMineCraft_Versions_X_X_jar(OperatingSystemToUse, MOD_jar);
         }
@@ -453,6 +450,7 @@ public class LauncherAPI {
 
         //argument patch for netty and patchy comes here
         if (injectNetty) {
+            eventHandler.onGameStart(LauncherEventHandler.StartStatus.PATCHING_NETTY);
             logger.debug("Netty/Patchy Patch Detected!");
 
             String patchy_mod = "";
@@ -506,7 +504,6 @@ public class LauncherAPI {
             }
 
         }
-
         //argument patch netty and patchy ends here
 
         String[] HalfArgument = local.generateMinecraftArguments(OperatingSystemToUse, Username, versionName, gameDirectory, AssetsRoot, assetsIdexId, authuuid, "aeef7bc935f9420eb6314dea7ad7e1e5", "{\"twitch_access_token\":[\"emoitqdugw2h8un7psy3uo84uwb8raq\"]}", "mojang", VersionType, GameAssets, AuthSession);
@@ -542,6 +539,7 @@ public class LauncherAPI {
             for (String finalArgs_ : finalArgs) {
                 logger.info(runMarker, finalArgs_);
             }
+            eventHandler.onGameStart(LauncherEventHandler.StartStatus.STARTING);
             logger.info(runMarker, "Starting game... Please wait....");
             Process process = Runtime.getRuntime().exec(finalArgs);
 
@@ -550,12 +548,13 @@ public class LauncherAPI {
                 //process.waitFor();
                 if (process.exitValue() != 0) {
                     //something went wrong.
+                    eventHandler.onGameCorrupted();
                     logger.error("Minecraft Corruption found!");
                 }
-
             } catch (Exception ex) {
+                //nothing to print.. everything went fine.
+                eventHandler.onGameStarted();
                 logger.info(runMarker, "Minecraft Initialized!");
-                //nothing to print.. everythimg went fine.
             }
 
         } catch (Exception e) {

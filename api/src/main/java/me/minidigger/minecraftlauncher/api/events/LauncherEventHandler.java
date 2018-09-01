@@ -39,12 +39,33 @@ public interface LauncherEventHandler {
      *
      * @param downloadable {@link Downloadable}
      */
-    void onDownload(@NonNull Downloadable downloadable);
+    default void onDownload(@NonNull Downloadable downloadable) {
+    }
 
     /**
      * This method is invoked when download is complete
      */
-    void onDownloadComplete();
+    default void onDownloadComplete() {
+    }
+
+    /**
+     * This method is invoked when the game is starting
+     * @param status the current status
+     */
+    default void onGameStart(@NonNull StartStatus status) {
+    }
+
+    /**
+     * This method is invoked when the game has started
+     */
+    default void onGameStarted() {
+    }
+
+    /**
+     * This method is invoked when the game couldn't start
+     */
+    default void onGameCorrupted(){
+    }
 
     /**
      * Downloadable items
@@ -57,16 +78,10 @@ public interface LauncherEventHandler {
         NATIVES,
     }
 
-    @NonNull
-    static LauncherEventHandler DUMMY = new LauncherEventHandler() {
-        @Override
-        public void onDownload(@NonNull Downloadable downloadable) {
-
-        }
-
-        @Override
-        public void onDownloadComplete() {
-
-        }
-    };
+    enum StartStatus {
+        VALIDATING,
+        DOWNLOADING_NATIVES,
+        PATCHING_NETTY,
+        STARTING,
+    }
 }

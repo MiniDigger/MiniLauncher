@@ -26,6 +26,8 @@
 
 package me.minidigger.minecraftlauncher.launcher;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -66,17 +68,19 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import me.minidigger.minecraftlauncher.api.LauncherAPI;
+import me.minidigger.minecraftlauncher.api.events.LauncherEventHandler;
 
 /**
  * @author ammar
  */
-public class LauncherMainController implements Initializable {
+public class LauncherMainController extends AbstractGUIController {
 
     private static Stage applicationOptionStage;
-    ArrayList<String> backgroundList = new ArrayList<>();
+    private List<String> backgroundList = new ArrayList<>();
 
     private double xOffset = 0;
     private double yOffset = 0;
+
     @FXML
     private ImageView playerAvatarImage;
     @FXML
@@ -91,6 +95,20 @@ public class LauncherMainController implements Initializable {
     private Tooltip tt_play;
     @FXML
     private Tooltip tt_options;
+    @FXML
+    private Label label;
+    @FXML
+    private TextField username;
+    @FXML
+    private Button launch;
+    @FXML
+    private ComboBox<String> version;
+    @FXML
+    private Button minimize;
+    @FXML
+    private Button exit;
+    @FXML
+    private Button options;
 
     private void setApplicationOptionStage(Stage stage) {
         LauncherMainController.applicationOptionStage = stage;
@@ -99,20 +117,6 @@ public class LauncherMainController implements Initializable {
     static public Stage getApplicationOptionStage() {
         return LauncherMainController.applicationOptionStage;
     }
-
-    private Label label;
-    @FXML
-    private TextField username;
-    @FXML
-    private Button launch;
-    @FXML
-    private ComboBox version;
-    @FXML
-    private Button minimize;
-    @FXML
-    private Button exit;
-    @FXML
-    private Button options;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -123,15 +127,12 @@ public class LauncherMainController implements Initializable {
 
         new Thread(this::loadPlayerAvatar).start();
         new Thread(this::checkLatestVersion).start();
-        LauncherAPI API = new LauncherAPI();
 
         username.setText(LauncherSettings.playerUsername);
 
-        for (Object ob : API.getInstalledVersionsList()) {
-            version.getItems().addAll(ob.toString());
+        version.getItems().addAll(API.getInstalledVersionsList());
 
-        }
-        for (Object ob : API.getInstalledVersionsList()) {
+        for (String ob : API.getInstalledVersionsList()) {
             if (ob.equals(LauncherSettings.playerVersion)) {
                 version.setValue(LauncherSettings.playerVersion);
             }
@@ -176,7 +177,7 @@ public class LauncherMainController implements Initializable {
         }
 
         LauncherSettings.playerUsername = username.getText();
-        LauncherSettings.playerVersion = version.getValue().toString();
+        LauncherSettings.playerVersion = version.getValue();
         LauncherSettings.userSettingsSave();
 
         options.setDisable(true);
@@ -185,12 +186,10 @@ public class LauncherMainController implements Initializable {
         username.setDisable(true);
         new Thread(this::loadPlayerAvatar).start();
 
-        LauncherAPI API = new LauncherAPI();
-
-        ExecutorService executor = Executors.newCachedThreadPool();
+        ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(() -> {
             //add server
-            List ip = new ArrayList(API.getServersIPList());
+            List<String> ip = new ArrayList<>(API.getServersIPList());
             if (ip.isEmpty() || !ip.contains(LauncherSettings.serverIP)) {
                 API.addServerToServersDat(LauncherSettings.serverName, LauncherSettings.serverIP);
             }
@@ -199,7 +198,7 @@ public class LauncherMainController implements Initializable {
             API.syncVersions();
 
             if (!LauncherSettings.fastStartUp) { //NOT faststartup
-                API.downloadMinecraft((String) version.getValue(), false);
+                API.downloadMinecraft(version.getValue(), false);
             }
 
             API.setMinMemory(Integer.parseInt(LauncherSettings.ramAllocationMin));
@@ -219,74 +218,14 @@ public class LauncherMainController implements Initializable {
                 API.setVersionData("#MiniDigger is awesome");
             }
 
-            Boolean nettyPatch = LauncherSettings.bypassBlacklist;
+            boolean nettyPatch = LauncherSettings.bypassBlacklist;
             if (LauncherSettings.fastStartUp) {
-                API.runMinecraft(username.getText(), (String) version.getValue(), false, nettyPatch);
+                API.runMinecraft(username.getText(), version.getValue(), false, nettyPatch);
             } else {
-                API.runMinecraft(username.getText(), (String) version.getValue(), true, nettyPatch);
+                API.runMinecraft(username.getText(), version.getValue(), true, nettyPatch);
             }
-
-            return null;
         });
         executor.shutdown();
-
-        Thread t = new Thread(() -> {
-            while (true) {
-                try {
-                    if (LauncherSettings.showDebugStatus) {
-                        Platform.runLater(() -> launcherStatus.setText(API.getLog()));
-                    } else {
-                        if (API.getLog().startsWith("[dl] DOWNLOADING...")) {
-                            Platform.runLater(() -> launcherStatus.setText("Status: Checking installed " + LauncherSettings.playerVersion + " files."));
-                        }
-                        if (API.getLog().startsWith("[rl] KEY:")) {
-                            Platform.runLater(() -> launcherStatus.setText("Status: Preparing to start Minecraft."));
-                        }
-                        if (API.getLog().startsWith("[rl] Starting")) {
-                            Platform.runLater(() -> launcherStatus.setText("Status: Starting Minecraft " + LauncherSettings.playerVersion + "."));
-                        }
-                    }
-
-                    Thread.sleep(10);
-
-                    if (API.getLog().equals("[rl] Minecraft Initialized!")) {
-                        LauncherSettings.playerUsername = username.getText();
-                        LauncherSettings.playerVersion = version.getValue().toString();
-                        LauncherSettings.userSettingsSave();
-
-                        if (!LauncherSettings.keepLauncherOpen) {
-                            Platform.runLater(() -> launcherStatus.setText("Status: Minecraft started, now closing launcher. Have fun!"));
-                            System.exit(0);
-                        } else {
-                            new Thread(this::checkLatestVersion).start();
-                        }
-                        return;
-
-                    } else if (API.getLog().equals("[el] Minecraft Corruption found!")) {
-                        Platform.runLater(() -> {
-                            //STATUS status.setText(API.getLog());
-                            launcherStatus.setText("Status: Error. Minecraft file corruption detected!");
-                            Alert alert = new Alert(AlertType.ERROR);
-                            alert.setTitle("Minecraft Launcher - Error");
-                            alert.setHeaderText("Version: " + version.getValue() + " failed to initialize!");
-                            alert.setContentText("The game failed to initialize as data corruption \nwas found! Press re-Download game with \n*Force Download* checked in the options menu.");
-                            alert.initStyle(StageStyle.UTILITY);
-                            DialogPane dialogPane = alert.getDialogPane();
-                            dialogPane.getStylesheets().add("/css/purple.css");
-                            alert.showAndWait();
-                            username.setDisable(false);
-                            options.setDisable(false);
-                            launch.setDisable(false);
-                            version.setDisable(false);
-                        });
-                        return;
-                    }
-                } catch (Exception e) {
-                }
-            }
-        });
-        t.start();
-
     }
 
     @FXML
@@ -299,7 +238,7 @@ public class LauncherMainController implements Initializable {
     private void launchExit(ActionEvent event) {
         LauncherSettings.playerUsername = username.getText();
         if (version.getValue() != null) {
-            LauncherSettings.playerVersion = version.getValue().toString();
+            LauncherSettings.playerVersion = version.getValue();
         }
         LauncherSettings.userSettingsSave();
         Stage stage = LauncherMain.getApplicationMainStage();
@@ -338,8 +277,6 @@ public class LauncherMainController implements Initializable {
             });
             stage.setOnHiding(event_ -> {
                 //if (LauncherSettings.refreshVersionList == true) { //Just refesh it anyway.
-                LauncherAPI API = new LauncherAPI();
-
                 version.getItems().removeAll(version.getItems());
                 for (Object ob : API.getInstalledVersionsList()) {
                     version.getItems().addAll(ob.toString());
@@ -456,5 +393,61 @@ public class LauncherMainController implements Initializable {
                 }
             }
         });
+    }
+
+    @Override
+    public void onGameStart(@NonNull StartStatus status) {
+        Platform.runLater(() -> {
+            switch (status){
+                case VALIDATING:
+                    launcherStatus.setText("Status: Checking installed " + LauncherSettings.playerVersion + " files.");
+                    break;
+                case DOWNLOADING_NATIVES:
+                    launcherStatus.setText("Status: Downloading natives.");
+                    break;
+                case PATCHING_NETTY:
+                    launcherStatus.setText("Status: Patching netty.");
+                    break;
+                case STARTING:
+                    launcherStatus.setText("Status: Starting Minecraft " + LauncherSettings.playerVersion + ".");
+                    break;
+            }
+        });
+    }
+
+    @Override
+    public void onGameStarted() {
+        LauncherSettings.playerUsername = username.getText();
+        LauncherSettings.playerVersion = version.getValue();
+        LauncherSettings.userSettingsSave();
+
+        if (!LauncherSettings.keepLauncherOpen) {
+            Platform.runLater(() -> launcherStatus.setText("Status: Minecraft started, now closing launcher. Have fun!"));
+            System.exit(0);
+        } else {
+            new Thread(this::checkLatestVersion).start();
+        }
+    }
+
+    @Override
+    public void onGameCorrupted() {
+        launcherStatus.setText("Status: Error. Minecraft file corruption detected!");
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle("Minecraft Launcher - Error");
+        alert.setHeaderText("Version: " + version.getValue() + " failed to initialize!");
+        alert.setContentText("The game failed to initialize as data corruption \nwas found! Press re-Download game with \n*Force Download* checked in the options menu.");
+        alert.initStyle(StageStyle.UTILITY);
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add("/css/purple.css");
+        alert.showAndWait();
+        username.setDisable(false);
+        options.setDisable(false);
+        launch.setDisable(false);
+        version.setDisable(false);
+    }
+
+    @Override
+    public void setStatus(LauncherSettings.Status status) {
+        launcherStatus.setText("Status: " + status);
     }
 }
