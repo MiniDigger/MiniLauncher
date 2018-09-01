@@ -15,6 +15,7 @@ import java.util.List;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.Enumeration;
@@ -44,29 +45,16 @@ class Utils {
 
     //String versions_linux = getMineCraftLocation("Linux") + "/versions";
     public String getMineCraftLocation(String OS) {
-        if (OS.equals("Windows")) {
-            return (System.getenv("APPDATA") + "/.minecraft");
+        switch (OS) {
+            case "Windows":
+                return (System.getenv("APPDATA") + "/.minecraft");
+            case "Linux":
+                return (System.getProperty("user.home") + "/.minecraft");
+            case "Mac":
+                return (System.getProperty("user.home") + "/Library/Application Support/minecraft");
+                default:
+                    return "N/A";
         }
-        if (OS.equals("Linux")) {
-            return (System.getProperty("user.home") + "/.minecraft");
-        }
-        if (OS.equals("Mac")) {
-            return (System.getProperty("user.home") + "/Library/Application Support/minecraft");
-        }
-        return "N/A";
-    }
-
-    public String getMineCraftGameDirectoryLocation(String OS) {
-        if (OS.equals("Windows")) {
-            return (System.getenv("APPDATA") + "/.minecraft");
-        }
-        if (OS.equals("Linux")) {
-            return (System.getProperty("user.home") + "/.minecraft");
-        }
-        if (OS.equals("Mac")) {
-            return (System.getProperty("user.home") + "/Library/Application Support/minecraft");
-        }
-        return "N/A";
     }
 
     public String getMineCraft_APIMeta(String OS) {
@@ -105,7 +93,7 @@ class Utils {
         return (getMineCraftTmpIoNettyBootstrapLocation(OS) + "/Bootstrap.class");
     }
     
-    public Map getMineCraftLibrariesComMojangNetty_jar(String OS) {
+    public Map<String, String> getMineCraftLibrariesComMojangNetty_jar(String OS) {
         Map<String, String> results = new HashMap<>();
 
         Utils utils = new Utils();
@@ -125,9 +113,9 @@ class Utils {
         return (results);
     }
 
-    public List getMineCraftServerDatNBTIP(String OS) {
+    public List<String> getMineCraftServerDatNBTIP(String OS) {
         Utils utils = new Utils();
-        List ip = new ArrayList();
+        List<String> ip = new ArrayList<>();
         try {
             File file = new File(utils.getMineCraft_ServersDat(OS));
             NBTTagCompound root = NBTUtil.readFile(file, false);
@@ -138,14 +126,14 @@ class Utils {
                 }
             }
         } catch (IOException e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
         return ip;
     }
     
-    public List getMineCraftServerDatNBTName(String OS) {
+    public List<String> getMineCraftServerDatNBTName(String OS) {
         Utils utils = new Utils();
-        List name = new ArrayList();
+        List<String> name = new ArrayList<>();
         try {
             File file = new File(utils.getMineCraft_ServersDat(OS));
             NBTTagCompound root = NBTUtil.readFile(file, false);
@@ -156,19 +144,19 @@ class Utils {
                 }
             }
         } catch (IOException e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
         return name;
     }
     
     public void injectPatchy(String OS) {
         Utils utils = new Utils();
-        Map<String, String> map = new HashMap<String, String>(utils.getMineCraftLibrariesComMojangPatchy_jar(OS));
+        Map<String, String> map = new HashMap<>(utils.getMineCraftLibrariesComMojangPatchy_jar(OS));
         
         for (Map.Entry<String, String> entry : map.entrySet()) {
             try {
                 File file_to_delete = new File(entry.getKey());
-                if (entry.getValue().toString().startsWith("mod_")) {
+                if (entry.getValue().startsWith("mod_")) {
                     file_to_delete.delete();
                 }
             } catch (Exception ex) {
@@ -178,14 +166,14 @@ class Utils {
         
         
         for (Map.Entry<String, String> entry : map.entrySet()) {
-            if (!entry.getValue().toString().startsWith("mod_")) {
+            if (!entry.getValue().startsWith("mod_")) {
                 System.out.println(entry.getKey());
                 //time to extract all files inside.
                 try {
-                    utils.extractJarContent(utils.getMineCraftTmpLocation(OS), entry.getKey().toString());
+                    utils.extractJarContent(utils.getMineCraftTmpLocation(OS), entry.getKey());
                     System.out.println("Jar extracted!");
                 } catch (Exception ex) {
-                    System.out.println(ex);
+                    ex.printStackTrace();
                 }
                 //file extracted! now to modify it...
                 try {
@@ -199,7 +187,7 @@ class Utils {
                     HexEditor.save();
                     System.out.println("Class modified!");
                 } catch (Exception ex) {
-                    System.out.println(ex);
+                    ex.printStackTrace();
                 }
 
                 /*
@@ -218,7 +206,7 @@ class Utils {
                     File file_to_delete = new File(mod_netty);
                     file_to_delete.delete();
                 } catch (Exception ex) {
-                    System.out.println(ex);
+                    ex.printStackTrace();
                 }
 
                 //file modified. now we compress it again.
@@ -228,7 +216,7 @@ class Utils {
                     System.out.println("3: " + entry.getValue());
                     System.out.println("4: " + mod_netty);
 
-                    utils.compressJarContent(new File(getMineCraftTmpLocation(OS)), new File(mod_netty));
+                    compressJarContent(new File(getMineCraftTmpLocation(OS)), new File(mod_netty));
                     System.out.println("Compressed file to jar");
                 } catch (Exception ex) {
                     System.out.println(ex);
@@ -239,7 +227,7 @@ class Utils {
                     FileUtils.deleteDirectory(new File(utils.getMineCraftTmpLocation(OS)));
                     System.out.println("Cleanup directory");
                 } catch (Exception ex) {
-                    System.out.println(ex);
+                    ex.printStackTrace();
                 }
             }
         }
@@ -247,28 +235,28 @@ class Utils {
     
     public void injectNetty(String OS) {
         Utils utils = new Utils();
-        Map<String, String> map = new HashMap<String, String>(utils.getMineCraftLibrariesComMojangNetty_jar(OS));
+        Map<String, String> map = new HashMap<>(utils.getMineCraftLibrariesComMojangNetty_jar(OS));
         
         for (Map.Entry<String, String> entry : map.entrySet()) {
             try {
                 File file_to_delete = new File(entry.getKey());
-                if (entry.getValue().toString().startsWith("mod_")) {
+                if (entry.getValue().startsWith("mod_")) {
                     file_to_delete.delete();
                 }
             } catch (Exception ex) {
-                System.out.println(ex);
+                ex.printStackTrace();
             }
         }
         
         for (Map.Entry<String, String> entry : map.entrySet()) {
-                if (!entry.getValue().toString().startsWith("mod_")) {
+                if (!entry.getValue().startsWith("mod_")) {
                        System.out.println(entry.getKey());
                 //time to extract all files inside.
                 try {
-                    utils.extractJarContent(utils.getMineCraftTmpLocation(OS), entry.getKey().toString());
+                    utils.extractJarContent(utils.getMineCraftTmpLocation(OS), entry.getKey());
                     System.out.println("Jar extracted!");
                 } catch (Exception ex) {
-                    System.out.println(ex);
+                    ex.printStackTrace();
                 }
                 //file extracted! now to modify it...
                 try {
@@ -301,7 +289,7 @@ class Utils {
                     File file_to_delete = new File(mod_netty);
                     file_to_delete.delete();
                 } catch (Exception ex) {
-                    System.out.println(ex);
+                    ex.printStackTrace();
                 }
 
                 //file modified. now we compress it again.
@@ -311,10 +299,10 @@ class Utils {
                     System.out.println("3: " + entry.getValue());
                     System.out.println("4: " + mod_netty);
 
-                    utils.compressJarContent(new File(getMineCraftTmpLocation(OS)), new File(mod_netty));
+                    compressJarContent(new File(getMineCraftTmpLocation(OS)), new File(mod_netty));
                     System.out.println("Compressed file to jar");
                 } catch (Exception ex) {
-                    System.out.println(ex);
+                    ex.printStackTrace();
                 }
 
                 //cleanup. delete tmp folder
@@ -322,7 +310,7 @@ class Utils {
                     FileUtils.deleteDirectory(new File(utils.getMineCraftTmpLocation(OS)));
                     System.out.println("Cleanup directory");
                 } catch (Exception ex) {
-                    System.out.println(ex);
+                    ex.printStackTrace();
                 }
             }
         }
@@ -330,7 +318,7 @@ class Utils {
 
     public static void compressJarContent(File directory, File zipfile) throws IOException {
         URI base = directory.toURI();
-        Deque<File> queue = new LinkedList<File>();
+        Deque<File> queue = new LinkedList<>();
         queue.push(directory);
         OutputStream out = new FileOutputStream(zipfile);
         Closeable res = out;
@@ -364,7 +352,7 @@ class Utils {
         // fist get all directories,
         // then make those directory on the destination Path
         for (Enumeration<JarEntry> enums = jar.entries(); enums.hasMoreElements();) {
-            JarEntry entry = (JarEntry) enums.nextElement();
+            JarEntry entry = enums.nextElement();
 
             String fileName = destinationDir + File.separator + entry.getName();
             File f = new File(fileName);
@@ -377,7 +365,7 @@ class Utils {
 
         //now create all files
         for (Enumeration<JarEntry> enums = jar.entries(); enums.hasMoreElements();) {
-            JarEntry entry = (JarEntry) enums.nextElement();
+            JarEntry entry = enums.nextElement();
 
             String fileName = destinationDir + File.separator + entry.getName();
             File f = new File(fileName);
@@ -405,7 +393,7 @@ class Utils {
         return (getMineCraftTmpIoNettyBootstrapLocation(OS) + "/Bootstrap.class");
     }
 
-    public Map getMineCraftLibrariesComMojangPatchy_jar(String OS) {
+    public Map<String, String> getMineCraftLibrariesComMojangPatchy_jar(String OS) {
         Map<String, String> results = new HashMap<>();
 
         Utils utils = new Utils();
@@ -539,7 +527,7 @@ class Utils {
             byte[] mdbytes = md.digest();
 
             //convert the byte to hex format
-            StringBuilder sb = new StringBuilder("");
+            StringBuilder sb = new StringBuilder();
             for (int i = 0; i < mdbytes.length; i++) {
                 sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16).substring(1));
             }
@@ -615,11 +603,11 @@ class Utils {
     public String getOS() {
         String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
 
-        if ((OS.indexOf("mac") >= 0) || (OS.indexOf("darwin") >= 0)) {
+        if ((OS.contains("mac")) || (OS.contains("darwin"))) {
             return ("Mac");
-        } else if (OS.indexOf("win") >= 0) {
+        } else if (OS.contains("win")) {
             return ("Windows");
-        } else if (OS.indexOf("nux") >= 0) {
+        } else if (OS.contains("nux")) {
             return ("Linux");
         } else {
             //bring support to other OS.
@@ -634,16 +622,16 @@ class Utils {
         return new BigInteger(130, random).toString(32);
     }
 
-    public ArrayList removeDuplicates(ArrayList list) {
+    public List<String> removeDuplicates(List<String> list) {
 
         // Store unique items in result.
-        ArrayList result = new ArrayList();
+        List<String> result = new ArrayList<>();
 
         // Record encountered Strings in HashSet.
-        HashSet set = new HashSet();
+        Set<String> set = new HashSet<>();
 
         // Loop over argument list.
-        for (Object item : list) {
+        for (String item : list) {
 
             // If String is not in set, add it to the list and the set.
             if (!set.contains(item)) {
@@ -666,12 +654,12 @@ class Utils {
 
             FileWriter fw = new FileWriter(file.getAbsoluteFile());
             BufferedWriter bw = new BufferedWriter(fw);
-            String content = "Logs: \n";
+            StringBuilder content = new StringBuilder("Logs: \n");
             for (Object item : list) {
-                content = content + item + "\n";
+                content.append(item).append("\n");
             }
 
-            bw.write(content);
+            bw.write(content.toString());
             bw.close();
 
             System.out.println("Done");

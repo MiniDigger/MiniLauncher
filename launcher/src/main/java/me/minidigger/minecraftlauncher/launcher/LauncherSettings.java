@@ -13,7 +13,7 @@ import java.io.OutputStream;
 import java.util.Properties;
 
 import javafx.scene.Scene;
-import me.minidigger.minecraftlauncher.api.API_Interface;
+import me.minidigger.minecraftlauncher.api.LauncherAPI;
 
 /**
  * @author Mathew
@@ -111,7 +111,7 @@ public class LauncherSettings {
         APILOG {
             @Override
             public String toString() {
-                API_Interface API = new API_Interface();
+                LauncherAPI API = new LauncherAPI();
                 return API.getLog();
             }
         },

@@ -9,7 +9,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
@@ -30,39 +32,37 @@ import org.json.simple.parser.ParseException;
  */
 class Local {
 
-    List versions_json_path_list = new ArrayList(); //gets the path of all json files
-    List versions_list = new ArrayList();           //just gets the versions available on the system
-    List version_url_list = new ArrayList();        //gets url of all the libraries
-    List HALF_URL_version_url_list = new ArrayList();// this is the half url. it needs to be fixed first in order to be used
+    List<String> versions_json_path_list = new ArrayList<>(); //gets the path of all json files
+    List<String> versions_list = new ArrayList<>();           //just gets the versions available on the system
+    List<String> version_url_list = new ArrayList<>();        //gets url of all the libraries
+    List<String> HALF_URL_version_url_list = new ArrayList<>();// this is the half url. it needs to be fixed first in order to be used
 
-    List version_path_list = new ArrayList();       //%new added... This is for direct paths
-    List version_name_list = new ArrayList();       //%new added... This is for direct names
+    List<String> version_path_list = new ArrayList<>();       //%new added... This is for direct paths
+    List<String> version_name_list = new ArrayList<>();       //%new added... This is for direct names
 
-    List objects_hash = new ArrayList();            //gets objects hash
-    List objects_KEY = new ArrayList();             //gets objects keys
+    List<String> objects_hash = new ArrayList<>();            //gets objects hash
+    List<String> objects_KEY = new ArrayList<>();             //gets objects keys
 
-    List profiles_lastVersionId = new ArrayList();   //gets profiles lastVersionId
-    List profiles_KEY = new ArrayList();             //gets profiles keys
+    List<String> profiles_lastVersionId = new ArrayList<>();   //gets profiles lastVersionId
+    List<String> profiles_KEY = new ArrayList<>();             //gets profiles keys
 
-    List version_url_list_natives = new ArrayList();    //gets url of all the natives
-    List version_path_list_natives = new ArrayList();    //%gets url of all the natives
-    List version_name_list_natives = new ArrayList(); //EXP CODE!
+    List<String> version_url_list_natives = new ArrayList<>();    //gets url of all the natives
+    List<String> version_path_list_natives = new ArrayList<>();    //%gets url of all the natives
+    List<String> version_name_list_natives = new ArrayList<>(); //EXP CODE!
 
-    List libraries_path = new ArrayList();          //gets path to all the libraries
+    List<String> libraries_path = new ArrayList<>();          //gets path to all the libraries
     //List natives_path = new ArrayList();            //_NOT NEEDED_ gets path to all the natives
 
-    List version_manifest_versions_id = new ArrayList();
-    List version_manifest_versions_type = new ArrayList();
-    List version_manifest_versions_url = new ArrayList();
+    List<String> version_manifest_versions_id = new ArrayList<>();
+    List<String> version_manifest_versions_type = new ArrayList<>();
+    List<String> version_manifest_versions_url = new ArrayList<>();
 
-    public List getAPIMetaList(String OS) {
-        List meta = new ArrayList();
+    public List<String> getAPIMetaList(String OS) {
+        List<String> meta = new ArrayList<>();
         Utils utils = new Utils();
         try {
             for (String line : Files.readAllLines(Paths.get(utils.getMineCraft_APIMeta(OS)))) {
-                for (String part : line.split(":")) {
-                    meta.add(part);
-                }
+                Collections.addAll(meta, line.split(":"));
             }
         } catch (IOException ex) {
             System.out.println("API Meta does not exist!");
@@ -77,6 +77,7 @@ class Local {
         Utils utils = new Utils();
         try {
 
+            // TODO we also need to fix this
             String content = "{\"profiles\":{\"TagCraftMC\":{\"name\":\"TagCraftMC\"}},\"selectedProfile\":\"TagCraftMC\",\"clientToken\":\"dc291e47-a41f-4bc8-8ec2-563195188db2\",\"authenticationDatabase\":{\"4db2fbf560f355492dea6962e103f1d2\":{\"displayName\":\"TagCraftMC\",\"userProperties\":[{\"name\":\"twitch_access_token\",\"value\":\"e4u4updugw2h7pn7psy3u4u4u7p8raq\"}],\"accessToken\":\"c8c8358cac8a43c896ec85ee3c807c8e\",\"userid\":\"793addf9682c8e04c8cc823db79c8c85\",\"uuid\":\"4db2fbf5-60f3-5549-2dea-6962e103f1d2\",\"username\":\"support@tagcraftmc.com\"}},\"selectedUser\":\"4db2fbf560f355492dea6962e103f1d2\",\"launcherVersion\":{\"name\":\"1.6.61\",\"format\":18}}";
 
             File file = new File(utils.getMineCraft_Launcher_Profiles_json(OS));
@@ -114,10 +115,8 @@ class Local {
                 String fileName = (String) a.next();
                 profiles_KEY.add(fileName);
             }
-        } catch (FileNotFoundException exception) {
-            System.out.println(exception);
         } catch (IOException | ParseException ex) {
-            System.out.println(ex);
+            ex.printStackTrace();
         }
 
     }
@@ -133,18 +132,15 @@ class Local {
             JSONObject profiles = (JSONObject) jsonObject.get("profiles");
 
             Set fileCheckObjects = profiles.keySet();
-            Iterator a = fileCheckObjects.iterator();
-            while (a.hasNext()) {
-                String fileName = (String) a.next();
+            for (Object fileCheckObject : fileCheckObjects) {
+                String fileName = (String) fileCheckObject;
 
                 JSONObject fileNameObject = (JSONObject) profiles.get(fileName);
                 String lastVersionId = (String) fileNameObject.get("lastVersionId");
                 profiles_lastVersionId.add(lastVersionId);
             }
-        } catch (FileNotFoundException exception) {
-            System.out.println(exception);
         } catch (IOException | ParseException ex) {
-            System.out.println(ex);
+           ex.printStackTrace();
         }
 
     }
@@ -197,10 +193,8 @@ class Local {
             Object object = readMCJSONFiles.parse(new FileReader(path));
             JSONObject jsonObject = (JSONObject) object;
             JSONArray versions = (JSONArray) jsonObject.get("versions");
-            Iterator<JSONObject> iterator = versions.iterator();
-            while (iterator.hasNext()) {
-                JSONObject versions_ = (JSONObject) iterator.next();
-                version_manifest_versions_id.add(versions_.get("id"));
+            for (JSONObject version : (Iterable<JSONObject>) versions) {
+                version_manifest_versions_id.add((String) version.get("id"));
                 //System.out.println(versions_.get("id"));
             }
         } catch (IOException | ParseException e) {
@@ -214,10 +208,8 @@ class Local {
             Object object = readMCJSONFiles.parse(new FileReader(path));
             JSONObject jsonObject = (JSONObject) object;
             JSONArray versions = (JSONArray) jsonObject.get("versions");
-            Iterator<JSONObject> iterator = versions.iterator();
-            while (iterator.hasNext()) {
-                JSONObject versions_ = (JSONObject) iterator.next();
-                version_manifest_versions_type.add(versions_.get("type"));
+            for (JSONObject version : (Iterable<JSONObject>) versions) {
+                version_manifest_versions_type.add((String) version.get("type"));
                 //System.out.println(versions_.get("id"));
             }
         } catch (IOException | ParseException e) {
@@ -231,10 +223,8 @@ class Local {
             Object object = readMCJSONFiles.parse(new FileReader(path));
             JSONObject jsonObject = (JSONObject) object;
             JSONArray versions = (JSONArray) jsonObject.get("versions");
-            Iterator<JSONObject> iterator = versions.iterator();
-            while (iterator.hasNext()) {
-                JSONObject versions_ = (JSONObject) iterator.next();
-                version_manifest_versions_url.add(versions_.get("url"));
+            for (JSONObject version : (Iterable<JSONObject>) versions) {
+                version_manifest_versions_url.add((String) version.get("url"));
                 //System.out.println(versions_.get("id"));
             }
         } catch (IOException | ParseException e) {
@@ -248,10 +238,8 @@ class Local {
             Object object = readMCJSONFiles.parse(new FileReader(path));
             JSONObject jsonObject = (JSONObject) object;
             JSONArray versions = (JSONArray) jsonObject.get("libraries");
-            Iterator<JSONObject> iterator = versions.iterator();
-            while (iterator.hasNext()) {
-                JSONObject name_ = (JSONObject) iterator.next();
-                version_name_list.add(name_.get("name"));
+            for (JSONObject version : (Iterable<JSONObject>) versions) {
+                version_name_list.add((String) version.get("name"));
             }
         } catch (IOException | ParseException e) {
             //System.out.print(e);
@@ -265,10 +253,8 @@ class Local {
             Object object = readMCJSONFiles.parse(new FileReader(path));
             JSONObject jsonObject = (JSONObject) object;
             JSONArray msg = (JSONArray) jsonObject.get("libraries");
-            Iterator<JSONObject> iterator = msg.iterator();
-            while (iterator.hasNext()) {
-                JSONObject lib = (JSONObject) iterator.next();
-                JSONObject downloads = (JSONObject) lib.get("downloads");
+            for (JSONObject aMsg : (Iterable<JSONObject>) msg) {
+                JSONObject downloads = (JSONObject) aMsg.get("downloads");
                 if (downloads.get("artifact") != null) {
                     JSONObject artifact = (JSONObject) downloads.get("artifact");
                     if (artifact.get("url") != null) {
@@ -290,10 +276,8 @@ class Local {
             Object object = readMCJSONFiles.parse(new FileReader(path));
             JSONObject jsonObject = (JSONObject) object;
             JSONArray msg = (JSONArray) jsonObject.get("libraries");
-            Iterator<JSONObject> iterator = msg.iterator();
-            while (iterator.hasNext()) {
-                JSONObject lib = (JSONObject) iterator.next();
-                JSONObject downloads = (JSONObject) lib.get("downloads");
+            for (JSONObject aMsg : (Iterable<JSONObject>) msg) {
+                JSONObject downloads = (JSONObject) aMsg.get("downloads");
                 if (downloads.get("artifact") != null) {
                     JSONObject artifact = (JSONObject) downloads.get("artifact");
                     if (artifact.get("path") != null) {
@@ -327,6 +311,7 @@ class Local {
             ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
             try {
 
+                //TODO figure out wtf this script is doing
                 String script_js = "var getJsonLibrariesDownloadsClassifiersNativesX=function(r,s){var a=r,e=JSON.parse(a),n=\"\",t=0;for(i=0;i<500;i++)try{n=n+e.libraries[t].downloads.classifiers[s].url+\"\\n\",t+=1}catch(o){t+=1}return n},getJsonLibrariesDownloadsClassifiersNativesY=function(r,s){var a=r,e=JSON.parse(a),n=\"\",t=0;for(i=0;i<500;i++)try{n=n+e.libraries[t].downloads.classifiers[s].path+\"\\n\",t+=1}catch(o){t+=1}return n},getJsonLibrariesDownloadsClassifiersNativesZ=function(r){var s=r,a=JSON.parse(s),e=\"\",n=0;for(i=0;i<500;i++)try{a.libraries[n].natives?(e=e+a.libraries[n].name+\"\\n\",n+=1):n+=1}catch(t){n+=1}return e};";
 
                 File file = new File("./.script.js");
@@ -345,9 +330,7 @@ class Local {
 
             Object result = invocable.invokeFunction("getJsonLibrariesDownloadsClassifiersNativesX", content, natives_OS);
 
-            for (String retval : result.toString().split("\n")) {
-                version_url_list_natives.add(retval);
-            }
+            version_url_list_natives.addAll(Arrays.asList(result.toString().split("\n")));
         } catch (FileNotFoundException | ScriptException | NoSuchMethodException ex) {
             System.out.println(ex.getMessage());
         }
@@ -371,6 +354,7 @@ class Local {
             ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
             try {
 
+                //TODO figure out wtf to do with this script
                 String script_js = "var getJsonLibrariesDownloadsClassifiersNativesX=function(r,s){var a=r,e=JSON.parse(a),n=\"\",t=0;for(i=0;i<500;i++)try{n=n+e.libraries[t].downloads.classifiers[s].url+\"\\n\",t+=1}catch(o){t+=1}return n},getJsonLibrariesDownloadsClassifiersNativesY=function(r,s){var a=r,e=JSON.parse(a),n=\"\",t=0;for(i=0;i<500;i++)try{n=n+e.libraries[t].downloads.classifiers[s].path+\"\\n\",t+=1}catch(o){t+=1}return n},getJsonLibrariesDownloadsClassifiersNativesZ=function(r){var s=r,a=JSON.parse(s),e=\"\",n=0;for(i=0;i<500;i++)try{a.libraries[n].natives?(e=e+a.libraries[n].name+\"\\n\",n+=1):n+=1}catch(t){n+=1}return e};";
 
                 File file = new File("./.script.js");
@@ -389,9 +373,7 @@ class Local {
 
             Object result = invocable.invokeFunction("getJsonLibrariesDownloadsClassifiersNativesY", content, natives_OS);
 
-            for (String retval : result.toString().split("\n")) {
-                version_path_list_natives.add(retval);
-            }
+            version_path_list_natives.addAll(Arrays.asList(result.toString().split("\n")));
         } catch (FileNotFoundException | ScriptException | NoSuchMethodException ex) {
             System.out.println(ex.getMessage());
         }
@@ -424,9 +406,7 @@ class Local {
 
             Object result = invocable.invokeFunction("getJsonLibrariesDownloadsClassifiersNativesZ", content);
 
-            for (String retval : result.toString().split("\n")) {
-                version_name_list_natives.add(retval);
-            }
+            version_name_list_natives.addAll(Arrays.asList(result.toString().split("\n")));
         } catch (FileNotFoundException | ScriptException | NoSuchMethodException ex) {
             System.out.println(ex.getMessage());
         }
@@ -443,15 +423,12 @@ class Local {
             JSONObject objects = (JSONObject) jsonObject.get("objects");
 
             Set fileCheckObjects = objects.keySet();
-            Iterator a = fileCheckObjects.iterator();
-            while (a.hasNext()) {
-                String fileName = (String) a.next();
+            for (Object fileCheckObject : fileCheckObjects) {
+                String fileName = (String) fileCheckObject;
                 objects_KEY.add(fileName);
             }
-        } catch (FileNotFoundException exception) {
-            System.out.println(exception);
         } catch (IOException | ParseException ex) {
-            System.out.println(ex);
+            ex.printStackTrace();
         }
 
     }
@@ -467,18 +444,15 @@ class Local {
             JSONObject objects = (JSONObject) jsonObject.get("objects");
 
             Set fileCheckObjects = objects.keySet();
-            Iterator a = fileCheckObjects.iterator();
-            while (a.hasNext()) {
-                String fileName = (String) a.next();
+            for (Object fileCheckObject : fileCheckObjects) {
+                String fileName = (String) fileCheckObject;
 
                 JSONObject fileNameObject = (JSONObject) objects.get(fileName);
                 String fileHash = (String) fileNameObject.get("hash");
                 objects_hash.add(fileHash);
             }
-        } catch (FileNotFoundException exception) {
-            System.out.println(exception);
         } catch (IOException | ParseException ex) {
-            System.out.println(ex);
+            ex.printStackTrace();
         }
 
     }
@@ -519,14 +493,14 @@ class Local {
 
             Collection files = FileUtils.listFiles(root, null, recursive);
 
-            for (Iterator iterator = files.iterator(); iterator.hasNext();) {
-                File file = (File) iterator.next();
+            for (Object file1 : files) {
+                File file = (File) file1;
                 if (file.getName().endsWith(fileName)) {
                     versions_json_path_list.add(file.getAbsolutePath());
                 }
             }
         } catch (Exception e) {
-            System.out.print(e);
+            e.printStackTrace();
         }
     }
 
@@ -538,14 +512,14 @@ class Local {
 
             Collection files = FileUtils.listFiles(root, null, recursive);
 
-            for (Iterator iterator = files.iterator(); iterator.hasNext();) {
-                File file = (File) iterator.next();
+            for (Object file1 : files) {
+                File file = (File) file1;
                 if (file.getName().endsWith(fileName)) {
                     versions_list.add(file.getName().replace(".json", ""));
                 }
             }
         } catch (Exception e) {
-            System.out.print(e);
+            e.printStackTrace();
         }
     }
 
@@ -558,7 +532,7 @@ class Local {
             String args = jsonArgs.get("game").toString();
             args = args.replaceAll("\\[","").replaceAll("\\]","").replaceAll(",", "").replaceAll("\"\"", " ").replaceAll("\"", "");
             String[] argsF = args.split("\\{rules");
-            return (String)(argsF[0]);
+            return (argsF[0]);
 
         } catch (IOException | ParseException e) {
             System.out.print(e);
@@ -677,19 +651,19 @@ class Local {
     }
 
     public String generateLibrariesArguments(String OS) {
-        String cp = "";
+        StringBuilder cp = new StringBuilder();
         Utils utils = new Utils();
         for (int i = 0; i < libraries_path.size(); i++) {
             if (i == libraries_path.size() - 1) {
 
-                cp = cp + libraries_path.get(i).toString();
+                cp.append(libraries_path.get(i));
 
             } else {
-                cp = cp + libraries_path.get(i).toString() + utils.getArgsDiv(OS);
+                cp.append(libraries_path.get(i)).append(utils.getArgsDiv(OS));
 
             }
         }
-        return cp;
+        return cp.toString();
     }
 
     public String generateRunnableArguments(String Memory, String NativesDir, String FullLibraryArgument, String mainClass, String HalfArgument) {
@@ -698,6 +672,7 @@ class Local {
 
     }
 
+    // TODO why are these unused, this doesn't look to bad
     public String generateRunnableArguments(String Memory, String MinMemory, String NativesDir, String FullLibraryArgument, String mainClass, String HalfArgument) {
         //unused function. Will be removed
         return ("-Xms" + Memory + " -Xmx" + Memory + " -XX:HeapDumpPath=MojangTricksIntelDriversForPerformance_javaw.exe_minecraft.exe.heapdump -Djava.library.path=" + NativesDir + " -cp " + FullLibraryArgument + " " + mainClass + " " + HalfArgument);
@@ -712,10 +687,10 @@ class Local {
 
             String compileSplit = "";
 
-            String compileFolder = "";
+            StringBuilder compileFolder = new StringBuilder();
 
-            for (int i = 0; i < folderSplit.length; i++) {
-                compileFolder += folderSplit[i] + "/";
+            for (String aFolderSplit : folderSplit) {
+                compileFolder.append(aFolderSplit).append("/");
             }
             compileSplit = compileFolder + "/" + colonSplit[1] + "/" + colonSplit[2] + "/" + colonSplit[1] + "-" + colonSplit[2] + ".jar";
             compileSplit = compileSplit.replace("//", "/");
@@ -751,10 +726,10 @@ class Local {
 
             String compileSplit = "";
 
-            String compileFolder = "";
+            StringBuilder compileFolder = new StringBuilder();
 
             for (int i = 0; i < folderSplit.length; i++) {
-                compileFolder += folderSplit[i] + "/";
+                compileFolder.append(folderSplit[i]).append("/");
             }
 
             compileSplit = compileFolder + "/" + colonSplit[1] + "/" + colonSplit[2] + "/" + colonSplit[1] + "-" + colonSplit[2] + "-" + natives_OS + ".jar";
@@ -762,14 +737,14 @@ class Local {
             return (compileSplit);
 
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
         return "N/A";
     }
 
     public Boolean checkIfVanillaMC(String version) {
-        for (int i = 0; i < version_manifest_versions_id.size(); i++) {
-            if (version_manifest_versions_id.get(i).equals(version)) {
+        for (String aVersion_manifest_versions_id : version_manifest_versions_id) {
+            if (aVersion_manifest_versions_id.equals(version)) {
                 return true;
             }
         }
@@ -784,15 +759,13 @@ class Local {
             Object object = readMCJSONFiles.parse(new FileReader(path));
             JSONObject jsonObject = (JSONObject) object;
             JSONArray versions = (JSONArray) jsonObject.get("libraries");
-            Iterator<JSONObject> iterator = versions.iterator();
-            while (iterator.hasNext()) {
-                JSONObject name_ = (JSONObject) iterator.next();
-                version_name_list.add(name_.get("name"));
-                if (name_.get("url") == null) {
+            for (JSONObject version : (Iterable<JSONObject>) versions) {
+                version_name_list.add((String) version.get("name"));
+                if (version.get("url") == null) {
                     System.out.println("Can't resolve: url Attempting to fix!");
                     HALF_URL_version_url_list.add(network.https_libraries_minecraft_net);
                 } else {
-                    HALF_URL_version_url_list.add(name_.get("url"));
+                    HALF_URL_version_url_list.add((String) version.get("url"));
 
                 }
             }

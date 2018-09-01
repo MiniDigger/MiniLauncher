@@ -44,7 +44,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
-import me.minidigger.minecraftlauncher.api.API_Interface;
+import me.minidigger.minecraftlauncher.api.LauncherAPI;
 
 /**
  * @author ammar
@@ -102,7 +102,7 @@ public class LauncherMainController implements Initializable {
 
         new Thread(this::loadPlayerAvatar).start();
         new Thread(this::checkLatestVersion).start();
-        API_Interface API = new API_Interface();
+        LauncherAPI API = new LauncherAPI();
 
         username.setText(LauncherSettings.playerUsername);
 
@@ -164,7 +164,7 @@ public class LauncherMainController implements Initializable {
         username.setDisable(true);
         new Thread(this::loadPlayerAvatar).start();
 
-        API_Interface API = new API_Interface();
+        LauncherAPI API = new LauncherAPI();
 
         ExecutorService executor = Executors.newCachedThreadPool();
         executor.submit(() -> {
@@ -319,7 +319,7 @@ public class LauncherMainController implements Initializable {
             });
             stage.setOnHiding(event_ -> {
                 //if (LauncherSettings.refreshVersionList == true) { //Just refesh it anyway.
-                API_Interface API = new API_Interface();
+                LauncherAPI API = new LauncherAPI();
 
                 version.getItems().removeAll(version.getItems());
                 for (Object ob : API.getInstalledVersionsList()) {

@@ -33,7 +33,7 @@ import javafx.scene.layout.Region;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import me.minidigger.minecraftlauncher.api.API_Interface;
+import me.minidigger.minecraftlauncher.api.LauncherAPI;
 
 /**
  * FXML Controller class
@@ -131,7 +131,7 @@ public class LauncherOptionsController implements Initializable {
 
         loadOptionsData();
 
-        API_Interface API = new API_Interface();
+        LauncherAPI API = new LauncherAPI();
         ExecutorService executor1 = Executors.newCachedThreadPool();
         executor1.submit(() -> {
             if (API.getUpdateStatus().equals("0")) {
@@ -281,7 +281,7 @@ public class LauncherOptionsController implements Initializable {
             System.out.println("NOT Selected!");
 
         }
-        API_Interface API = new API_Interface();
+        LauncherAPI API = new LauncherAPI();
         ExecutorService executor = Executors.newCachedThreadPool();
         executor.submit(() -> {
             API.downloadMinecraft((String) optionsSelectVersion.getValue(), optionsSelectVersionForce.isSelected());

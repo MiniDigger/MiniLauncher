@@ -14,8 +14,10 @@ class Network {
     //all web urls come here...
     public final String https_libraries_minecraft_net = "https://libraries.minecraft.net";
     public final String http_resources_download_minecraft_net = "http://resources.download.minecraft.net";
+    //TODO this s3 url needs to be replaced
     public final String https_s3_amazonaws_com_Minecraft_Download_versions = "https://s3.amazonaws.com/Minecraft.Download/versions";
     public final String https_api_mojang_com_users_profiles_minecraft = "https://api.mojang.com/users/profiles/minecraft";
+    //TODO wtf is api meta for?
     public final String https_raw_githubusercontent_com = "https://raw.githubusercontent.com/ammarx/TagAPI_3/master/api_meta?time=" + (Math.random() * 100);
 
     public void downloadAPIMeta(String OS) {
@@ -42,7 +44,7 @@ class Network {
                 FileUtils.copyURLToFile(url, file);
             }
         } catch (Exception e) {
-            System.out.print(e);
+            e.printStackTrace();
         }
     }
 
@@ -51,7 +53,7 @@ class Network {
             Utils utils = new Utils();
             URL url = new URL(_url);
             File file = new File(utils.getMineCraftLibrariesLocation(OS) + "/" + _path);
-            if (ForceDownload == true) {
+            if (ForceDownload) {
                 FileUtils.copyURLToFile(url, file);
             } else if (file.exists()) {
                 System.out.println("File Exists! - Skipping download");
@@ -59,7 +61,7 @@ class Network {
                 FileUtils.copyURLToFile(url, file);
             }
         } catch (Exception e) {
-            System.out.print(e);
+           e.printStackTrace();
         }
     }
 
@@ -78,7 +80,7 @@ class Network {
                 FileUtils.copyURLToFile(url, file);
             }
         } catch (Exception e) {
-            System.out.print(e);
+            e.printStackTrace();
         }
     }
 
@@ -105,7 +107,7 @@ class Network {
             Utils utils = new Utils();
             URL url = new URL(https_s3_amazonaws_com_Minecraft_Download_versions + "/" + version + "/" + version + ".jar");
             File file = new File(utils.getMineCraft_Versions_X_X_jar_Location(OS, version));
-            if (ForceDownload == true) {
+            if (ForceDownload) {
                 FileUtils.copyURLToFile(url, file);
             } else if (file.exists()) {
                 //do not download..
@@ -114,7 +116,7 @@ class Network {
                 FileUtils.copyURLToFile(url, file);
             }
         } catch (Exception e) {
-            System.out.print(e);
+            e.printStackTrace();
         }
     }
 
@@ -124,7 +126,7 @@ class Network {
             File file = new File(_filepath);
             FileUtils.copyURLToFile(url, file);
         } catch (Exception e) {
-            System.out.print(e);
+            e.printStackTrace();
         }
     }
 
@@ -142,7 +144,7 @@ class Network {
             FileUtils.copyURLToFile(url, file);
 
         } catch (Exception e) {
-            System.out.print(e);
+            e.printStackTrace();
         }
     }
 }
