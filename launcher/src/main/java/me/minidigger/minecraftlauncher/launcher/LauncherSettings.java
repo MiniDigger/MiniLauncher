@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package me.minidigger.minecraftlauncher.launcher;
 
 import java.io.FileInputStream;
@@ -20,7 +15,7 @@ import me.minidigger.minecraftlauncher.api.LauncherAPI;
  */
 public class LauncherSettings {
 
-    static public final String updateURL = "https://raw.githubusercontent.com/MiniDigger/TagLauncher_3/master/_html_/latestVersion";
+    static public final String updateURL = "https://raw.githubusercontent.com/MiniDigger/MinecraftLauncher/master/_html_/latestVersion";
     static public final String serverIP = "localhost";
     static public final String serverName = "Localhost";
     static public String launcherVersion = "2.0";
