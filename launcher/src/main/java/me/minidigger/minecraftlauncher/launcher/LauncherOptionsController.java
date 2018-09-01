@@ -89,7 +89,7 @@ public class LauncherOptionsController implements Initializable {
     @FXML
     private TextField optionsRamAllocationMax;
     @FXML
-    private ComboBox optionsSelectVersion;
+    private ComboBox<String> optionsSelectVersion;
     @FXML
     private Button optionsSelectVersionInstall;
     @FXML
@@ -109,7 +109,7 @@ public class LauncherOptionsController implements Initializable {
     @FXML
     private RadioButton optionsDebugMode;
     @FXML
-    private ComboBox themeType;
+    private ComboBox<String> themeType;
     @FXML
     private RadioButton useThemeType;
     @FXML
@@ -182,10 +182,10 @@ public class LauncherOptionsController implements Initializable {
             }
             if (!API.getInstalledVersionsList().isEmpty()) {
 
-                for (Object ob_ : API.getInstalledVersionsList()) {
+                for (String ob_ : API.getInstalledVersionsList()) {
                     if (!VersionHashTable.containsKey(ob_)) {
                         optionsSelectVersion.getItems().addAll(ob_);
-                        VersionHashTable.put((String) ob_, "Unknown");
+                        VersionHashTable.put(ob_, "Unknown");
                     }
                 }
 
@@ -193,7 +193,7 @@ public class LauncherOptionsController implements Initializable {
             optionsSelectVersion.setDisable(false);
             optionsSelectVersionInstall.setDisable(false);
             try {
-                Platform.runLater(() -> optionStatus.setText("Status: Idle"));
+                Platform.runLater(() -> setStatus(LauncherSettings.Status.IDLE));
             } catch (Exception e) {
             }
             return null;
@@ -324,19 +324,19 @@ public class LauncherOptionsController implements Initializable {
                             optionStatus.setText(API.getLog());
                         } else {
                             if (API.getLog().startsWith("[dl] URL: https://launchermeta")) {
-                                optionStatus.setText("Status: " + LauncherSettings.Status.DOWNLOADING_LM);
+                                this.setStatus(LauncherSettings.Status.DOWNLOADING_LM);
                             }
                             if (API.getLog().startsWith("[dl] DOWNLOADING...HASH:")) {
-                                optionStatus.setText("Status: " + LauncherSettings.Status.DOWNLOADING);
+                                this.setStatus(LauncherSettings.Status.DOWNLOADING);
                             }
                             if (API.getLog().startsWith("[dl] DOWNLOADING MINECRAFT JAR")) {
-                                optionStatus.setText("Status: " + LauncherSettings.Status.DOWNLOADING_M);
+                                this.setStatus(LauncherSettings.Status.DOWNLOADING_M);
                             }
                             if (API.getLog().startsWith("[dl] Downloading: https://libraries")) {
-                                optionStatus.setText("Status: " + LauncherSettings.Status.DOWNLOADING_L);
+                                this.setStatus(LauncherSettings.Status.DOWNLOADING_L);
                             }
                             if (API.getLog().startsWith("[dl] Getting NATIVES URL")) {
-                                optionStatus.setText("Status: " + LauncherSettings.Status.FINALIZING);
+                                this.setStatus(LauncherSettings.Status.FINALIZING);
                             }
                         }
 
@@ -346,7 +346,7 @@ public class LauncherOptionsController implements Initializable {
 
                     if (API.getLog().equals("[dl] Download Complete!")) {
                         Platform.runLater(() -> {
-                            optionStatus.setText("Status: " + LauncherSettings.Status.DOWNLOAD_COMPLETE);
+                            this.setStatus(LauncherSettings.Status.DOWNLOAD_COMPLETE);
                             Alert alert = new Alert(Alert.AlertType.INFORMATION);
                             alert.setTitle("Minecraft Launcher - Success");
                             alert.setHeaderText("Download Complete.");
@@ -354,8 +354,7 @@ public class LauncherOptionsController implements Initializable {
                             DialogPane dialogPane = alert.getDialogPane();
                             dialogPane.getStylesheets().add("/css/purple.css");
                             alert.setContentText("Version: " + optionsSelectVersion.getValue() + " has been downloaded & installed!");
-                            ;
-                            optionStatus.setText("Status: " + LauncherSettings.Status.IDLE);
+                            this.setStatus(LauncherSettings.Status.IDLE);
                             optionsSelectVersionInstall.setDisable(false);
                             optionsExit.setDisable(false);
                             optionsClose.setDisable(false);
@@ -458,6 +457,10 @@ public class LauncherOptionsController implements Initializable {
             optionsKeepLauncherOpen.setSelected(true);
         }
 
+    }
+
+    private void setStatus(LauncherSettings.Status status) {
+        optionStatus.setText("Status: " + status);
     }
 
     @FXML
