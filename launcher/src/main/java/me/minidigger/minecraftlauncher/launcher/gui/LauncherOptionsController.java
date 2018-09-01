@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-package me.minidigger.minecraftlauncher.launcher;
+package me.minidigger.minecraftlauncher.launcher.gui;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +40,6 @@ import java.util.concurrent.Executors;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -57,7 +56,9 @@ import javafx.scene.layout.Region;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import me.minidigger.minecraftlauncher.api.LauncherAPI;
+import me.minidigger.minecraftlauncher.launcher.LauncherMain;
+import me.minidigger.minecraftlauncher.launcher.LauncherSettings;
+import me.minidigger.minecraftlauncher.launcher.Status;
 
 /**
  * FXML Controller class
@@ -182,7 +183,7 @@ public class LauncherOptionsController extends AbstractGUIController {
             optionsSelectVersion.setDisable(false);
             optionsSelectVersionInstall.setDisable(false);
             try {
-                Platform.runLater(() -> setStatus(LauncherSettings.Status.IDLE));
+                Platform.runLater(() -> setStatus(Status.IDLE));
             } catch (Exception e) {
             }
             return null;
@@ -641,7 +642,7 @@ public class LauncherOptionsController extends AbstractGUIController {
     @Override
     public void onDownloadComplete() {
         Platform.runLater(() -> {
-            setStatus(LauncherSettings.Status.DOWNLOAD_COMPLETE);
+            setStatus(Status.DOWNLOAD_COMPLETE);
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Minecraft Launcher - Success");
             alert.setHeaderText("Download Complete.");
@@ -649,7 +650,7 @@ public class LauncherOptionsController extends AbstractGUIController {
             DialogPane dialogPane = alert.getDialogPane();
             dialogPane.getStylesheets().add("/css/purple.css");
             alert.setContentText("Version: " + optionsSelectVersion.getValue() + " has been downloaded & installed!");
-            setStatus(LauncherSettings.Status.IDLE);
+            setStatus(Status.IDLE);
             optionsSelectVersionInstall.setDisable(false);
             optionsExit.setDisable(false);
             optionsClose.setDisable(false);
@@ -662,7 +663,7 @@ public class LauncherOptionsController extends AbstractGUIController {
     }
 
     @Override
-    public void setStatus(LauncherSettings.Status status) {
+    public void setStatus(Status status) {
         optionStatus.setText("Status: " + status);
     }
 }

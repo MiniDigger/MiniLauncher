@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-package me.minidigger.minecraftlauncher.launcher;
+package me.minidigger.minecraftlauncher.launcher.gui;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -48,7 +48,6 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -67,8 +66,9 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
-import me.minidigger.minecraftlauncher.api.LauncherAPI;
-import me.minidigger.minecraftlauncher.api.events.LauncherEventHandler;
+import me.minidigger.minecraftlauncher.launcher.LauncherMain;
+import me.minidigger.minecraftlauncher.launcher.LauncherSettings;
+import me.minidigger.minecraftlauncher.launcher.Status;
 
 /**
  * @author ammar
@@ -398,7 +398,7 @@ public class LauncherMainController extends AbstractGUIController {
     @Override
     public void onGameStart(@NonNull StartStatus status) {
         Platform.runLater(() -> {
-            switch (status){
+            switch (status) {
                 case VALIDATING:
                     launcherStatus.setText("Status: Checking installed " + LauncherSettings.playerVersion + " files.");
                     break;
@@ -455,7 +455,7 @@ public class LauncherMainController extends AbstractGUIController {
     }
 
     @Override
-    public void setStatus(LauncherSettings.Status status) {
+    public void setStatus(Status status) {
         launcherStatus.setText("Status: " + status);
     }
 }

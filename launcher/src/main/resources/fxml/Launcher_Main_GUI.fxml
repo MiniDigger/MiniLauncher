@@ -14,7 +14,7 @@
 <?import javafx.scene.text.Font?>
 <AnchorPane id="AnchorPane" fx:id="mainBackground" prefHeight="450.0" prefWidth="450.0" styleClass="main_scene"
             xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="me.minidigger.minecraftlauncher.launcher.LauncherMainController">
+            fx:controller="me.minidigger.minecraftlauncher.launcher.gui.LauncherMainController">
     <HBox prefHeight="18.0" prefWidth="253.0">
         <Pane prefHeight="25.0" prefWidth="46.0"/>
     </HBox>

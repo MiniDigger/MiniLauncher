@@ -13,7 +13,7 @@
 <?import javafx.scene.text.Font?>
 <AnchorPane id="AnchorPane" prefHeight="500.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.131"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="me.minidigger.minecraftlauncher.launcher.LauncherOptionsController">
+            fx:controller="me.minidigger.minecraftlauncher.launcher.gui.LauncherOptionsController">
     <BorderPane prefHeight="500.0" prefWidth="400.0">
         <top>
             <Pane prefHeight="25.0" prefWidth="500.0" styleClass="top_title_bar" BorderPane.alignment="CENTER">
