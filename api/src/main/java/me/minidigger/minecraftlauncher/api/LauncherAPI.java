@@ -26,9 +26,9 @@
 
 package me.minidigger.minecraftlauncher.api;
 
-import com.minecraft.moonlake.nbt.NBTTagCompound;
-import com.minecraft.moonlake.nbt.NBTTagList;
-import com.minecraft.moonlake.nbt.NBTUtil;
+import net.kyori.nbt.CompoundTag;
+import net.kyori.nbt.ListTag;
+import net.kyori.nbt.TagIO;
 
 import java.io.File;
 import java.io.IOException;
@@ -195,29 +195,29 @@ public class LauncherAPI {
     public void addServerToServersDat(String Name, String IP) {
         Utils utils = new Utils();
         String OperatingSystemToUse = utils.getOS();
-        NBTTagCompound root = new NBTTagCompound();
-        NBTTagList<NBTTagCompound> server = new NBTTagList<>("servers");
-        NBTTagCompound data = new NBTTagCompound();
+        CompoundTag root = new CompoundTag();
+        ListTag servers = new ListTag();
+        CompoundTag data = new CompoundTag();
 
         List<String> names = new ArrayList<>(utils.getMineCraftServerDatNBTName(OperatingSystemToUse));
         List<String> ips = new ArrayList<>(utils.getMineCraftServerDatNBTIP(OperatingSystemToUse));
-        data.setString("name", Name);
-        data.setString("ip", IP);
-        server.add(data);
+        data.putString("name", Name);
+        data.putString("ip", IP);
+        servers.add(data);
         try {
             for (int i = 0; i < ips.size(); i++) {
-                data = new NBTTagCompound();
-                data.setString("name", names.get(i));
-                data.setString("ip", ips.get(i));
-                server.add(data);
+                data = new CompoundTag();
+                data.putString("name", names.get(i));
+                data.putString("ip", ips.get(i));
+                servers.add(data);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        root.put(server);
+        root.put("servers", servers);
         //System.out.println(root.toString());
         try {
-            NBTUtil.writeFile(root, new File(utils.getMineCraft_ServersDat(OperatingSystemToUse)), false);
+            TagIO.writePath(root, new File(utils.getMineCraft_ServersDat(OperatingSystemToUse)).toPath());
         } catch (IOException e) {
             e.printStackTrace();
         }

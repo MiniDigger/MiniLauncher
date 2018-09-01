@@ -27,10 +27,10 @@
 package me.minidigger.minecraftlauncher.api;
 
 import com.alemcode.HexEditor.HexEditor;
-import com.minecraft.moonlake.nbt.NBTBase;
-import com.minecraft.moonlake.nbt.NBTTagCompound;
-import com.minecraft.moonlake.nbt.NBTUtil;
 
+import net.kyori.nbt.CompoundTag;
+import net.kyori.nbt.Tag;
+import net.kyori.nbt.TagIO;
 import org.apache.commons.io.FileUtils;
 
 import java.io.BufferedWriter;
@@ -144,10 +144,10 @@ class Utils {
         List<String> ip = new ArrayList<>();
         try {
             File file = new File(utils.getMineCraft_ServersDat(OS));
-            NBTTagCompound root = NBTUtil.readFile(file, false);
-            for (NBTBase server : root.getList("servers")) {
-                if (server instanceof NBTTagCompound) {
-                    NBTTagCompound serverNBT = (NBTTagCompound) server;
+            CompoundTag root = TagIO.readPath(file.toPath());
+            for (Tag server : root.getList("servers")) {
+                if (server instanceof CompoundTag) {
+                    CompoundTag serverNBT = (CompoundTag) server;
                     ip.add(serverNBT.getString("ip"));
                 }
             }
@@ -162,10 +162,10 @@ class Utils {
         List<String> name = new ArrayList<>();
         try {
             File file = new File(utils.getMineCraft_ServersDat(OS));
-            NBTTagCompound root = NBTUtil.readFile(file, false);
-            for (NBTBase server : root.getList("servers")) {
-                if (server instanceof NBTTagCompound) {
-                    NBTTagCompound serverNBT = (NBTTagCompound) server;
+            CompoundTag root = TagIO.readPath(file.toPath());
+            for (Tag server : root.getList("servers")) {
+                if (server instanceof CompoundTag) {
+                    CompoundTag serverNBT = (CompoundTag) server;
                     name.add(serverNBT.getString("name"));
                 }
             }
