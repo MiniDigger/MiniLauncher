@@ -692,7 +692,7 @@ public class LauncherAPI {
         Local local = new Local();
         Network network = new Network();
         String OperatingSystemToUse = utils.getOS();
-        logger.info(downloadMarker,"Downlaoding: " + VersionToUse);
+        logger.info(downloadMarker, "Downlaoding: " + VersionToUse);
 
         //add version in launcher_profiles.json
         local.writeJson_launcher_profiles(OperatingSystemToUse, "_Cracked_" + utils.nextSessionId() + "_" + VersionToUse, VersionToUse);
@@ -721,7 +721,7 @@ public class LauncherAPI {
                 logger.debug(local.HALF_URL_version_url_list.get(i));
             }
 
-            logger.info(downloadMarker,"Fixing url using name.");
+            logger.info(downloadMarker, "Fixing url using name.");
             for (int i = 0; i < local.version_name_list.size(); i++) {
                 local.version_path_list.add(local.generateLibrariesPath(OperatingSystemToUse, local.version_name_list.get(i)));
 
@@ -731,45 +731,45 @@ public class LauncherAPI {
                 local.version_url_list.add(local.HALF_URL_version_url_list.get(i) + "/" + local.version_path_list.get(i));
             }
             for (int i = 0; i < local.version_name_list.size(); i++) {
-                logger.info(downloadMarker,"Downloading: " + local.version_url_list.get(i));
+                logger.info(downloadMarker, "Downloading: " + local.version_url_list.get(i));
                 network.downloadLibraries(OperatingSystemToUse, local.version_url_list.get(i), local.version_path_list.get(i), ForceDownload);
 
             }
 
             MOD_inheritsFrom = local.readJson_inheritsFrom(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse));
-            logger.info(downloadMarker,"inheritsFrom: " + MOD_inheritsFrom);
+            logger.info(downloadMarker, "inheritsFrom: " + MOD_inheritsFrom);
 
             MOD_jar = local.readJson_jar(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse));
-            logger.info(downloadMarker,"jar: " + MOD_jar);
+            logger.info(downloadMarker, "jar: " + MOD_jar);
 
             MOD_assets = local.readJson_assets(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse));
-            logger.info(downloadMarker,"assets: " + MOD_assets);
+            logger.info(downloadMarker, "assets: " + MOD_assets);
 
             MOD_minecraftArguments = local.readJson_minecraftArguments(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse));
-            logger.info(downloadMarker,"minecraftArguments: " + MOD_minecraftArguments);
+            logger.info(downloadMarker, "minecraftArguments: " + MOD_minecraftArguments);
 
             MOD_mainClass = local.readJson_mainClass(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse));
-            logger.info(downloadMarker,"mainClass: " + MOD_mainClass);
+            logger.info(downloadMarker, "mainClass: " + MOD_mainClass);
 
             MOD_id = local.readJson_id(utils.getMineCraft_Version_Json(OperatingSystemToUse, VersionToUse));
-            logger.info(downloadMarker,"id: " + MOD_id);
+            logger.info(downloadMarker, "id: " + MOD_id);
         }
 
         if (MOD_inheritsFrom == null) {
-            logger.info(downloadMarker,"Using: " + VersionToUse);
+            logger.info(downloadMarker, "Using: " + VersionToUse);
 
         } else {
             VersionToUse = MOD_inheritsFrom;
-            logger.info(downloadMarker,"Using: " + VersionToUse);
+            logger.info(downloadMarker, "Using: " + VersionToUse);
 
         }
 
         //incase the url is empty.. we have to assume that the user has old path system.
         eventHandler.onDownload(LauncherEventHandler.Downloadable.LAUNCHER_META);
         for (int i = 0; i < local.version_manifest_versions_id.size(); i++) {
-            logger.info(downloadMarker,"ID: " + local.version_manifest_versions_id.get(i));
-            logger.info(downloadMarker,"TYPE: " + local.version_manifest_versions_type.get(i));
-            logger.info(downloadMarker,"URL: " + local.version_manifest_versions_url.get(i));
+            logger.info(downloadMarker, "ID: " + local.version_manifest_versions_id.get(i));
+            logger.info(downloadMarker, "TYPE: " + local.version_manifest_versions_type.get(i));
+            logger.info(downloadMarker, "URL: " + local.version_manifest_versions_url.get(i));
         }
 
         //download 1.7.10.json_libs
@@ -816,7 +816,7 @@ public class LauncherAPI {
         ///************************************************************
         eventHandler.onDownload(LauncherEventHandler.Downloadable.LIBRARIES);
         for (int i = 0; i < local.version_url_list.size(); i++) {
-            logger.info(downloadMarker,"Downloading: " + local.version_url_list.get(i));
+            logger.info(downloadMarker, "Downloading: " + local.version_url_list.get(i));
             try {
                 network.downloadLibraries(OperatingSystemToUse, local.version_url_list.get(i), local.version_path_list.get(i), ForceDownload);
 
@@ -841,11 +841,11 @@ public class LauncherAPI {
 
         eventHandler.onDownload(LauncherEventHandler.Downloadable.ASSETS);
         for (int i = 0; i < local.objects_hash.size(); i++) {
-            logger.info(downloadMarker,"HASH: " + local.objects_hash.get(i));
-            logger.info(downloadMarker,"FOLDER: " + local.objects_hash.get(i).substring(0, 2));
-            logger.info(downloadMarker,"KEY: " + local.objects_KEY.get(i));
+            logger.info(downloadMarker, "HASH: " + local.objects_hash.get(i));
+            logger.info(downloadMarker, "FOLDER: " + local.objects_hash.get(i).substring(0, 2));
+            logger.info(downloadMarker, "KEY: " + local.objects_KEY.get(i));
 
-            logger.info(downloadMarker,"DOWNLOADING..." + "HASH: " + local.objects_hash.get(i));
+            logger.info(downloadMarker, "DOWNLOADING..." + "HASH: " + local.objects_hash.get(i));
             network.downloadAssetsObjects(OperatingSystemToUse, local.objects_hash.get(i).substring(0, 2), local.objects_hash.get(i));
             utils.copyToVirtual(OperatingSystemToUse, local.objects_hash.get(i).substring(0, 2), local.objects_hash.get(i), local.objects_KEY.get(i));
             //generate virtual folder as well.
@@ -853,7 +853,7 @@ public class LauncherAPI {
         }
 
         eventHandler.onDownload(LauncherEventHandler.Downloadable.MINECRAFT);
-        logger.info(downloadMarker,"DOWNLOADING MINECRAFT JAR " + VersionToUse);
+        logger.info(downloadMarker, "DOWNLOADING MINECRAFT JAR " + VersionToUse);
         if (MOD_jar == null) {
             network.downloadMinecraftJar(OperatingSystemToUse, VersionToUse, ForceDownload);
 
@@ -864,13 +864,13 @@ public class LauncherAPI {
 
         //would have tp edit this line as we also need natives paths!
         eventHandler.onDownload(LauncherEventHandler.Downloadable.NATIVES);
-        logger.info(downloadMarker,"Getting NATIVES URL");
+        logger.info(downloadMarker, "Getting NATIVES URL");
         local.readJson_libraries_downloads_classifiers_natives_X(utils.getMineCraft_Versions_X_X_json(OperatingSystemToUse, VersionToUse), OperatingSystemToUse);
-        logger.info(downloadMarker,"Getting NATIVES PATH");
+        logger.info(downloadMarker, "Getting NATIVES PATH");
         local.readJson_libraries_downloads_classifiers_natives_Y(utils.getMineCraft_Versions_X_X_json(OperatingSystemToUse, VersionToUse), OperatingSystemToUse);
 
         for (int i = 0; i < local.version_url_list_natives.size(); i++) {
-            logger.info(downloadMarker,"NATIVE URL: " + local.version_url_list_natives.get(i));
+            logger.info(downloadMarker, "NATIVE URL: " + local.version_url_list_natives.get(i));
             network.downloadLibraries(OperatingSystemToUse, local.version_url_list_natives.get(i), local.version_path_list_natives.get(i), ForceDownload);
             //extract them here..
             logger.info(runMarker, "Extracting...");
@@ -881,7 +881,7 @@ public class LauncherAPI {
 
         }
         eventHandler.onDownloadComplete();
-        logger.info(downloadMarker,"Download Complete!");
+        logger.info(downloadMarker, "Download Complete!");
     }
 
 }
