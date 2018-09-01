@@ -39,16 +39,17 @@ import java.net.URL;
 class Network {
     private final static Logger logger = LoggerFactory.getLogger(Network.class);
 
-    public final String minecraftLibrariesUrl = "https://libraries.minecraft.net";
-    public final String minecraftAssetsUrl = "http://resources.download.minecraft.net";
-    public final String minecraftVersionsJsonUrl = "https://launchermeta.mojang.com/mc/game/version_manifest.json";
-    public final String minecraftProfilesUrl = "https://api.mojang.com/users/profiles/minecraft";
+    public final static String minecraftLibrariesUrl = "https://libraries.minecraft.net";
+    public final static String minecraftAssetsUrl = "http://resources.download.minecraft.net";
+    public final static String minecraftVersionsJsonUrl = "https://launchermeta.mojang.com/mc/game/version_manifest.json";
+    public final static String minecraftProfilesUrl = "https://api.mojang.com/users/profiles/minecraft";
 
-    public void downloadProfile(String OS, String _username) {
+    private Network() {}
+
+    public static void downloadProfile(String OS, String _username) {
         try {
-            Utils utils = new Utils();
             URL url = new URL(minecraftProfilesUrl + "/" + _username);
-            File file = new File(utils.getMineCraftLocation(OS) + "/" + _username + ".json");
+            File file = new File(Utils.getMineCraftLocation(OS) + "/" + _username + ".json");
             if (file.exists()) {
                 //do not download..
                 logger.debug("Profile for user {} already exists", _username);
@@ -60,11 +61,10 @@ class Network {
         }
     }
 
-    public void downloadLibraries(String OS, String _url, String _path, Boolean ForceDownload) {
+    public static void downloadLibraries(String OS, String _url, String _path, Boolean ForceDownload) {
         try {
-            Utils utils = new Utils();
             URL url = new URL(_url);
-            File file = new File(utils.getMineCraftLibrariesLocation(OS) + "/" + _path);
+            File file = new File(Utils.getMineCraftLibrariesLocation(OS) + "/" + _path);
             if (ForceDownload) {
                 FileUtils.copyURLToFile(url, file);
             } else if (file.exists()) {
@@ -77,18 +77,17 @@ class Network {
         }
     }
 
-    public void downloadAssetsObjects(String OS, String folder, String _hash) {
+    public static void downloadAssetsObjects(String OS, String folder, String _hash) {
         //resources.download.minecraft.net/4b/4b90ff3a9b1486642bc0f15da0045d83a91df82e
         try {
-            Utils utils = new Utils();
             URL url = new URL(minecraftAssetsUrl + "/" + folder + "/" + _hash);
-            File file = new File(utils.getMineCraftAssetsObjectsLocation(OS) + "/" + folder + "/" + _hash);
-            if (file.exists() && utils.getSHA_1(file.toString()).equals(_hash)) {
+            File file = new File(Utils.getMineCraftAssetsObjectsLocation(OS) + "/" + folder + "/" + _hash);
+            if (file.exists() && Utils.getSHA_1(file.toString()).equals(_hash)) {
                 //do not download..
                 logger.debug("File Exists!");
                 logger.debug("Hash Verified!");
             } else {
-                //System.out.println("Calculated Hash:" + utils.getSHA_1(file.toString()));
+                //System.out.println("Calculated Hash:" + Utils.getSHA_1(file.toString()));
                 FileUtils.copyURLToFile(url, file);
             }
         } catch (Exception e) {
@@ -96,11 +95,10 @@ class Network {
         }
     }
 
-    public void downloadLaunchermeta(String OS, String _url, String version, Boolean ForceDownload) {
+    public static void downloadLaunchermeta(String OS, String _url, String version, Boolean ForceDownload) {
         try {
-            Utils utils = new Utils();
             URL url = new URL(_url);
-            File file = new File(utils.getMineCraftAssetsIndexes_X_json(OS, version));
+            File file = new File(Utils.getMineCraftAssetsIndexes_X_json(OS, version));
             if (ForceDownload == true) {
                 FileUtils.copyURLToFile(url, file);
             } else if (file.exists()) {
@@ -114,11 +112,10 @@ class Network {
         }
     }
 
-    public void downloadMinecraftJar(String OS, String version, Boolean ForceDownload) {
+    public static void downloadMinecraftJar(String OS, String version, Boolean ForceDownload) {
         try {
-            Utils utils = new Utils();
             URL url = new URL(minecraftVersionsJsonUrl + "/" + version + "/" + version + ".jar");
-            File file = new File(utils.getMineCraft_Versions_X_X_jar_Location(OS, version));
+            File file = new File(Utils.getMineCraft_Versions_X_X_jar_Location(OS, version));
             if (ForceDownload) {
                 FileUtils.copyURLToFile(url, file);
             } else if (file.exists()) {
@@ -132,7 +129,7 @@ class Network {
         }
     }
 
-    public void downloadVersionManifest(String _filepath) {
+    public static void downloadVersionManifest(String _filepath) {
         try {
             URL url = new URL("https://launchermeta.mojang.com/mc/game/version_manifest.json");
             File file = new File(_filepath);
@@ -142,11 +139,10 @@ class Network {
         }
     }
 
-    public void downloadVersionJson(String OS, String _url, String versionnumber) {
+    public static void downloadVersionJson(String OS, String _url, String versionnumber) {
         try {
-            Utils utils = new Utils();
             URL url = new URL(_url);
-            File file = new File(utils.getMineCraft_Versions_X_X_json(OS, versionnumber));
+            File file = new File(Utils.getMineCraft_Versions_X_X_json(OS, versionnumber));
             /*if (file.exists()){
                 //do not download..
                 System.out.println("File Exists!");

@@ -69,9 +69,12 @@ import static org.zeroturnaround.zip.commons.FileUtils.copy;
  */
 class Utils {
     private final static Logger logger = LoggerFactory.getLogger(Utils.class);
+    private final static SecureRandom random = new SecureRandom();
+
+    private Utils() {}
 
     //String versions_linux = getMineCraftLocation("Linux") + "/versions";
-    public String getMineCraftLocation(String OS) {
+    public static String getMineCraftLocation(String OS) {
         switch (OS) {
             case "Windows":
                 return (System.getenv("APPDATA") + "/.minecraft");
@@ -84,46 +87,45 @@ class Utils {
         }
     }
 
-    public String getMineCraft_APIMeta(String OS) {
+    public static String getMineCraft_APIMeta(String OS) {
         return (getMineCraftLocation(OS) + "/api_meta");
     }
 
-    public String getMineCraft_ServersDat(String OS) {
+    public static String getMineCraft_ServersDat(String OS) {
         return (getMineCraftLocation(OS) + "/servers.dat");
     }
 
-    public String getMineCraftVersionsLocation(String OS) {
+    public static String getMineCraftVersionsLocation(String OS) {
         return (getMineCraftLocation(OS) + "/versions");
     }
 
-    public String getMineCraftTmpLocation(String OS) {
+    public static String getMineCraftTmpLocation(String OS) {
         return (getMineCraftLocation(OS) + "/tmp");
     }
 
-    public String getMineCraft_Launcherlogs_txt(String OS) {
+    public static String getMineCraft_Launcherlogs_txt(String OS) {
         return (getMineCraftLocation(OS) + "/Launcherlogs.txt");
     }
 
-    public String getMineCraftLibrariesLocation(String OS) {
+    public static String getMineCraftLibrariesLocation(String OS) {
         return (getMineCraftLocation(OS) + "/libraries");
     }
 
-    public String getMineCraftLibrariesComMojangNettyLocation(String OS) {
+    public static String getMineCraftLibrariesComMojangNettyLocation(String OS) {
         return (getMineCraftLibrariesLocation(OS) + "/com/mojang/netty");
     }
 
-    public String getMineCraftTmpIoNettyBootstrapLocation(String OS) {
+    public static String getMineCraftTmpIoNettyBootstrapLocation(String OS) {
         return (getMineCraftTmpLocation(OS) + "/io/netty/bootstrap");
     }
 
-    public String getMineCraftTmpIoNettyBootstrapBootstrap_class(String OS) {
+    public static String getMineCraftTmpIoNettyBootstrapBootstrap_class(String OS) {
         return (getMineCraftTmpIoNettyBootstrapLocation(OS) + "/Bootstrap.class");
     }
 
-    public Map<String, String> getMineCraftLibrariesComMojangNetty_jar(String OS) {
+    public static Map<String, String> getMineCraftLibrariesComMojangNetty_jar(String OS) {
         Map<String, String> results = new HashMap<>();
 
-        Utils utils = new Utils();
         File[] directories = new File(getMineCraftLibrariesComMojangNettyLocation(OS)).listFiles(File::isDirectory);
         for (File en : directories) {
             //check if file exists.
@@ -140,11 +142,10 @@ class Utils {
         return (results);
     }
 
-    public List<String> getMineCraftServerDatNBTIP(String OS) {
-        Utils utils = new Utils();
+    public static List<String> getMineCraftServerDatNBTIP(String OS) {
         List<String> ip = new ArrayList<>();
         try {
-            File file = new File(utils.getMineCraft_ServersDat(OS));
+            File file = new File(getMineCraft_ServersDat(OS));
             CompoundTag root = TagIO.readPath(file.toPath());
             for (Tag server : root.getList("servers")) {
                 if (server instanceof CompoundTag) {
@@ -158,11 +159,10 @@ class Utils {
         return ip;
     }
 
-    public List<String> getMineCraftServerDatNBTName(String OS) {
-        Utils utils = new Utils();
+    public static  List<String> getMineCraftServerDatNBTName(String OS) {
         List<String> name = new ArrayList<>();
         try {
-            File file = new File(utils.getMineCraft_ServersDat(OS));
+            File file = new File(getMineCraft_ServersDat(OS));
             CompoundTag root = TagIO.readPath(file.toPath());
             for (Tag server : root.getList("servers")) {
                 if (server instanceof CompoundTag) {
@@ -176,26 +176,25 @@ class Utils {
         return name;
     }
 
-    public void injectPatchy(String OS) {
+    public static void injectPatchy(String OS) {
 
     }
 
-    public void injectNetty(String OS) {
+    public static void injectNetty(String OS) {
 
     }
 
-    public String getMineCraftLibrariesComMojangPatchyLocation(String OS) {
+    public static String getMineCraftLibrariesComMojangPatchyLocation(String OS) {
         return (getMineCraftLibrariesLocation(OS) + "/com/mojang/patchy");
     }
 
-    public String getMineCraftTmpIoPatchyBootstrapBootstrap_class(String OS) {
+    public static String getMineCraftTmpIoPatchyBootstrapBootstrap_class(String OS) {
         return (getMineCraftTmpIoNettyBootstrapLocation(OS) + "/Bootstrap.class");
     }
 
-    public Map<String, String> getMineCraftLibrariesComMojangPatchy_jar(String OS) {
+    public static Map<String, String> getMineCraftLibrariesComMojangPatchy_jar(String OS) {
         Map<String, String> results = new HashMap<>();
 
-        Utils utils = new Utils();
         File[] directories = new File(getMineCraftLibrariesComMojangPatchyLocation(OS)).listFiles(File::isDirectory);
         for (File en : directories) {
             //check if file exists.
@@ -213,87 +212,77 @@ class Utils {
     }
 
 
-    public String getMineCraft_Version_Manifest_json(String OS) {
+    public static String getMineCraft_Version_Manifest_json(String OS) {
         return (getMineCraftLocation(OS) + "/version_manifest.json");
 
     }
 
-    public String getMineCraft_Launcher_Profiles_json(String OS) {
+    public static String getMineCraft_Launcher_Profiles_json(String OS) {
         return (getMineCraftLocation(OS) + "/launcher_profiles.json");
     }
 
-    public String getMineCraft_Version_Json(String OS, String VersionNumber) {
+    public static String getMineCraft_Version_Json(String OS, String VersionNumber) {
+        return (getMineCraftVersionsLocation(OS) + "/" + VersionNumber + "/" + VersionNumber + ".json");
+    }
+
+    public static String getMineCraft_Versions_X_X_json(String OS, String VersionNumber) {
         return (getMineCraftVersionsLocation(OS) + "/" + VersionNumber + "/" + VersionNumber + ".json");
 
     }
 
-    public String getMineCraft_Versions_X_X_json(String OS, String VersionNumber) {
-        return (getMineCraftVersionsLocation(OS) + "/" + VersionNumber + "/" + VersionNumber + ".json");
-
-    }
-
-    public String getMineCraft_Versions_X_X_jar(String OS, String VersionNumber) {
+    public static String getMineCraft_Versions_X_X_jar(String OS, String VersionNumber) {
         return (getMineCraftVersionsLocation(OS) + "/" + VersionNumber + "/" + VersionNumber + ".jar");
-
     }
 
-    public String getMineCraft_Versions_X_X_jar_Location(String OS, String VersionNumber) {
+    public static String getMineCraft_Versions_X_X_jar_Location(String OS, String VersionNumber) {
         return (getMineCraftVersionsLocation(OS) + "/" + VersionNumber + "/" + VersionNumber + ".jar");
-
     }
 
-    public String getMineCraftAssetsRootLocation(String OS) {
+    public static String getMineCraftAssetsRootLocation(String OS) {
         return (getMineCraftLocation(OS) + "/assets");
 
     }
 
-    public String getMineCraft_Versions_X_Natives_Location(String OS, String VersionNumber) {
+    public static String getMineCraft_Versions_X_Natives_Location(String OS, String VersionNumber) {
         return (getMineCraftVersionsLocation(OS) + "/" + VersionNumber + "/natives");
 
     }
 
-    public String getMineCraft_Versions_X_Natives(String OS, String VersionNumber) {
+    public static String getMineCraft_Versions_X_Natives(String OS, String VersionNumber) {
         return (getMineCraftVersionsLocation(OS) + "/" + VersionNumber + "/natives");
 
     }
 
-    public String getMineCraftAssetsIndexes_X_json(String OS, String VersionNumber) {
-
+    public static String getMineCraftAssetsIndexes_X_json(String OS, String VersionNumber) {
         return (getMineCraftAssetsIndexesLocation(OS) + "/" + VersionNumber + ".json");
     }
 
-    public String getMineCraft_X_json(String OS, String Username) {
-
+    public static String getMineCraft_X_json(String OS, String Username) {
         return (getMineCraftLocation(OS) + "/" + Username + ".json");
-
     }
 
-    public String getMineCraftAssetsIndexesLocation(String OS) {
+    public static String getMineCraftAssetsIndexesLocation(String OS) {
         return (getMineCraftAssetsLocation(OS) + "/indexes");
 
     }
 
-    public String getMineCraftAssetsLocation(String OS) {
+    public static String getMineCraftAssetsLocation(String OS) {
         return (getMineCraftLocation(OS) + "/assets");
-
     }
 
-    public String getMineCraftAssetsObjectsLocation(String OS) {
+    public static String getMineCraftAssetsObjectsLocation(String OS) {
         return (getMineCraftAssetsLocation(OS) + "/objects");
     }
 
-    public String setMineCraft_Versions_X_NativesLocation(String OS, String _path) {
-        Utils utils = new Utils();
-        return (utils.getMineCraftLibrariesLocation(OS) + "/" + _path);
-
+    public static String setMineCraft_Versions_X_NativesLocation(String OS, String _path) {
+        return (getMineCraftLibrariesLocation(OS) + "/" + _path);
     }
 
-    public String setMineCraft_librariesLocation(String OS, String _path) {
-        Utils utils = new Utils();
-        return (utils.getMineCraftLibrariesLocation(OS) + "/" + _path);
+    public static String setMineCraft_librariesLocation(String OS, String _path) {
+        return (getMineCraftLibrariesLocation(OS) + "/" + _path);
     }
 
-    public String getArgsDiv(String OS) {
+    public static String getArgsDiv(String OS) {
         if (OS.equals("Windows")) {
             return (";");
         }
@@ -308,8 +297,7 @@ class Utils {
     }
 
     @SuppressWarnings("empty-statement")
-    public String getSHA_1(String _path) {
-
+    public static String getSHA_1(String _path) {
         try {
 
             MessageDigest md = MessageDigest.getInstance("SHA1");
@@ -337,13 +325,11 @@ class Utils {
             logger.warn("Failed to get SHA1", ex);
             return "N/A";
         }
-
     }
 
-    public void jarExtract(String OS, String _jarFile, String destDir) {
+    public static void jarExtract(String OS, String _jarFile, String destDir) {
         try {
-            Utils utils = new Utils();
-            _jarFile = utils.setMineCraft_Versions_X_NativesLocation(OS, _jarFile);
+            _jarFile = setMineCraft_Versions_X_NativesLocation(OS, _jarFile);
             //_jarFile = _jarFile.replace("https://libraries.minecraft.net", "/home/ammar/NetBeansProjects/TagAPI_3/testx/libraries");
             File dir = new File(destDir);
             if (!dir.exists()) {
@@ -377,19 +363,18 @@ class Utils {
         }
     }
 
-    public String getMineCraftAssetsVirtualLocation(String OS) {
+    public static String getMineCraftAssetsVirtualLocation(String OS) {
         return (getMineCraftAssetsLocation(OS) + "/virtual");
     }
 
-    public String getMineCraftAssetsVirtualLegacyLocation(String OS) {
+    public static String getMineCraftAssetsVirtualLegacyLocation(String OS) {
         return (getMineCraftAssetsVirtualLocation(OS) + "/legacy");
     }
 
-    public void copyToVirtual(String OS, String folder, String _hash, String virtualfolder) {
+    public static void copyToVirtual(String OS, String folder, String _hash, String virtualfolder) {
         try {
-            Utils utils = new Utils();
-            File source = new File(utils.getMineCraftAssetsObjectsLocation(OS) + "/" + folder + "/" + _hash);
-            File dest = new File(utils.getMineCraftAssetsVirtualLegacyLocation(OS) + "/" + virtualfolder.replaceFirst("minecraft/", ""));
+            File source = new File(getMineCraftAssetsObjectsLocation(OS) + "/" + folder + "/" + _hash);
+            File dest = new File(getMineCraftAssetsVirtualLegacyLocation(OS) + "/" + virtualfolder.replaceFirst("minecraft/", ""));
             //Files.copy(source.toPath(), dest.toPath());
             FileUtils.copyFile(source, dest);
 
@@ -399,7 +384,7 @@ class Utils {
 
     }
 
-    public String getOS() {
+    public static String getOS() {
         String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
 
         if ((OS.contains("mac")) || (OS.contains("darwin"))) {
@@ -415,13 +400,11 @@ class Utils {
         }
     }
 
-    private SecureRandom random = new SecureRandom();
-
-    public String nextSessionId() {
+    public static String nextSessionId() {
         return new BigInteger(130, random).toString(32);
     }
 
-    public List<String> removeDuplicates(List<String> list) {
+    public static List<String> removeDuplicates(List<String> list) {
 
         // Store unique items in result.
         List<String> result = new ArrayList<>();

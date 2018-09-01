@@ -88,9 +88,8 @@ class Local {
 
     public List<String> getAPIMetaList(String OS) {
         List<String> meta = new ArrayList<>();
-        Utils utils = new Utils();
         try {
-            for (String line : Files.readAllLines(Paths.get(utils.getMineCraft_APIMeta(OS)))) {
+            for (String line : Files.readAllLines(Paths.get(Utils.getMineCraft_APIMeta(OS)))) {
                 Collections.addAll(meta, line.split(":"));
             }
         } catch (IOException ex) {
@@ -103,13 +102,12 @@ class Local {
         //this is where we will check if file is available or not. 
         //if the file is available, we do not need to fix anything...
         //else we need to fix it using the new version.
-        Utils utils = new Utils();
         try {
 
             // TODO we also need to fix this
             String content = "{\"profiles\":{\"TagCraftMC\":{\"name\":\"TagCraftMC\"}},\"selectedProfile\":\"TagCraftMC\",\"clientToken\":\"dc291e47-a41f-4bc8-8ec2-563195188db2\",\"authenticationDatabase\":{\"4db2fbf560f355492dea6962e103f1d2\":{\"displayName\":\"TagCraftMC\",\"userProperties\":[{\"name\":\"twitch_access_token\",\"value\":\"e4u4updugw2h7pn7psy3u4u4u7p8raq\"}],\"accessToken\":\"c8c8358cac8a43c896ec85ee3c807c8e\",\"userid\":\"793addf9682c8e04c8cc823db79c8c85\",\"uuid\":\"4db2fbf5-60f3-5549-2dea-6962e103f1d2\",\"username\":\"support@tagcraftmc.com\"}},\"selectedUser\":\"4db2fbf560f355492dea6962e103f1d2\",\"launcherVersion\":{\"name\":\"1.6.61\",\"format\":18}}";
 
-            File file = new File(utils.getMineCraft_Launcher_Profiles_json(OS));
+            File file = new File(Utils.getMineCraft_Launcher_Profiles_json(OS));
 
             // if file doesnt exists, then create it
             if (!file.exists()) {
@@ -182,9 +180,8 @@ class Local {
      */
     public void writeJson_launcher_profiles(String OS, String profile, String version) {
         try {
-            Utils utils = new Utils();
             JSONParser parser = new JSONParser();
-            Object obj = parser.parse(new FileReader(utils.getMineCraft_Launcher_Profiles_json(OS)));
+            Object obj = parser.parse(new FileReader(Utils.getMineCraft_Launcher_Profiles_json(OS)));
             JSONObject jsonObject = (JSONObject) obj;
             JSONObject profiles = (JSONObject) jsonObject.get("profiles");
             String selectedProfile = (String) jsonObject.get("selectedProfile");
@@ -206,7 +203,7 @@ class Local {
             lp_json.put("authenticationDatabase", authenticationDatabase);
             lp_json.put("selectedUser", selectedUser);
             lp_json.put("launcherVersion", launcherVersion);
-            FileWriter file = new FileWriter(utils.getMineCraft_Launcher_Profiles_json(OS));
+            FileWriter file = new FileWriter(Utils.getMineCraft_Launcher_Profiles_json(OS));
             file.write(lp_json.toJSONString());
             file.flush();
             file.close();
@@ -618,11 +615,10 @@ class Local {
     public String[] generateMinecraftArguments(String OS, String auth_player_name, String version_name, String game_directory, String assets_root, String assets_index_name, String auth_uuid, String auth_access_token, String user_properties, String user_type, String version_type, String game_assets, String auth_session) {
 
         Local local = new Local();
-        Utils utils = new Utils();
-        String cmdArgs = local.readJson_minecraftArguments(utils.getMineCraft_Versions_X_X_json(OS, version_name));
+        String cmdArgs = local.readJson_minecraftArguments(Utils.getMineCraft_Versions_X_X_json(OS, version_name));
         if (cmdArgs == null) {
             //run v2
-            cmdArgs = local.readJson_minecraftArguments_v2(utils.getMineCraft_Versions_X_X_json(OS, version_name));
+            cmdArgs = local.readJson_minecraftArguments_v2(Utils.getMineCraft_Versions_X_X_json(OS, version_name));
         }
 
         //the arguments can start with -- or $
@@ -674,14 +670,13 @@ class Local {
 
     public String generateLibrariesArguments(String OS) {
         StringBuilder cp = new StringBuilder();
-        Utils utils = new Utils();
         for (int i = 0; i < libraries_path.size(); i++) {
             if (i == libraries_path.size() - 1) {
 
                 cp.append(libraries_path.get(i));
 
             } else {
-                cp.append(libraries_path.get(i)).append(utils.getArgsDiv(OS));
+                cp.append(libraries_path.get(i)).append(Utils.getArgsDiv(OS));
 
             }
         }
@@ -721,7 +716,7 @@ class Local {
                 org/ow2/asm/asm-all/4.1/asm-all-4.1.jar
                 
              */
-            //compileSplit = utils.getMineCraftLibrariesLocation(_OS) + "/" + compileSplit;
+            //compileSplit = Utils.getMineCraftLibrariesLocation(_OS) + "/" + compileSplit;
             return (compileSplit);
 
         } catch (Exception e) {
@@ -777,7 +772,6 @@ class Local {
     public void MOD_readJson_libraries_name_PLUS_url(String path) {
         JSONParser readMCJSONFiles = new JSONParser();
         try {
-            Network network = new Network();
             Object object = readMCJSONFiles.parse(new FileReader(path));
             JSONObject jsonObject = (JSONObject) object;
             JSONArray versions = (JSONArray) jsonObject.get("libraries");
@@ -785,7 +779,7 @@ class Local {
                 version_name_list.add((String) version.get("name"));
                 if (version.get("url") == null) {
                     logger.error("Can't resolve url. Attempting to fix!");
-                    HALF_URL_version_url_list.add(network.minecraftLibrariesUrl);
+                    HALF_URL_version_url_list.add(Network.minecraftLibrariesUrl);
                 } else {
                     HALF_URL_version_url_list.add((String) version.get("url"));
 
