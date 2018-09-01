@@ -158,16 +158,6 @@ public class LauncherOptionsController implements Initializable {
         loadOptionsData();
 
         LauncherAPI API = new LauncherAPI();
-        ExecutorService executor1 = Executors.newCachedThreadPool();
-        executor1.submit(() -> {
-            if (API.getUpdateStatus().equals("0")) {
-                logger.info("You are running the latest API version");
-            } else {
-                logger.info("You are " + API.getUpdateStatus() + " versions behind");
-            }
-            return null;
-        });
-        executor1.shutdown();
 
         ExecutorService executor = Executors.newCachedThreadPool();
         executor.submit(() -> {

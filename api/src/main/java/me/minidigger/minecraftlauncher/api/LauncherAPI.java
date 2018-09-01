@@ -66,32 +66,6 @@ public class LauncherAPI {
         this.eventHandler = eventHandler != null ? eventHandler : LauncherEventHandler.DUMMY;
     }
 
-    public String getAPIVersion() {
-        return "v0.10-alpha";
-    }
-
-    public String getUpdateStatus() {
-        //download the file..
-        Network network = new Network();
-        Utils utils = new Utils();
-        Local local = new Local();
-        String OperatingSystemToUse = utils.getOS();
-        network.downloadAPIMeta(OperatingSystemToUse);
-        int versionBehind = 0;
-        if (!local.getAPIMetaList(OperatingSystemToUse).contains(getAPIVersion())) {
-            return "Unknown";
-        } else {
-            for (Object val : local.getAPIMetaList(OperatingSystemToUse)) {
-                if (!getAPIVersion().equals(val)) {
-                    versionBehind = versionBehind + 1;
-                } else if (getAPIVersion().equals(val)) {
-                    break;
-                }
-            }
-        }
-        return String.valueOf(versionBehind);
-    }
-
     public String getLog() {
         return "";
     }

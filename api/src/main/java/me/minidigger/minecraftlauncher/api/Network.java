@@ -45,20 +45,6 @@ class Network {
     public final String http_resources_download_minecraft_net = "http://resources.download.minecraft.net";
     public final String minecraftVersionsJson = "https://launchermeta.mojang.com/mc/game/version_manifest.json";
     public final String https_api_mojang_com_users_profiles_minecraft = "https://api.mojang.com/users/profiles/minecraft";
-    //TODO wtf is api meta for?
-    public final String https_raw_githubusercontent_com = "https://raw.githubusercontent.com/ammarx/TagAPI_3/master/api_meta?time=" + (Math.random() * 100);
-
-    public void downloadAPIMeta(String OS) {
-        try {
-            Utils utils = new Utils();
-            URL url = new URL(https_raw_githubusercontent_com);
-            File file = new File(utils.getMineCraftLocation(OS) + "/api_meta");
-            FileUtils.copyURLToFile(url, file);
-
-        } catch (Exception e) {
-            logger.warn("Failed to fetch API meta",e );
-        }
-    }
 
     public void downloadProfile(String OS, String _username) {
         try {
