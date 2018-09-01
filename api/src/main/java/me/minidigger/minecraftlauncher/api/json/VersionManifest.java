@@ -29,6 +29,7 @@ package me.minidigger.minecraftlauncher.api.json;
 import com.google.gson.annotations.SerializedName;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.net.URL;
 import java.util.Date;
 import java.util.List;
 
@@ -99,7 +100,7 @@ public class VersionManifest {
         private VersionType type;
 
         @SerializedName("url")
-        private String url;
+        private URL url;
 
         @SerializedName("time")
         private Date time;
@@ -130,7 +131,7 @@ public class VersionManifest {
          * @return Client asset index JSON url
          */
         @NonNull
-        public String getUrl() {
+        public URL getUrl() {
             return url;
         }
 
