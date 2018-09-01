@@ -361,6 +361,7 @@ public class LauncherMainController extends AbstractGUIController {
 
     private void checkLatestVersion() {
         try {
+            Platform.runLater(() -> launcherStatus.setText("Status: Checking launcher version."));
             URL versionLastesturl = new URL(LauncherSettings.updateURL);
             URLConnection con = versionLastesturl.openConnection();
             con.setUseCaches(false); //had to as it was caching it.
@@ -380,7 +381,6 @@ public class LauncherMainController extends AbstractGUIController {
 
         } catch (IOException e) {
             Platform.runLater(() -> launcherStatus.setText("Status: Unable to check for latest version!"));
-
         }
     }
 
@@ -427,19 +427,27 @@ public class LauncherMainController extends AbstractGUIController {
         } else {
             new Thread(this::checkLatestVersion).start();
         }
+
+        username.setDisable(false);
+        options.setDisable(false);
+        launch.setDisable(false);
+        version.setDisable(false);
     }
 
     @Override
     public void onGameCorrupted() {
         launcherStatus.setText("Status: Error. Minecraft file corruption detected!");
+
         Alert alert = new Alert(AlertType.ERROR);
         alert.setTitle("Minecraft Launcher - Error");
         alert.setHeaderText("Version: " + version.getValue() + " failed to initialize!");
         alert.setContentText("The game failed to initialize as data corruption \nwas found! Press re-Download game with \n*Force Download* checked in the options menu.");
         alert.initStyle(StageStyle.UTILITY);
+
         DialogPane dialogPane = alert.getDialogPane();
         dialogPane.getStylesheets().add("/css/purple.css");
         alert.showAndWait();
+
         username.setDisable(false);
         options.setDisable(false);
         launch.setDisable(false);
