@@ -1,4 +1,4 @@
-val log4j2Version = "2.11.1"
+val log4j2Version = "2.11.0"
 
 dependencies {
     implementation(project(":api"))
