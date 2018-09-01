@@ -44,6 +44,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -83,7 +87,7 @@ class Local {
     List<String> version_manifest_versions_type = new ArrayList<>();
     List<String> version_manifest_versions_url = new ArrayList<>();
 
-    public void fixLauncherProfiles(String OS) {
+    public void fixLauncherProfiles() {
         //this is where we will check if file is available or not. 
         //if the file is available, we do not need to fix anything...
         //else we need to fix it using the new version.
@@ -92,7 +96,7 @@ class Local {
             // TODO we also need to fix this
             String content = "{\"profiles\":{\"TagCraftMC\":{\"name\":\"TagCraftMC\"}},\"selectedProfile\":\"TagCraftMC\",\"clientToken\":\"dc291e47-a41f-4bc8-8ec2-563195188db2\",\"authenticationDatabase\":{\"4db2fbf560f355492dea6962e103f1d2\":{\"displayName\":\"TagCraftMC\",\"userProperties\":[{\"name\":\"twitch_access_token\",\"value\":\"e4u4updugw2h7pn7psy3u4u4u7p8raq\"}],\"accessToken\":\"c8c8358cac8a43c896ec85ee3c807c8e\",\"userid\":\"793addf9682c8e04c8cc823db79c8c85\",\"uuid\":\"4db2fbf5-60f3-5549-2dea-6962e103f1d2\",\"username\":\"support@tagcraftmc.com\"}},\"selectedUser\":\"4db2fbf560f355492dea6962e103f1d2\",\"launcherVersion\":{\"name\":\"1.6.61\",\"format\":18}}";
 
-            File file = new File(Utils.getMineCraft_Launcher_Profiles_json(OS));
+            File file = Utils.getMineCraft_Launcher_Profiles_json().toFile();
 
             // if file doesnt exists, then create it
             if (!file.exists()) {
@@ -111,12 +115,12 @@ class Local {
         }
     }
 
-    public void readJson_profiles_KEY(String path) {
+    public void readJson_profiles_KEY(Path path) {
         JSONParser readMCJSONFiles = new JSONParser();
         try {
             Object jsonfile;
 
-            jsonfile = readMCJSONFiles.parse(new FileReader(path));
+            jsonfile = readMCJSONFiles.parse(Files.newBufferedReader(path));
 
             JSONObject jsonObject = (JSONObject) jsonfile;
             JSONObject profiles = (JSONObject) jsonObject.get("profiles");
@@ -133,12 +137,12 @@ class Local {
 
     }
 
-    public void readJson_profiles_KEY_lastVersionId(String path) {
+    public void readJson_profiles_KEY_lastVersionId(Path path) {
         JSONParser readMCJSONFiles = new JSONParser();
         try {
             Object jsonfile;
 
-            jsonfile = readMCJSONFiles.parse(new FileReader(path));
+            jsonfile = readMCJSONFiles.parse(Files.newBufferedReader(path));
 
             JSONObject jsonObject = (JSONObject) jsonfile;
             JSONObject profiles = (JSONObject) jsonObject.get("profiles");
@@ -163,10 +167,10 @@ class Local {
         //step 2 would be to load json and read profiles{ {val} { lastVersionId } }
     }
      */
-    public void writeJson_launcher_profiles(String OS, String profile, String version) {
+    public void writeJson_launcher_profiles(String profile, String version) {
         try {
             JSONParser parser = new JSONParser();
-            Object obj = parser.parse(new FileReader(Utils.getMineCraft_Launcher_Profiles_json(OS)));
+            Object obj = parser.parse(new FileReader(Utils.getMineCraft_Launcher_Profiles_json().toFile()));
             JSONObject jsonObject = (JSONObject) obj;
             JSONObject profiles = (JSONObject) jsonObject.get("profiles");
             String selectedProfile = (String) jsonObject.get("selectedProfile");
@@ -188,20 +192,17 @@ class Local {
             lp_json.put("authenticationDatabase", authenticationDatabase);
             lp_json.put("selectedUser", selectedUser);
             lp_json.put("launcherVersion", launcherVersion);
-            FileWriter file = new FileWriter(Utils.getMineCraft_Launcher_Profiles_json(OS));
-            file.write(lp_json.toJSONString());
-            file.flush();
-            file.close();
+            Files.write(Utils.getMineCraft_Launcher_Profiles_json(), lp_json.toJSONString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.WRITE);
 
         } catch (Exception e) {
             logger.warn("Failed to write launcher profiles", e);
         }
     }
 
-    public void readJson_versions_id(String path) {
+    public void readJson_versions_id(Path path) {
         JSONParser readMCJSONFiles = new JSONParser();
         try {
-            Object object = readMCJSONFiles.parse(new FileReader(path));
+            Object object = readMCJSONFiles.parse(new FileReader(path.toFile()));
             JSONObject jsonObject = (JSONObject) object;
             JSONArray versions = (JSONArray) jsonObject.get("versions");
             for (JSONObject version : (Iterable<JSONObject>) versions) {
@@ -212,10 +213,10 @@ class Local {
         }
     }
 
-    public void readJson_versions_type(String path) {
+    public void readJson_versions_type(Path path) {
         JSONParser readMCJSONFiles = new JSONParser();
         try {
-            Object object = readMCJSONFiles.parse(new FileReader(path));
+            Object object = readMCJSONFiles.parse(new FileReader(path.toFile()));
             JSONObject jsonObject = (JSONObject) object;
             JSONArray versions = (JSONArray) jsonObject.get("versions");
             for (JSONObject version : (Iterable<JSONObject>) versions) {
@@ -226,10 +227,10 @@ class Local {
         }
     }
 
-    public void readJson_versions_url(String path) {
+    public void readJson_versions_url(Path path) {
         JSONParser readMCJSONFiles = new JSONParser();
         try {
-            Object object = readMCJSONFiles.parse(new FileReader(path));
+            Object object = readMCJSONFiles.parse(new FileReader(path.toFile()));
             JSONObject jsonObject = (JSONObject) object;
             JSONArray versions = (JSONArray) jsonObject.get("versions");
             for (JSONObject version : (Iterable<JSONObject>) versions) {
@@ -240,10 +241,10 @@ class Local {
         }
     }
 
-    public void readJson_libraries_name(String path) {
+    public void readJson_libraries_name(Path path) {
         JSONParser readMCJSONFiles = new JSONParser();
         try {
-            Object object = readMCJSONFiles.parse(new FileReader(path));
+            Object object = readMCJSONFiles.parse(new FileReader(path.toFile()));
             JSONObject jsonObject = (JSONObject) object;
             JSONArray versions = (JSONArray) jsonObject.get("libraries");
             for (JSONObject version : (Iterable<JSONObject>) versions) {
@@ -254,11 +255,11 @@ class Local {
         }
     }
 
-    public void readJson_libraries_downloads_artifact_url(String path) {
+    public void readJson_libraries_downloads_artifact_url(Path path) {
 
         JSONParser readMCJSONFiles = new JSONParser();
         try {
-            Object object = readMCJSONFiles.parse(new FileReader(path));
+            Object object = readMCJSONFiles.parse(Files.newBufferedReader(path));
             JSONObject jsonObject = (JSONObject) object;
             JSONArray msg = (JSONArray) jsonObject.get("libraries");
             for (JSONObject aMsg : (Iterable<JSONObject>) msg) {
@@ -277,11 +278,11 @@ class Local {
 
     }
 
-    public void readJson_libraries_downloads_artifact_path(String path) {
+    public void readJson_libraries_downloads_artifact_path(Path path) {
 
         JSONParser readMCJSONFiles = new JSONParser();
         try {
-            Object object = readMCJSONFiles.parse(new FileReader(path));
+            Object object = readMCJSONFiles.parse(Files.newBufferedReader(path));
             JSONObject jsonObject = (JSONObject) object;
             JSONArray msg = (JSONArray) jsonObject.get("libraries");
             for (JSONObject aMsg : (Iterable<JSONObject>) msg) {
@@ -301,20 +302,23 @@ class Local {
     }
 
     //edit this function to add more operating systems
-    public void readJson_libraries_downloads_classifiers_natives_X(String path, String natives_OS) {
+    public void readJson_libraries_downloads_classifiers_natives_X(Path path) {
 
         try {
-            if (natives_OS.equals("Linux")) {
-                natives_OS = natives_OS.replace("Linux", "natives-linux");
-            } else if (natives_OS.equals("Windows")) {
-                natives_OS = natives_OS.replace("Windows", "natives-windows");
-            } else if (natives_OS.equals("Mac")) {
-                natives_OS = natives_OS.replace("Mac", "natives-osx");
-            } else {
-                logger.warn("Unknown OS!");
-                //I DON'T KNOW THIS OS!
+            String natives_OS = null;
+            switch(Utils.getOS()) {
+                case LINUX:
+                    natives_OS = "natives-linux";
+                    break;
+                case WINDOWS:
+                    natives_OS = "natives-windows";
+                    break;
+                case MAC:
+                    natives_OS = "natives-osx";
+                    break;
             }
-            String content = new Scanner(new File(path)).useDelimiter("\\Z").next();
+
+            String content = new Scanner(path.toFile()).useDelimiter("\\Z").next();
             ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
             try {
 
@@ -343,20 +347,23 @@ class Local {
         }
     }
 
-    public void readJson_libraries_downloads_classifiers_natives_Y(String path, String natives_OS) {
+    public void readJson_libraries_downloads_classifiers_natives_Y(Path path) {
 
         try {
-            if (natives_OS.equals("Linux")) {
-                natives_OS = natives_OS.replace("Linux", "natives-linux");
-            } else if (natives_OS.equals("Windows")) {
-                natives_OS = natives_OS.replace("Windows", "natives-windows");
-            } else if (natives_OS.equals("Mac")) {
-                natives_OS = natives_OS.replace("Mac", "natives-osx");
-            } else {
-                logger.warn("Unknown OS!");
-                //I DON'T KNOW THIS OS!
+            String natives_OS = null;
+            switch(Utils.getOS()) {
+                case LINUX:
+                    natives_OS = "natives-linux";
+                    break;
+                case WINDOWS:
+                    natives_OS = "natives-windows";
+                    break;
+                case MAC:
+                    natives_OS = "natives-osx";
+                    break;
             }
-            String content = new Scanner(new File(path)).useDelimiter("\\Z").next();
+
+            String content = new Scanner(path.toFile()).useDelimiter("\\Z").next();
             ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
             try {
 
@@ -385,11 +392,11 @@ class Local {
         }
     }
 
-    public void readJson_libraries_downloads_classifiers_natives_Z(String path) {
+    public void readJson_libraries_downloads_classifiers_natives_Z(Path path) {
 
         try {
 
-            String content = new Scanner(new File(path)).useDelimiter("\\Z").next();
+            String content = new Scanner(path.toFile()).useDelimiter("\\Z").next();
             ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
             try {
 
@@ -417,12 +424,12 @@ class Local {
         }
     }
 
-    public void readJson_objects_KEY(String path) {
+    public void readJson_objects_KEY(Path path) {
         JSONParser readMCJSONFiles = new JSONParser();
         try {
             Object jsonfile;
 
-            jsonfile = readMCJSONFiles.parse(new FileReader(path));
+            jsonfile = readMCJSONFiles.parse(Files.newBufferedReader(path));
 
             JSONObject jsonObject = (JSONObject) jsonfile;
             JSONObject objects = (JSONObject) jsonObject.get("objects");
@@ -438,12 +445,12 @@ class Local {
 
     }
 
-    public void readJson_objects_KEY_hash(String path) {
+    public void readJson_objects_KEY_hash(Path path) {
         JSONParser readMCJSONFiles = new JSONParser();
         try {
             Object jsonfile;
 
-            jsonfile = readMCJSONFiles.parse(new FileReader(path));
+            jsonfile = readMCJSONFiles.parse(Files.newBufferedReader(path));
 
             JSONObject jsonObject = (JSONObject) jsonfile;
             JSONObject objects = (JSONObject) jsonObject.get("objects");
@@ -462,11 +469,10 @@ class Local {
 
     }
 
-    public String readJson_assetIndex_url(String path) {
+    public String readJson_assetIndex_url(Path path) {
         try {
-            FileReader reader = new FileReader(path);
             JSONParser jsonParser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) jsonParser.parse(reader);
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(Files.newBufferedReader(path));
             JSONObject structure = (JSONObject) jsonObject.get("assetIndex");
             return (String) (structure.get("url"));
 
@@ -476,11 +482,10 @@ class Local {
         return "N/A";
     }
 
-    public String readJson_assetIndex_id(String path) {
+    public String readJson_assetIndex_id(Path path) {
         try {
-            FileReader reader = new FileReader(path);
             JSONParser jsonParser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) jsonParser.parse(reader);
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(Files.newBufferedReader(path));
             JSONObject structure = (JSONObject) jsonObject.get("assetIndex");
             return (String) (structure.get("id"));
 
@@ -490,8 +495,8 @@ class Local {
         return "N/A";
     }
 
-    public void generateVersionJsonPathList(String path) {
-        File root = new File(path);
+    public void generateVersionJsonPathList(Path path) {
+        File root = path.toFile();
         String fileName = ".json";
         try {
             boolean recursive = true;
@@ -509,8 +514,8 @@ class Local {
         }
     }
 
-    public void generateVersionList(String path) {
-        File root = new File(path);
+    public void generateVersionList(Path path) {
+        File root = path.toFile();
         String fileName = ".json";
         try {
             boolean recursive = true;
@@ -528,11 +533,10 @@ class Local {
         }
     }
 
-    public String readJson_minecraftArguments_v2(String path) {
+    public String readJson_minecraftArguments_v2(Path path) {
         try {
-            FileReader reader = new FileReader(path);
             JSONParser jsonParser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) jsonParser.parse(reader);
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(Files.newBufferedReader(path));
             JSONObject jsonArgs = (JSONObject) jsonObject.get("arguments");
             String args = jsonArgs.get("game").toString();
             args = args.replaceAll("\\[", "").replaceAll("\\]", "").replaceAll(",", "").replaceAll("\"\"", " ").replaceAll("\"", "");
@@ -545,11 +549,10 @@ class Local {
         return "N/A";
     }
 
-    public String readJson_minecraftArguments(String path) {
+    public String readJson_minecraftArguments(Path path) {
         try {
-            FileReader reader = new FileReader(path);
             JSONParser jsonParser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) jsonParser.parse(reader);
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(Files.newBufferedReader(path));
             return (String) (jsonObject.get("minecraftArguments"));
 
         } catch (IOException | ParseException e) {
@@ -558,11 +561,10 @@ class Local {
         return "N/A";
     }
 
-    public String readJson_assets(String path) {
+    public String readJson_assets(Path path) {
         try {
-            FileReader reader = new FileReader(path);
             JSONParser jsonParser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) jsonParser.parse(reader);
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(Files.newBufferedReader(path));
             return (String) (jsonObject.get("assets"));
 
         } catch (IOException | ParseException e) {
@@ -571,11 +573,10 @@ class Local {
         return "N/A";
     }
 
-    public String readJson_id(String path) {
+    public String readJson_id(Path path) {
         try {
-            FileReader reader = new FileReader(path);
             JSONParser jsonParser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) jsonParser.parse(reader);
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(Files.newBufferedReader(path));
             return (String) (jsonObject.get("id"));
 
         } catch (IOException | ParseException e) {
@@ -584,11 +585,10 @@ class Local {
         return "N/A";
     }
 
-    public String readJson_mainClass(String path) {
+    public String readJson_mainClass(Path path) {
         try {
-            FileReader reader = new FileReader(path);
             JSONParser jsonParser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) jsonParser.parse(reader);
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(Files.newBufferedReader(path));
             return (String) (jsonObject.get("mainClass"));
 
         } catch (IOException | ParseException e) {
@@ -597,13 +597,13 @@ class Local {
         return "N/A";
     }
 
-    public String[] generateMinecraftArguments(String OS, String auth_player_name, String version_name, String game_directory, String assets_root, String assets_index_name, String auth_uuid, String auth_access_token, String user_properties, String user_type, String version_type, String game_assets, String auth_session) {
+    public String[] generateMinecraftArguments(String auth_player_name, String version_name, Path game_directory, Path assets_root, String assets_index_name, String auth_uuid, String auth_access_token, String user_properties, String user_type, String version_type, Path game_assets, String auth_session) {
 
         Local local = new Local();
-        String cmdArgs = local.readJson_minecraftArguments(Utils.getMineCraft_Versions_X_X_json(OS, version_name));
+        String cmdArgs = local.readJson_minecraftArguments(Utils.getMineCraft_Versions_X_X_json(version_name));
         if (cmdArgs == null) {
             //run v2
-            cmdArgs = local.readJson_minecraftArguments_v2(Utils.getMineCraft_Versions_X_X_json(OS, version_name));
+            cmdArgs = local.readJson_minecraftArguments_v2(Utils.getMineCraft_Versions_X_X_json(version_name));
         }
 
         //the arguments can start with -- or $
@@ -619,10 +619,10 @@ class Local {
                 tempArgsSplit[i] = version_name;
             }
             if (tempArgsSplit[i].equals("${game_directory}")) {
-                tempArgsSplit[i] = game_directory;
+                tempArgsSplit[i] = game_directory.toString();
             }
             if (tempArgsSplit[i].equals("${assets_root}")) {
-                tempArgsSplit[i] = assets_root;
+                tempArgsSplit[i] = assets_root.toString();
             }
             if (tempArgsSplit[i].equals("${assets_index_name}")) {
                 tempArgsSplit[i] = assets_index_name;
@@ -643,7 +643,7 @@ class Local {
                 tempArgsSplit[i] = version_type;
             }
             if (tempArgsSplit[i].equals("${game_assets}")) {
-                tempArgsSplit[i] = game_assets;
+                tempArgsSplit[i] = game_assets.toString();
             }
             if (tempArgsSplit[i].equals("${auth_session}")) {
                 tempArgsSplit[i] = auth_session;
@@ -653,7 +653,7 @@ class Local {
         return tempArgsSplit;
     }
 
-    public String generateLibrariesArguments(String OS) {
+    public String generateLibrariesArguments() {
         StringBuilder cp = new StringBuilder();
         for (int i = 0; i < libraries_path.size(); i++) {
             if (i == libraries_path.size() - 1) {
@@ -661,7 +661,7 @@ class Local {
                 cp.append(libraries_path.get(i));
 
             } else {
-                cp.append(libraries_path.get(i)).append(Utils.getArgsDiv(OS));
+                cp.append(libraries_path.get(i)).append(Utils.getArgsDiv());
 
             }
         }
@@ -681,7 +681,7 @@ class Local {
 
     }
 
-    public String generateLibrariesPath(String _OS, String _name) {
+    public String generateLibrariesPath(String _name) {
         try {
             String fileName = _name;
             String[] colonSplit = fileName.split("\\:", 3);
@@ -710,18 +710,21 @@ class Local {
         return "N/A";
     }
 
-    public String generateNativesPath(String natives_OS, String _name) {
+    public String generateNativesPath(String _name) {
         try {
-            if (natives_OS.equals("Linux")) {
-                natives_OS = natives_OS.replace("Linux", "natives-linux");
-            } else if (natives_OS.equals("Windows")) {
-                natives_OS = natives_OS.replace("Windows", "natives-windows");
-            } else if (natives_OS.equals("Mac")) {
-                natives_OS = natives_OS.replace("Mac", "natives-osx");
-            } else {
-                logger.warn("Unknown OS!");
-                //I DON'T KNOW THIS OS!
+            String natives_OS = null;
+            switch(Utils.getOS()) {
+                case LINUX:
+                    natives_OS = "natives-linux";
+                    break;
+                case WINDOWS:
+                    natives_OS = "natives-windows";
+                    break;
+                case MAC:
+                    natives_OS = "natives-osx";
+                    break;
             }
+
             String fileName = _name;
             String[] colonSplit = fileName.split("\\:", 3);
             String[] folderSplit = colonSplit[0].split("\\.");
@@ -754,10 +757,10 @@ class Local {
         return false;
     }
 
-    public void MOD_readJson_libraries_name_PLUS_url(String path) {
+    public void MOD_readJson_libraries_name_PLUS_url(Path path) {
         JSONParser readMCJSONFiles = new JSONParser();
         try {
-            Object object = readMCJSONFiles.parse(new FileReader(path));
+            Object object = readMCJSONFiles.parse(Files.newBufferedReader(path));
             JSONObject jsonObject = (JSONObject) object;
             JSONArray versions = (JSONArray) jsonObject.get("libraries");
             for (JSONObject version : (Iterable<JSONObject>) versions) {
@@ -775,11 +778,10 @@ class Local {
         }
     }
 
-    public String readJson_inheritsFrom(String path) {
+    public String readJson_inheritsFrom(Path path) {
         try {
-            FileReader reader = new FileReader(path);
             JSONParser jsonParser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) jsonParser.parse(reader);
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(Files.newBufferedReader(path));
             return (String) (jsonObject.get("inheritsFrom"));
 
         } catch (IOException | ParseException e) {
@@ -788,11 +790,10 @@ class Local {
         return "N/A";
     }
 
-    public String readJson_jar(String path) {
+    public String readJson_jar(Path path) {
         try {
-            FileReader reader = new FileReader(path);
             JSONParser jsonParser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) jsonParser.parse(reader);
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(Files.newBufferedReader(path));
             return (String) (jsonObject.get("jar"));
 
         } catch (IOException | ParseException e) {

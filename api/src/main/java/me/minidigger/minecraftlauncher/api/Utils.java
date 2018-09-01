@@ -29,7 +29,7 @@ package me.minidigger.minecraftlauncher.api;
 import net.kyori.nbt.CompoundTag;
 import net.kyori.nbt.Tag;
 import net.kyori.nbt.TagIO;
-import org.apache.commons.io.FileUtils;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,16 +37,18 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author ammar
@@ -54,79 +56,39 @@ import java.util.Set;
 class Utils {
     private final static Logger logger = LoggerFactory.getLogger(Utils.class);
     private final static SecureRandom random = new SecureRandom();
+    private static OperatingSystem currentOS;
+    private static Path minecraftDataDirectory;
 
     private Utils() {}
 
-    //String versions_linux = getMineCraftLocation("Linux") + "/versions";
-    public static String getMineCraftLocation(String OS) {
-        switch (OS) {
-            case "Windows":
-                return (System.getenv("APPDATA") + "/.minecraft");
-            case "Linux":
-                return (System.getProperty("user.home") + "/.minecraft");
-            case "Mac":
-                return (System.getProperty("user.home") + "/Library/Application Support/minecraft");
-            default:
-                return "N/A";
-        }
+    @NonNull
+    public static Path getMinecraftDataDirectory() {
+        if(minecraftDataDirectory == null)
+            throw new IllegalStateException("Unsupported OS");
+        
+        return minecraftDataDirectory;
     }
 
-    public static String getMineCraft_ServersDat(String OS) {
-        return (getMineCraftLocation(OS) + "/servers.dat");
+    public static Path getMinecraftServersList() {
+        return minecraftDataDirectory.resolve("servers.dat");
     }
 
-    public static String getMineCraftVersionsLocation(String OS) {
-        return (getMineCraftLocation(OS) + "/versions");
+    public static Path getMineCraftVersionsLocation() {
+        return getMinecraftDataDirectory().resolve("versions");
     }
 
-    public static String getMineCraftTmpLocation(String OS) {
-        return (getMineCraftLocation(OS) + "/tmp");
+    public static Path getMineCraftTmpLocation() {
+        return getMinecraftDataDirectory().resolve("tmp");
     }
 
-    public static String getMineCraft_Launcherlogs_txt(String OS) {
-        return (getMineCraftLocation(OS) + "/Launcherlogs.txt");
+    public static Path getMineCraftLibrariesLocation() {
+        return getMinecraftDataDirectory().resolve("libraries");
     }
 
-    public static String getMineCraftLibrariesLocation(String OS) {
-        return (getMineCraftLocation(OS) + "/libraries");
-    }
-
-    public static String getMineCraftLibrariesComMojangNettyLocation(String OS) {
-        return (getMineCraftLibrariesLocation(OS) + "/com/mojang/netty");
-    }
-
-    public static String getMineCraftTmpIoNettyBootstrapLocation(String OS) {
-        return (getMineCraftTmpLocation(OS) + "/io/netty/bootstrap");
-    }
-
-    public static String getMineCraftTmpIoNettyBootstrapBootstrap_class(String OS) {
-        return (getMineCraftTmpIoNettyBootstrapLocation(OS) + "/Bootstrap.class");
-    }
-
-    public static Map<String, String> getMineCraftLibrariesComMojangNetty_jar(String OS) {
-        Map<String, String> results = new HashMap<>();
-
-        File[] directories = new File(getMineCraftLibrariesComMojangNettyLocation(OS)).listFiles(File::isDirectory);
-        for (File en : directories) {
-            //check if file exists.
-            File[] files = new File(en.toString()).listFiles();
-            for (File file : files) {
-                if (file.isFile()) {
-                    if (file.toString().endsWith(".jar")) {
-                        results.put(file.getPath(), file.getName());
-                    }
-                }
-            }
-        }
-
-        return (results);
-    }
-
-    public static List<String> getMineCraftServerDatNBTIP(String OS) {
+    public static List<String> getMineCraftServerDatNBTIP() {
         List<String> ip = new ArrayList<>();
         try {
-            File file = new File(getMineCraft_ServersDat(OS));
-            CompoundTag root = TagIO.readPath(file.toPath());
+            CompoundTag root = TagIO.readPath(getMinecraftServersList());
             for (Tag server : root.getList("servers")) {
                 if (server instanceof CompoundTag) {
                     CompoundTag serverNBT = (CompoundTag) server;
@@ -139,11 +101,10 @@ class Utils {
         return ip;
     }
 
-    public static  List<String> getMineCraftServerDatNBTName(String OS) {
+    public static List<String> getMineCraftServerDatNBTName() {
         List<String> name = new ArrayList<>();
         try {
-            File file = new File(getMineCraft_ServersDat(OS));
-            CompoundTag root = TagIO.readPath(file.toPath());
+            CompoundTag root = TagIO.readPath(getMinecraftServersList());
             for (Tag server : root.getList("servers")) {
                 if (server instanceof CompoundTag) {
                     CompoundTag serverNBT = (CompoundTag) server;
@@ -156,26 +117,26 @@ class Utils {
         return name;
     }
 
-    public static void injectPatchy(String OS) {
+    public static void injectPatchy() {
 
     }
 
-    public static void injectNetty(String OS) {
+    public static void injectNetty() {
 
     }
 
-    public static String getMineCraftLibrariesComMojangPatchyLocation(String OS) {
-        return (getMineCraftLibrariesLocation(OS) + "/com/mojang/patchy");
+    public static Path getMineCraftLibrariesComMojangPatchyLocation() {
+        return getMineCraftLibrariesLocation().resolve("com/mojang/patchy");
     }
 
-    public static String getMineCraftTmpIoPatchyBootstrapBootstrap_class(String OS) {
-        return (getMineCraftTmpIoNettyBootstrapLocation(OS) + "/Bootstrap.class");
+    /*public static Path getMineCraftTmpIoPatchyBootstrapBootstrap_class() {
+        return (getMineCraftTmpIoNettyBootstrapLocation().resolve("Bootstrap.class");
     }
 
-    public static Map<String, String> getMineCraftLibrariesComMojangPatchy_jar(String OS) {
+    public static Map<String, String> getMineCraftLibrariesComMojangPatchy_jar() {
         Map<String, String> results = new HashMap<>();
 
-        File[] directories = new File(getMineCraftLibrariesComMojangPatchyLocation(OS)).listFiles(File::isDirectory);
+        File[] directories = new File(getMineCraftLibrariesComMojangPatchyLocation()).listFiles(File::isDirectory);
         for (File en : directories) {
             //check if file exists.
             File[] files = new File(en.toString()).listFiles();
@@ -189,91 +150,84 @@ class Utils {
         }
 
         return (results);
-    }
+    }*/
 
 
-    public static String getMineCraft_Version_Manifest_json(String OS) {
-        return (getMineCraftLocation(OS) + "/version_manifest.json");
-
-    }
-
-    public static String getMineCraft_Launcher_Profiles_json(String OS) {
-        return (getMineCraftLocation(OS) + "/launcher_profiles.json");
-    }
-
-    public static String getMineCraft_Version_Json(String OS, String VersionNumber) {
-        return (getMineCraftVersionsLocation(OS) + "/" + VersionNumber + "/" + VersionNumber + ".json");
-    }
-
-    public static String getMineCraft_Versions_X_X_json(String OS, String VersionNumber) {
-        return (getMineCraftVersionsLocation(OS) + "/" + VersionNumber + "/" + VersionNumber + ".json");
+    public static Path getMineCraft_Version_Manifest_json() {
+        return getMinecraftDataDirectory().resolve("version_manifest.json");
 
     }
 
-    public static String getMineCraft_Versions_X_X_jar(String OS, String VersionNumber) {
-        return (getMineCraftVersionsLocation(OS) + "/" + VersionNumber + "/" + VersionNumber + ".jar");
+    public static Path getMineCraft_Launcher_Profiles_json() {
+        return getMinecraftDataDirectory().resolve("launcher_profiles.json");
     }
 
-    public static String getMineCraft_Versions_X_X_jar_Location(String OS, String VersionNumber) {
-        return (getMineCraftVersionsLocation(OS) + "/" + VersionNumber + "/" + VersionNumber + ".jar");
+    public static Path getMineCraft_Version_Json(String VersionNumber) {
+        return getMineCraftVersionsLocation().resolve("" + VersionNumber + "/" + VersionNumber + ".json");
     }
 
-    public static String getMineCraftAssetsRootLocation(String OS) {
-        return (getMineCraftLocation(OS) + "/assets");
-
+    public static Path getMineCraft_Versions_X_X_json(String VersionNumber) {
+        return getMineCraftVersionsLocation().resolve("" + VersionNumber + "/" + VersionNumber + ".json");
     }
 
-    public static String getMineCraft_Versions_X_Natives_Location(String OS, String VersionNumber) {
-        return (getMineCraftVersionsLocation(OS) + "/" + VersionNumber + "/natives");
-
+    public static Path getMineCraft_Versions_X_X_jar(String VersionNumber) {
+        return getMineCraftVersionsLocation().resolve("" + VersionNumber + "/" + VersionNumber + ".jar");
     }
 
-    public static String getMineCraft_Versions_X_Natives(String OS, String VersionNumber) {
-        return (getMineCraftVersionsLocation(OS) + "/" + VersionNumber + "/natives");
-
+    public static Path getMineCraft_Versions_X_X_jar_Location(String VersionNumber) {
+        return getMineCraftVersionsLocation().resolve("" + VersionNumber + "/" + VersionNumber + ".jar");
     }
 
-    public static String getMineCraftAssetsIndexes_X_json(String OS, String VersionNumber) {
-        return (getMineCraftAssetsIndexesLocation(OS) + "/" + VersionNumber + ".json");
+    public static Path getMineCraftAssetsRootLocation() {
+        return getMinecraftDataDirectory().resolve("assets");
     }
 
-    public static String getMineCraft_X_json(String OS, String Username) {
-        return (getMineCraftLocation(OS) + "/" + Username + ".json");
+    public static Path getMineCraft_Versions_X_Natives_Location(String VersionNumber) {
+        return getMineCraftVersionsLocation().resolve("" + VersionNumber + "/natives");
     }
 
-    public static String getMineCraftAssetsIndexesLocation(String OS) {
-        return (getMineCraftAssetsLocation(OS) + "/indexes");
-
+    public static Path getMineCraft_Versions_X_Natives(String VersionNumber) {
+        return getMineCraftVersionsLocation().resolve("" + VersionNumber + "/natives");
     }
 
-    public static String getMineCraftAssetsLocation(String OS) {
-        return (getMineCraftLocation(OS) + "/assets");
+    public static Path getMineCraftAssetsIndexes_X_json(String VersionNumber) {
+        return getMineCraftAssetsIndexesLocation().resolve("" + VersionNumber + ".json");
     }
 
-    public static String getMineCraftAssetsObjectsLocation(String OS) {
-        return (getMineCraftAssetsLocation(OS) + "/objects");
+    public static Path getMineCraft_X_json(String Username) {
+        return getMinecraftDataDirectory().resolve("" + Username + ".json");
     }
 
-    public static String setMineCraft_Versions_X_NativesLocation(String OS, String _path) {
-        return (getMineCraftLibrariesLocation(OS) + "/" + _path);
+    public static Path getMineCraftAssetsIndexesLocation() {
+        return getMineCraftAssetsLocation().resolve("indexes");
     }
 
-    public static String setMineCraft_librariesLocation(String OS, String _path) {
-        return (getMineCraftLibrariesLocation(OS) + "/" + _path);
+    public static Path getMineCraftAssetsLocation() {
+        return getMinecraftDataDirectory().resolve("assets");
     }
 
-    public static String getArgsDiv(String OS) {
-        if (OS.equals("Windows")) {
-            return (";");
+    public static Path getMineCraftAssetsObjectsLocation() {
+        return getMineCraftAssetsLocation().resolve("objects");
+    }
+
+    public static Path setMineCraft_Versions_X_NativesLocation(String _path) {
+        return getMineCraftLibrariesLocation().resolve(_path);
+    }
+
+    public static Path setMineCraft_librariesLocation(String _path) {
+        return getMineCraftLibrariesLocation().resolve("" + _path);
+    }
+
+    public static String getArgsDiv() {
+        switch(currentOS) {
+            case LINUX:
+            case MAC:
+                return ":";
+            case WINDOWS:
+                return ";";
+            default:
+                throw new IllegalStateException("Unsupported OS");
         }
-        if (OS.equals("Linux")) {
-            return (":");
-        }
-        if (OS.equals("Mac")) {
-            return (":");
-        }
-
-        return "N/A";
     }
 
     @SuppressWarnings("empty-statement")
@@ -307,18 +261,15 @@ class Utils {
         }
     }
 
-    public static void jarExtract(String OS, String _jarFile, String destDir) {
+    public static void jarExtract(Path _jarFile, Path destDir) {
         try {
-            _jarFile = setMineCraft_Versions_X_NativesLocation(OS, _jarFile);
+            _jarFile = setMineCraft_Versions_X_NativesLocation(_jarFile.toString());
             //_jarFile = _jarFile.replace("https://libraries.minecraft.net", "/home/ammar/NetBeansProjects/TagAPI_3/testx/libraries");
-            File dir = new File(destDir);
-            if (!dir.exists()) {
-                dir.mkdirs();
+            if (Files.notExists(destDir)) {
+                Files.createDirectories(destDir);
             }
 
-            File jarFile = new File(_jarFile);
-
-            java.util.jar.JarFile jar = new java.util.jar.JarFile(jarFile);
+            java.util.jar.JarFile jar = new java.util.jar.JarFile(_jarFile.toFile());
             java.util.Enumeration enumEntries = jar.entries();
             while (enumEntries.hasMoreElements()) {
                 java.util.jar.JarEntry file = (java.util.jar.JarEntry) enumEntries.nextElement();
@@ -343,64 +294,55 @@ class Utils {
         }
     }
 
-    public static String getMineCraftAssetsVirtualLocation(String OS) {
-        return (getMineCraftAssetsLocation(OS) + "/virtual");
+    public static Path getMineCraftAssetsVirtualLocation() {
+        return getMineCraftAssetsLocation().resolve("virtual");
     }
 
-    public static String getMineCraftAssetsVirtualLegacyLocation(String OS) {
-        return (getMineCraftAssetsVirtualLocation(OS) + "/legacy");
+    public static Path getMineCraftAssetsVirtualLegacyLocation() {
+        return getMineCraftAssetsVirtualLocation().resolve("legacy");
     }
 
-    public static void copyToVirtual(String OS, String folder, String _hash, String virtualfolder) {
+    public static void copyToVirtual(String folder, String sha1hash, String virtualfolder) {
         try {
-            File source = new File(getMineCraftAssetsObjectsLocation(OS) + "/" + folder + "/" + _hash);
-            File dest = new File(getMineCraftAssetsVirtualLegacyLocation(OS) + "/" + virtualfolder.replaceFirst("minecraft/", ""));
-            //Files.copy(source.toPath(), dest.toPath());
-            FileUtils.copyFile(source, dest);
-
-        } catch (Exception ex) {
+            Path source = getMineCraftAssetsObjectsLocation().resolve(folder + "/" + sha1hash);
+            Path dest = getMineCraftAssetsVirtualLegacyLocation().resolve(virtualfolder.replaceFirst("minecraft/", ""));
+            Files.copy(source, dest, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException ex) {
             logger.warn("Failed to copy", ex);
         }
 
     }
 
-    public static String getOS() {
-        String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
-
-        if ((OS.contains("mac")) || (OS.contains("darwin"))) {
-            return ("Mac");
-        } else if (OS.contains("win")) {
-            return ("Windows");
-        } else if (OS.contains("nux")) {
-            return ("Linux");
-        } else {
-            //bring support to other OS.
-            //we will assume that the OS is based on linux.
-            return ("Linux");
-        }
+    public static OperatingSystem getOS() {
+        return currentOS;
     }
 
     public static String nextSessionId() {
         return new BigInteger(130, random).toString(32);
     }
 
-    public static List<String> removeDuplicates(List<String> list) {
+    public enum OperatingSystem {
+        LINUX,
+        MAC,
+        WINDOWS,
+        UNSUPPORTED,
+    }
 
-        // Store unique items in result.
-        List<String> result = new ArrayList<>();
+    static {
+        // Cache current OS and data directory
+        String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
 
-        // Record encountered Strings in HashSet.
-        Set<String> set = new HashSet<>();
-
-        // Loop over argument list.
-        for (String item : list) {
-
-            // If String is not in set, add it to the list and the set.
-            if (!set.contains(item)) {
-                result.add(item);
-                set.add(item);
-            }
+        if ((OS.contains("mac")) || (OS.contains("darwin"))) {
+            currentOS = OperatingSystem.MAC;
+            minecraftDataDirectory = Paths.get(System.getProperty("user.home") + "Library/Application Support/minecraft");
+        } else if (OS.contains("win")) {
+            currentOS = OperatingSystem.WINDOWS;
+            minecraftDataDirectory = Paths.get(System.getenv("APPDATA"),  ".minecraft");
+        } else if (OS.contains("nux")) {
+            currentOS = OperatingSystem.LINUX;
+            minecraftDataDirectory = Paths.get(System.getProperty("user.home"), ".minecraft");
+        } else {
+            currentOS = OperatingSystem.UNSUPPORTED;
         }
-        return result;
     }
 }
