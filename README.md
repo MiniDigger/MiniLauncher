@@ -5,10 +5,10 @@ This repo is a fork by MiniDigger for his own needs. Its not affiliated with Tag
 
 Overview:
 
-![](/_html_/overview.png)
+![](_html_/overview.png)
 
 Game running:
-![](/_html_/run.png)
+![](_html_/run.png)
 
 Big thanks to @ammarx for making https://github.com/ammarx/TagAPI_3 and 
 https://github.com/ammarx/TagLauncher_3 and releasing it under MIT.
