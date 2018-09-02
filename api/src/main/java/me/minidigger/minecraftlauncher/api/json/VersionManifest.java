@@ -105,6 +105,9 @@ public class VersionManifest {
         @SerializedName("time")
         private Date time;
 
+        @SerializedName("releaseTime")
+        private Date releaseTime;
+
         /**
          * Gets Minecraft version represented by this {@link VersionInfo}
          *
@@ -137,7 +140,7 @@ public class VersionManifest {
 
         @Override
         public int compareTo(VersionInfo o) {
-            return time.compareTo(o.time);
+            return releaseTime.compareTo(o.releaseTime);
         }
     }
 
