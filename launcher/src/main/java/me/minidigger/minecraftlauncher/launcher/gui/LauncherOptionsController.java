@@ -107,8 +107,6 @@ public class LauncherOptionsController extends AbstractGUIController {
     private TextField optionsJavaVersionInput;
     @FXML
     private TextField optionsJVMArgumentsInput;
-
-    Hashtable<String, String> VersionHashTable = new Hashtable<>();
     @FXML
     private Label optionStatus;
     @FXML
@@ -148,12 +146,13 @@ public class LauncherOptionsController extends AbstractGUIController {
     @FXML
     private Tooltip tt_debugMode;
 
+    private Hashtable<String, String> VersionHashTable = new Hashtable<>();
+
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
         setToolTips();
         setTextBoxMax();
         themeType.getItems().addAll("Purple", "Gray", "Red", "Green", "Blue", "White");
@@ -171,41 +170,32 @@ public class LauncherOptionsController extends AbstractGUIController {
                 String[] prsntAry = ob.toString().split(" % ");
                 optionsSelectVersion.getItems().addAll(prsntAry[0]);
                 VersionHashTable.put(prsntAry[0], prsntAry[1]);
-
             }
-            if (!API.getInstalledVersionsList().isEmpty()) {
 
+            if (!API.getInstalledVersionsList().isEmpty()) {
                 for (String ob_ : API.getInstalledVersionsList()) {
                     if (!VersionHashTable.containsKey(ob_)) {
                         optionsSelectVersion.getItems().addAll(ob_);
                         VersionHashTable.put(ob_, "Unknown");
                     }
                 }
-
             }
+
             optionsSelectVersion.setDisable(false);
             optionsSelectVersionInstall.setDisable(false);
-            try {
-                Platform.runLater(() -> setStatus(Status.IDLE));
-            } catch (Exception e) {
-            }
-            return null;
+
+            Platform.runLater(() -> setStatus(Status.IDLE));
         });
         executor.shutdown();
     }
 
     @FXML
     private void _optionsClose(ActionEvent event) {
-        saveOptionsData();
-        Stage stage = LauncherMainController.getApplicationOptionStage();
-        stage.close();
+        _optionsExit(event);
     }
 
     @FXML
     private void _optionsExit(ActionEvent event) {
-        saveOptionsData();
-        Stage stage = LauncherMainController.getApplicationOptionStage();
-        stage.close();
     }
 
     @FXML
@@ -296,9 +286,10 @@ public class LauncherOptionsController extends AbstractGUIController {
             logger.info("Selected!");
         } else {
             logger.info("NOT Selected!");
-
         }
+
         API.setEventHandler(this);
+
         ExecutorService executor = Executors.newCachedThreadPool();
         executor.submit(() -> {
             API.downloadMinecraft(optionsSelectVersion.getValue(), optionsSelectVersionForce.isSelected());
@@ -392,37 +383,28 @@ public class LauncherOptionsController extends AbstractGUIController {
 
     @FXML
     private void kt_optionsResolutionMin(KeyEvent event) {
-        if (!event.getCharacter().matches("[0-9\b]")) {
-            Toolkit.getDefaultToolkit().beep();
-            event.consume();
-
-        }
+        validate(event);
     }
 
     @FXML
     private void kt_optionsRamAllocationMin(KeyEvent event) {
-        if (!event.getCharacter().matches("[0-9\b]")) {
-            Toolkit.getDefaultToolkit().beep();
-            event.consume();
-
-        }
+        validate(event);
     }
 
     @FXML
     private void kt_optionsResolutionMax(KeyEvent event) {
-        if (!event.getCharacter().matches("[0-9\b]")) {
-            Toolkit.getDefaultToolkit().beep();
-            event.consume();
-
-        }
+        validate(event);
     }
 
     @FXML
     private void kt_optionsRamAllocationMax(KeyEvent event) {
+        validate(event);
+    }
+
+    private void validate(KeyEvent event){
         if (!event.getCharacter().matches("[0-9\b]")) {
             Toolkit.getDefaultToolkit().beep();
             event.consume();
-
         }
     }
 
@@ -521,7 +503,6 @@ public class LauncherOptionsController extends AbstractGUIController {
             if (newValue.intValue() > oldValue.intValue()) {
                 if (optionsResolutionMin.getText().length() > 4) {
                     optionsResolutionMin.setText(optionsResolutionMin.getText().substring(0, 4));
-                    //Toolkit.getDefaultToolkit().beep();
                 }
             }
         });
@@ -530,7 +511,6 @@ public class LauncherOptionsController extends AbstractGUIController {
             if (newValue.intValue() > oldValue.intValue()) {
                 if (optionsResolutionMax.getText().length() > 4) {
                     optionsResolutionMax.setText(optionsResolutionMax.getText().substring(0, 4));
-                    //Toolkit.getDefaultToolkit().beep();
                 }
             }
         });
@@ -539,7 +519,6 @@ public class LauncherOptionsController extends AbstractGUIController {
             if (newValue.intValue() > oldValue.intValue()) {
                 if (optionsRamAllocationMin.getText().length() > 4) {
                     optionsRamAllocationMin.setText(optionsRamAllocationMin.getText().substring(0, 4));
-                    //Toolkit.getDefaultToolkit().beep();
                 }
             }
         });
@@ -548,7 +527,6 @@ public class LauncherOptionsController extends AbstractGUIController {
             if (newValue.intValue() > oldValue.intValue()) {
                 if (optionsRamAllocationMax.getText().length() > 4) {
                     optionsRamAllocationMax.setText(optionsRamAllocationMax.getText().substring(0, 4));
-                    //Toolkit.getDefaultToolkit().beep();
                 }
             }
         });
