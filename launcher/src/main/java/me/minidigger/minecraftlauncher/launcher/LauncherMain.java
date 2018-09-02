@@ -26,6 +26,8 @@
 
 package me.minidigger.minecraftlauncher.launcher;
 
+import java.util.ResourceBundle;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -38,13 +40,13 @@ import javafx.stage.StageStyle;
  * @author ammar
  */
 public class LauncherMain extends Application {
+
+    private static ResourceBundle resourceBundle = ResourceBundle.getBundle("minilauncher");
+
     private static Stage applicationMainStage;
+
     private double xOffset = 0;
     private double yOffset = 0;
-
-    private void setApplicationMainStage(Stage stage) {
-        LauncherMain.applicationMainStage = stage;
-    }
 
     static public Stage getApplicationMainStage() {
         return LauncherMain.applicationMainStage;
@@ -58,8 +60,6 @@ public class LauncherMain extends Application {
     public void start(Stage stage) throws Exception {
         LauncherSettings.userSettingsLoad();
 
-        //Launcher_Main_Background.setBackgroundImages();
-
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/Launcher_Main_GUI.fxml"));
         Scene scene = new Scene(root);
         initApplicationSettings(stage, scene);
@@ -69,10 +69,10 @@ public class LauncherMain extends Application {
     }
 
     public void initApplicationSettings(Stage stage, Scene scene) {
-        setApplicationMainStage(stage);
+        applicationMainStage = stage;
 
         stage.getIcons().add(new Image(LauncherMain.class.getResourceAsStream("/images/app_icon_1.png")));
-        stage.setTitle("Minecraft Launcher");
+        stage.setTitle(resourceBundle.getString("mainscreen.title"));
         stage.initStyle(StageStyle.UNDECORATED);
         stage.initStyle(StageStyle.TRANSPARENT);
         stage.setMinWidth(450);
@@ -81,7 +81,6 @@ public class LauncherMain extends Application {
         stage.setMaxHeight(450);
         stage.setResizable(false);
         LauncherSettings.setTheme(scene);
-
 
         scene.setOnMousePressed(event -> {
             xOffset = stage.getX() - event.getScreenX();

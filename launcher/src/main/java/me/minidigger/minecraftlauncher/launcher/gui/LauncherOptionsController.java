@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import java.awt.*;
 import java.io.File;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.Hashtable;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
@@ -66,6 +67,8 @@ import me.minidigger.minecraftlauncher.launcher.Status;
  * @author Mathew
  */
 public class LauncherOptionsController extends AbstractGUIController {
+
+    private static ResourceBundle resourceBundle = ResourceBundle.getBundle("minilauncher");
     private final static Logger logger = LoggerFactory.getLogger(LauncherOptionsController.class);
 
     @FXML
@@ -159,7 +162,7 @@ public class LauncherOptionsController extends AbstractGUIController {
 
         ExecutorService executor = Executors.newCachedThreadPool();
         executor.submit(() -> {
-            optionStatus.setText("Status: Getting latest versions");
+            optionStatus.setText(resourceBundle.getString("status.getting_latest_version"));
             optionsSelectVersion.setDisable(true);
             optionsSelectVersionInstall.setDisable(true);
             API.downloadVersionManifest();
@@ -274,9 +277,9 @@ public class LauncherOptionsController extends AbstractGUIController {
     private void _optionsSelectVersionInstall(ActionEvent event) {
         if (optionsSelectVersion.getValue() == null || optionsSelectVersion.getValue().equals("")) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Minecraft Launcher - Error");
-            alert.setHeaderText("Invaild selection.");
-            alert.setContentText("Please select a version to install prior to installing.");
+            alert.setTitle(resourceBundle.getString("alert.no_version.title"));
+            alert.setHeaderText(resourceBundle.getString("alert.no_version.header"));
+            alert.setContentText(resourceBundle.getString("alert.no_version.content"));
             alert.initStyle(StageStyle.UTILITY);
             DialogPane dialogPane = alert.getDialogPane();
             dialogPane.getStylesheets().add("/css/purple.css");
@@ -333,8 +336,7 @@ public class LauncherOptionsController extends AbstractGUIController {
     }
 
     private void loadOptionsData() {
-
-        launcherVersion.setText("Version: " + LauncherSettings.launcherVersion);
+        launcherVersion.setText(MessageFormat.format(resourceBundle.getString("optionscreen.version"), LauncherSettings.launcherVersion));
 
         optionsResolutionMin.setText(LauncherSettings.resolutionWidth);
         optionsResolutionMax.setText(LauncherSettings.resolutionHeight);
@@ -458,121 +460,59 @@ public class LauncherOptionsController extends AbstractGUIController {
     private void setToolTips() {
         Image infoIMG = new Image(getClass().getResourceAsStream("/images/m_info.png"));
 
-        tt_keepLauncherOpen.setText(
-                ""
-                        + "Keep The Launcher Open\n"
-                        + "Keeps the launcher open after Minecraft has started.\n"
-        );
+        tt_keepLauncherOpen.setText(resourceBundle.getString("optionscreen.tooltip.keep_launcher_open"));
         tt_keepLauncherOpen.setGraphic(new ImageView(infoIMG));
 
-        tt_customTheme.setText(
-                ""
-                        + "Choose A Custom Theme\n"
-                        + "Change the launchers theme to a diffrent color.\n"
-        );
+        tt_customTheme.setText(resourceBundle.getString("optionscreen.tooltip.custom_theme"));
         tt_customTheme.setGraphic(new ImageView(infoIMG));
 
-        tt_resolution.setText(
-                ""
-                        + "Set Minecraft's Resolution\n"
-                        + "Set the height and width of the Minecraft client.\n"
-        );
+        tt_resolution.setText(resourceBundle.getString("optionscreen.tooltip.resolution"));
         tt_resolution.setGraphic(new ImageView(infoIMG));
 
-        tt_ramAllocation.setText(
-                ""
-                        + "Set Minecraft's Ram Usage\n"
-                        + "Set the minimum and maximum ram that the Minecraft client will use.\n"
-                        + "WARNING: It's best to leave this option alone unless you know what you're doing. Altering this beyond what your computer can handle will cause Minecraft to not open.\n"
-        );
+        tt_ramAllocation.setText(resourceBundle.getString("optionscreen.tooltip.ram"));
         tt_ramAllocation.setGraphic(new ImageView(infoIMG));
 
-        tt_fastStartup.setText(
-                ""
-                        + "Fast Startup\n"
-                        + "Lets you bypass the integrity check when launching Minecraft.\n"
-                        + "Should only be used if you're using vanilla minecraft or the mod doesn't need to download third party API/Files.\n"
-        );
+        tt_fastStartup.setText(resourceBundle.getString("optionscreen.tooltip.faststartup"));
         tt_fastStartup.setGraphic(new ImageView(infoIMG));
 
-        tt_bypassBlacklist.setText(
-                ""
-                        + "Bypass The Blacklist\n"
-                        + "Let you bypass the EULA blacklist when enabled.\n"
-        );
+        tt_bypassBlacklist.setText(resourceBundle.getString("optionscreen.tooltip.bypass_blacklist"));
         tt_bypassBlacklist.setGraphic(new ImageView(infoIMG));
 
-        tt_selectVersion.setText(
-                ""
-                        + "Select A Version\n"
-                        + "Choose a version of Minecraft to download and install.\n"
-        );
+        tt_selectVersion.setText(resourceBundle.getString("optionscreen.tooltip.select_version"));
         tt_selectVersion.setGraphic(new ImageView(infoIMG));
 
-        tt_selectVersionInstall.setText(
-                ""
-                        + "Install and Download\n"
-                        + "Install and download the version of Minecraft selected.\n"
-        );
+        tt_selectVersionInstall.setText(resourceBundle.getString("optionscreen.tooltip.select_version_install"));
         tt_selectVersionInstall.setGraphic(new ImageView(infoIMG));
 
-        tt_forceDownload.setText(
-                ""
-                        + "Force Download\n"
-                        + "When enabled, this tells the launcher to re-download all files for the selected version.\n"
-                        + "This can fix issues with Minecraft not starting due to corruption or missing files.\n"
-        );
+        tt_forceDownload.setText(resourceBundle.getString("optionscreen.tooltip.force_download"));
         tt_forceDownload.setGraphic(new ImageView(infoIMG));
 
-        tt_javaVersion.setText(
-                ""
-                        + "Java Location\n"
-                        + "When enabled, this changes the location of where the launcher gets Java from.\n"
-                        + "WARNING: It's best to leave this option alone unless you know what you're doing. Altering this may cause Minecraft to not open.\n"
-        );
+        tt_javaVersion.setText(resourceBundle.getString("optionscreen.tooltip.java_location"));
         tt_javaVersion.setGraphic(new ImageView(infoIMG));
 
-        tt_jvmArgs.setText(
-                ""
-                        + "Extra JVM Arguments\n"
-                        + "When enabled, this allows you to insert extra JVM arguments when Minecraft launches.\n"
-                        + "WARNING: It's best to leave this option alone unless you know what you're doing. Altering this may cause Minecraft to not open.\n"
-        );
+        tt_jvmArgs.setText(resourceBundle.getString("optionscreen.tooltip.jvm_args"));
         tt_jvmArgs.setGraphic(new ImageView(infoIMG));
 
-        tt_launcherVersion.setText(
-                ""
-                        + "Current Launcher Version\n"
-                        + "This is the current launcher version.\n"
-                        + "Click to view the launcher credits.\n"
-        );
+        tt_launcherVersion.setText(resourceBundle.getString("optionscreen.tooltip.launcher_version"));
         tt_launcherVersion.setGraphic(new ImageView(infoIMG));
 
-        tt_debugMode.setText(
-                ""
-                        + "Debug Mode\n"
-                        + "When enabled, this tells the launcher to output raw logs in the logger.\n"
-        );
+        tt_debugMode.setText(resourceBundle.getString("optionscreen.tooltip.debug_mode"));
         tt_debugMode.setGraphic(new ImageView(infoIMG));
     }
 
     @FXML
     private void mc_launcherVersion(MouseEvent event) {
-
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.getDialogPane().getChildren().stream().filter(node -> node instanceof Label).forEach(node -> ((Label) node).setMinHeight(Region.USE_PREF_SIZE));
-        alert.setTitle("Minecraft Launcher - Credits");
-        alert.setHeaderText("So long, and thanks for all the fish.");
+        alert.setTitle(resourceBundle.getString("alert.credits.title"));
+        alert.setHeaderText(resourceBundle.getString("alert.credits.header"));
+        alert.setContentText(resourceBundle.getString("alert.credits.content"));
+
         alert.initStyle(StageStyle.UTILITY);
+        alert.getDialogPane().getChildren().stream().filter(node -> node instanceof Label)
+                .forEach(node -> ((Label) node).setMinHeight(Region.USE_PREF_SIZE));
+
         DialogPane dialogPane = alert.getDialogPane();
         dialogPane.getStylesheets().add("/css/purple.css");
-        alert.setContentText(""
-                + "Minotar.net: API used for the Avatars.\n"
-                + "Mojang: A little thing called Minecraft.\n"
-                + "maxd @ Github: Great dark Modena theme.\n"
-                + "Ammar_Ahmad: The brains behind the code.\n"
-                + "Chalkie: Pressed 'compile' that one time.\n\n"
-                + "© TagCraftMC.com & TerraPrimal.com\n");
         alert.show();
     }
 
@@ -620,7 +560,7 @@ public class LauncherOptionsController extends AbstractGUIController {
         if (optionsJavaVersionInput.getText().equals("")) {
 
             FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Your Java Location");
+            fileChooser.setTitle(resourceBundle.getString("filechooser.title"));
             //removed! because this will not work if you are on MAC or Linux.
             //fileChooser.getExtensionFilters().add(new ExtensionFilter("Java Version", "*.exe"));
 
@@ -643,27 +583,32 @@ public class LauncherOptionsController extends AbstractGUIController {
     public void onDownloadComplete() {
         Platform.runLater(() -> {
             setStatus(Status.DOWNLOAD_COMPLETE);
+
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Minecraft Launcher - Success");
-            alert.setHeaderText("Download Complete.");
+            alert.setTitle(resourceBundle.getString("alert.download_success.title"));
+            alert.setHeaderText(resourceBundle.getString("alert.download_success.header"));
+            alert.setContentText(MessageFormat.format(resourceBundle.getString("alert.download_success.content"), optionsSelectVersion.getValue()));
             alert.initStyle(StageStyle.UTILITY);
+
             DialogPane dialogPane = alert.getDialogPane();
             dialogPane.getStylesheets().add("/css/purple.css");
-            alert.setContentText("Version: " + optionsSelectVersion.getValue() + " has been downloaded & installed!");
+
             setStatus(Status.IDLE);
             optionsSelectVersionInstall.setDisable(false);
             optionsExit.setDisable(false);
             optionsClose.setDisable(false);
             optionsSelectVersion.setDisable(false);
             optionsSelectFastStart.setSelected(false);
+
             LauncherSettings.refreshVersionList = true;
             LauncherSettings.fastStartUp = false;
+
             alert.showAndWait();
         });
     }
 
     @Override
     public void setStatus(Status status) {
-        optionStatus.setText("Status: " + status);
+        optionStatus.setText(MessageFormat.format(resourceBundle.getString("status.generic"), status));
     }
 }

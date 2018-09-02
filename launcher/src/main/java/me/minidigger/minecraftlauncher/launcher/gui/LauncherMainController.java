@@ -30,6 +30,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.io.IOException;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -73,6 +74,8 @@ import me.minidigger.minecraftlauncher.launcher.tasks.VersionCheckerTask;
  * @author ammar
  */
 public class LauncherMainController extends AbstractGUIController {
+
+    private static ResourceBundle resourceBundle = ResourceBundle.getBundle("minilauncher");
 
     private static Stage applicationOptionStage;
     private List<String> backgroundList = new ArrayList<>();
@@ -146,12 +149,9 @@ public class LauncherMainController extends AbstractGUIController {
 
     public void showFirstTimeMessage() {
         Alert alert = new Alert(AlertType.INFORMATION);
-        alert.setTitle("Minecraft Launcher - Welcome");
-        alert.setHeaderText("Greetings Player...");
-        alert.setContentText(""
-                + "It looks like this is your first time using our launcher and we wanted to provide you with some help.\n\n"
-                + "By default, the launcher doesn't come with any versions of Minecraft installed so you will need to download the version you wish to play via the options menu.\n\n"
-                + "Once in the options menu, click the dropdown menu under the Version Settings title and choose the version you want. When you have chosen, click the download button and wait for the launcher to download all the necessary files.");
+        alert.setTitle(resourceBundle.getString("alert.welcome.title"));
+        alert.setHeaderText(resourceBundle.getString("alert.welcome.header"));
+        alert.setContentText(resourceBundle.getString("alert.welcome.content"));
         alert.initStyle(StageStyle.UTILITY);
         DialogPane dialogPane = alert.getDialogPane();
         dialogPane.getStylesheets().add("/css/purple.css");
@@ -165,9 +165,9 @@ public class LauncherMainController extends AbstractGUIController {
     private void launchMineCraft(ActionEvent event) {
         if (username.getText().equals("")) {
             Alert alert = new Alert(AlertType.ERROR);
-            alert.setTitle("Minecraft Launcher - Error");
-            alert.setHeaderText("A username is required.");
-            alert.setContentText("Please create a username prior to starting Minecraft.");
+            alert.setTitle(resourceBundle.getString("alert.username_missing.title"));
+            alert.setHeaderText(resourceBundle.getString("alert.username_missing.header"));
+            alert.setContentText(resourceBundle.getString("alert.username_missing.content"));
             alert.initStyle(StageStyle.UTILITY);
             DialogPane dialogPane = alert.getDialogPane();
             dialogPane.getStylesheets().add("/css/purple.css");
@@ -213,9 +213,9 @@ public class LauncherMainController extends AbstractGUIController {
                 API.setJVMArgument(LauncherSettings.jvmArguments);
             }
             if (!LauncherSettings.playerUsername.equals("")) {
-                API.setVersionData("Hi " + LauncherSettings.playerUsername + "!");
+                API.setVersionData(MessageFormat.format(resourceBundle.getString("versiondata.name"), LauncherSettings.playerUsername));
             } else {
-                API.setVersionData("#MiniDigger is awesome");
+                API.setVersionData(resourceBundle.getString("versiondata.default"));
             }
 
             boolean nettyPatch = LauncherSettings.bypassBlacklist;
@@ -254,7 +254,7 @@ public class LauncherMainController extends AbstractGUIController {
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initStyle(StageStyle.UNDECORATED);
             stage.getIcons().add(new Image(LauncherMain.class.getResourceAsStream("/images/app_icon_1.png")));
-            stage.setTitle("Minecraft Launcher - Options");
+            stage.setTitle(resourceBundle.getString("optionscreen.title"));
             Scene sceneOptions = new Scene(optionsGUI);
             stage.setMinWidth(400);
             stage.setMinHeight(500);
@@ -296,32 +296,16 @@ public class LauncherMainController extends AbstractGUIController {
     private void setToolTips() {
         Image infoIMG = new Image(getClass().getResourceAsStream("/images/m_info.png"));
 
-        tt_username.setText(
-                ""
-                        + "Your Username\n"
-                        + "The name must be between 4 and 16 characters long and can only contain letters, numbers and underscores.\n"
-        );
+        tt_username.setText(resourceBundle.getString("mainscreen.tooltip.username"));
         tt_username.setGraphic(new ImageView(infoIMG));
 
-        tt_version.setText(
-                ""
-                        + "Minecraft Version\n"
-                        + "Select what version of minecraft you wish to play.\n"
-                        + "You can download new versions via the options menu.\n"
-        );
+        tt_version.setText(resourceBundle.getString("mainscreen.tooltip.version"));
         tt_version.setGraphic(new ImageView(infoIMG));
 
-        tt_options.setText(
-                ""
-                        + "The Options Menu\n"
-                        + "A menu that allows you to tweak various settings for the launcher and Minecraft.\n"
-        );
+        tt_options.setText(resourceBundle.getString("mainscreen.tooltip.options"));
         tt_options.setGraphic(new ImageView(infoIMG));
-        tt_play.setText(
-                ""
-                        + "Play Minecraft\n"
-                        + "Launches Minecraft with the version and settings you have chosen.\n"
-        );
+
+        tt_play.setText(resourceBundle.getString("mainscreen.tooltip.play"));
         tt_play.setGraphic(new ImageView(infoIMG));
     }
 
@@ -367,16 +351,16 @@ public class LauncherMainController extends AbstractGUIController {
         Platform.runLater(() -> {
             switch (status) {
                 case VALIDATING:
-                    launcherStatus.setText("Status: Checking installed " + LauncherSettings.playerVersion + " files.");
+                    launcherStatus.setText(MessageFormat.format(resourceBundle.getString("status.validating"), LauncherSettings.playerVersion));
                     break;
                 case DOWNLOADING_NATIVES:
-                    launcherStatus.setText("Status: Downloading natives.");
+                    launcherStatus.setText(resourceBundle.getString("status.downloading_natives"));
                     break;
                 case PATCHING_NETTY:
-                    launcherStatus.setText("Status: Patching netty.");
+                    launcherStatus.setText(resourceBundle.getString("status.patching_netty"));
                     break;
                 case STARTING:
-                    launcherStatus.setText("Status: Starting Minecraft " + LauncherSettings.playerVersion + ".");
+                    launcherStatus.setText(MessageFormat.format(resourceBundle.getString("status.starting"), LauncherSettings.playerVersion));
                     break;
             }
         });
@@ -389,7 +373,7 @@ public class LauncherMainController extends AbstractGUIController {
         LauncherSettings.userSettingsSave();
 
         if (!LauncherSettings.keepLauncherOpen) {
-            Platform.runLater(() -> launcherStatus.setText("Status: Minecraft started, now closing launcher. Have fun!"));
+            Platform.runLater(() -> launcherStatus.setText(resourceBundle.getString("status.minecraft_started")));
             System.exit(0);
         } else {
             new VersionCheckerTask((status) -> launcherStatus.setText(status)).start();
@@ -403,12 +387,12 @@ public class LauncherMainController extends AbstractGUIController {
 
     @Override
     public void onGameCorrupted() {
-        launcherStatus.setText("Status: Error. Minecraft file corruption detected!");
+        launcherStatus.setText(resourceBundle.getString("status.corrupted"));
 
         Alert alert = new Alert(AlertType.ERROR);
-        alert.setTitle("Minecraft Launcher - Error");
-        alert.setHeaderText("Version: " + version.getValue() + " failed to initialize!");
-        alert.setContentText("The game failed to initialize as data corruption \nwas found! Press re-Download game with \n*Force Download* checked in the options menu.");
+        alert.setTitle(resourceBundle.getString("alert.corruption.title"));
+        alert.setHeaderText(MessageFormat.format(resourceBundle.getString("alert.corruption.header"), version.getValue()));
+        alert.setContentText(resourceBundle.getString("alert.corruption.content"));
         alert.initStyle(StageStyle.UTILITY);
 
         DialogPane dialogPane = alert.getDialogPane();
@@ -423,6 +407,6 @@ public class LauncherMainController extends AbstractGUIController {
 
     @Override
     public void setStatus(Status status) {
-        launcherStatus.setText("Status: " + status);
+        launcherStatus.setText(MessageFormat.format(resourceBundle.getString("status.generic"), status));
     }
 }
