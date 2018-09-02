@@ -32,6 +32,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Launcher package object
@@ -48,6 +49,12 @@ public class LauncherPackage {
     @SerializedName("assets")
     private String assets;
 
+    @SerializedName("assetIndex")
+    private AssetIndexInfo assetIndex;
+
+    @SerializedName("downloads")
+    Map<String, Downloadable> downloads;
+
     @SerializedName("minimumLauncherVersion")
     private int minimumLauncherVersion;
 
@@ -60,6 +67,34 @@ public class LauncherPackage {
 
         @SerializedName("jvm")
         private List<Argument> jvm;
+    }
+
+    public static class AssetIndexInfo {
+        @SerializedName("id")
+        private String id;
+
+        @SerializedName("sha1")
+        private String sha1;
+
+        @SerializedName("size")
+        private long size;
+
+        @SerializedName("totalSize")
+        private long totalSize;
+
+        @SerializedName("url")
+        private URL url;
+    }
+
+    public static class Downloadable {
+        @SerializedName("sha1")
+        private String sha1;
+
+        @SerializedName("size")
+        private long size;
+
+        @SerializedName("url")
+        private URL url;
     }
 
     public static class Library {
@@ -85,6 +120,11 @@ public class LauncherPackage {
     }
 
     public interface Argument {
+        /**
+         * Gets the argument value which should be appended to Minecraft game or JVM
+         *
+         * @return Argument value
+         */
         @NonNull
         List<String> getValue();
 
