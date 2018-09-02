@@ -26,7 +26,6 @@
 
 package me.minidigger.minecraftlauncher.api;
 
-import me.minidigger.minecraftlauncher.api.events.LauncherEventHandler;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
@@ -42,6 +41,9 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
+import me.minidigger.minecraftlauncher.api.events.LauncherEventHandler;
+import me.minidigger.minecraftlauncher.api.patch.JarPatcher;
+
 /**
  * @author ammar
  */
@@ -50,7 +52,8 @@ public class LauncherAPI {
     private final static Marker downloadMarker = MarkerFactory.getMarker("DOWNLOAD");
     private final static Marker runMarker = MarkerFactory.getMarker("RUN");
 
-    private LauncherEventHandler eventHandler = new LauncherEventHandler() { };
+    private LauncherEventHandler eventHandler = new LauncherEventHandler() {
+    };
 
     @NonNull
     public LauncherEventHandler getEventHandler() {
@@ -58,7 +61,8 @@ public class LauncherAPI {
     }
 
     public void setEventHandler(@Nullable LauncherEventHandler eventHandler) {
-        this.eventHandler = eventHandler != null ? eventHandler : new LauncherEventHandler() { };
+        this.eventHandler = eventHandler != null ? eventHandler : new LauncherEventHandler() {
+        };
     }
 
     public List<String> getInstallableVersionsList() {
@@ -409,6 +413,9 @@ public class LauncherAPI {
         if (injectNetty) {
             eventHandler.onGameStart(LauncherEventHandler.StartStatus.PATCHING_NETTY);
             logger.debug("Netty/Patchy Patch Detected!");
+
+            Path minecraftJar = Utils.getMineCraft_Versions_X_X_jar_Location(VersionToUse);
+            new JarPatcher().patchWindowTitle(minecraftJar, VersionToUse, "Minecraft " + VersionToUse + " - " + UsernameToUse);
 
             String patchy_mod = "";
             String patchy = "";

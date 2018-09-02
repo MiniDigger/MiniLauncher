@@ -29,6 +29,8 @@ package me.minidigger.minecraftlauncher.api.patch;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -45,6 +47,8 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class JarPatcher {
+
+    private final static Logger logger = LoggerFactory.getLogger(JarPatcher.class);
 
     private Map<String, String> classFileMap = new HashMap<>();
 
@@ -63,6 +67,7 @@ public class JarPatcher {
             throw new RuntimeException("Can't patch window title: " + versionName + " is not supported");
         }
 
+        logger.info("Patching window title: {} ({})", replacement, versionName);
         patch(jar, classFileMap.get(versionName), (cw) -> new WindowTitleTransformer(cw, "Minecraft", replacement));
     }
 
