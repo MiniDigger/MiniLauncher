@@ -532,6 +532,8 @@ public class LauncherAPI {
             logger.info(runMarker, "Starting game... Please wait....");
             Process process = Runtime.getRuntime().exec(finalArgs);
 
+            new MinecraftLogThread(process.getInputStream());
+
             try {
                 process.waitFor(10, TimeUnit.SECONDS);
                 //process.waitFor();

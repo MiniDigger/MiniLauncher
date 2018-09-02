@@ -125,17 +125,12 @@ public class LauncherMainController extends AbstractGUIController {
     @FXML
     private Button options;
 
-    private void setApplicationOptionStage(Stage stage) {
-        LauncherMainController.applicationOptionStage = stage;
-    }
-
     static public Stage getApplicationOptionStage() {
         return LauncherMainController.applicationOptionStage;
     }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
         setToolTips();
         setTextBoxMax();
         runBackground();
@@ -166,11 +161,14 @@ public class LauncherMainController extends AbstractGUIController {
         alert.setHeaderText(resourceBundle.getString("alert.welcome.header"));
         alert.setContentText(resourceBundle.getString("alert.welcome.content"));
         alert.initStyle(StageStyle.UTILITY);
+
         DialogPane dialogPane = alert.getDialogPane();
         dialogPane.getStylesheets().add("/css/purple.css");
+
         Stage stage = (Stage) dialogPane.getScene().getWindow();
         stage.setAlwaysOnTop(true);
         stage.toFront();
+
         alert.show();
     }
 
@@ -182,8 +180,10 @@ public class LauncherMainController extends AbstractGUIController {
             alert.setHeaderText(resourceBundle.getString("alert.username_missing.header"));
             alert.setContentText(resourceBundle.getString("alert.username_missing.content"));
             alert.initStyle(StageStyle.UTILITY);
+
             DialogPane dialogPane = alert.getDialogPane();
             dialogPane.getStylesheets().add("/css/purple.css");
+
             alert.show();
             return;
         }
@@ -263,21 +263,22 @@ public class LauncherMainController extends AbstractGUIController {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/Launcher_Options_GUI.fxml"));
             Parent optionsGUI = fxmlLoader.load();
+
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initStyle(StageStyle.UNDECORATED);
             stage.getIcons().add(new Image(LauncherMain.class.getResourceAsStream("/images/app_icon_1.png")));
             stage.setTitle(resourceBundle.getString("optionscreen.title"));
-            Scene sceneOptions = new Scene(optionsGUI);
             stage.setMinWidth(400);
             stage.setMinHeight(500);
             stage.setMaxWidth(400);
             stage.setMaxHeight(500);
             stage.setResizable(false);
 
+            Scene sceneOptions = new Scene(optionsGUI);
             stage.setScene(sceneOptions);
             LauncherSettings.setTheme(sceneOptions);
-            setApplicationOptionStage(stage);
+            LauncherMainController.applicationOptionStage = stage;
 
             sceneOptions.setOnMousePressed(event_ -> {
                 xOffset = stage.getX() - event_.getScreenX();
@@ -288,6 +289,7 @@ public class LauncherMainController extends AbstractGUIController {
                 stage.setX(event_.getScreenX() + xOffset);
                 stage.setY(event_.getScreenY() + yOffset);
             });
+
             stage.setOnHiding(event_ -> {
                 //if (LauncherSettings.refreshVersionList == true) { //Just refesh it anyway.
                 version.getItems().removeAll(version.getItems());
@@ -400,22 +402,24 @@ public class LauncherMainController extends AbstractGUIController {
 
     @Override
     public void onGameCorrupted() {
-        launcherStatus.setText(resourceBundle.getString("status.corrupted"));
+        Platform.runLater(() -> {
+            launcherStatus.setText(resourceBundle.getString("status.corrupted"));
 
-        Alert alert = new Alert(AlertType.ERROR);
-        alert.setTitle(resourceBundle.getString("alert.corruption.title"));
-        alert.setHeaderText(MessageFormat.format(resourceBundle.getString("alert.corruption.header"), version.getValue()));
-        alert.setContentText(resourceBundle.getString("alert.corruption.content"));
-        alert.initStyle(StageStyle.UTILITY);
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle(resourceBundle.getString("alert.corruption.title"));
+            alert.setHeaderText(MessageFormat.format(resourceBundle.getString("alert.corruption.header"), version.getValue()));
+            alert.setContentText(resourceBundle.getString("alert.corruption.content"));
+            alert.initStyle(StageStyle.UTILITY);
 
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStylesheets().add("/css/purple.css");
-        alert.showAndWait();
+            DialogPane dialogPane = alert.getDialogPane();
+            dialogPane.getStylesheets().add("/css/purple.css");
+            alert.showAndWait();
 
-        username.setDisable(false);
-        options.setDisable(false);
-        launch.setDisable(false);
-        version.setDisable(false);
+            username.setDisable(false);
+            options.setDisable(false);
+            launch.setDisable(false);
+            version.setDisable(false);
+        });
     }
 
     @Override
