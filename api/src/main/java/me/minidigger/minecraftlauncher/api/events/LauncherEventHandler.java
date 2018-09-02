@@ -37,9 +37,9 @@ public interface LauncherEventHandler {
     /**
      * This method is invoked when {@link me.minidigger.minecraftlauncher.api.LauncherAPI} is downloading something
      *
-     * @param downloadable {@link Downloadable}
+     * @param downloadingStatus {@link DownloadingStatus}
      */
-    default void onDownload(@NonNull Downloadable downloadable) {
+    default void onDownload(@NonNull DownloadingStatus downloadingStatus) {
     }
 
     /**
@@ -70,7 +70,7 @@ public interface LauncherEventHandler {
     /**
      * Downloadable items
      */
-    enum Downloadable {
+    enum DownloadingStatus {
         ASSETS,
         LAUNCHER_META,
         LIBRARIES,
@@ -78,10 +78,15 @@ public interface LauncherEventHandler {
         NATIVES,
     }
 
+    /**
+     * Startup status
+     */
     enum StartStatus {
         VALIDATING,
         DOWNLOADING_NATIVES,
         PATCHING_NETTY,
         STARTING,
     }
+
+    LauncherEventHandler DUMMY = new LauncherEventHandler() {};
 }

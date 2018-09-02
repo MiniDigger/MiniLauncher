@@ -44,10 +44,10 @@ public abstract class AbstractGUIController implements Initializable, LauncherEv
     }
 
     @Override
-    public void onDownload(@NonNull Downloadable downloadable) {
+    public void onDownload(@NonNull LauncherEventHandler.DownloadingStatus downloadingStatus) {
         // TODO: direct log message passing is not supported
         Platform.runLater(() -> {
-            switch(downloadable) {
+            switch(downloadingStatus) {
                 case ASSETS:
                     setStatus(Status.DOWNLOADING_GAME_ASSETS);
                     break;
