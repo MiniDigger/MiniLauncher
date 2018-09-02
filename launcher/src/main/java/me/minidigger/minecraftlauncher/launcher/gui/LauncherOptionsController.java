@@ -196,6 +196,9 @@ public class LauncherOptionsController extends AbstractGUIController {
 
     @FXML
     private void _optionsExit(ActionEvent event) {
+        saveOptionsData();
+        Stage stage = LauncherMainController.getApplicationOptionStage();
+        stage.close();
     }
 
     @FXML
