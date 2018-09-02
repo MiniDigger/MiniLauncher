@@ -85,30 +85,43 @@ public class LauncherMainController extends AbstractGUIController {
 
     @FXML
     private ImageView playerAvatarImage;
-    @FXML
-    private Tooltip tt_username;
+
     @FXML
     private Label launcherStatus;
+
     @FXML
     private AnchorPane mainBackground;
+
     @FXML
-    private Tooltip tt_version;
+    private Tooltip optionsTooltip;
+
     @FXML
-    private Tooltip tt_play;
+    private Tooltip playTooltip;
+
     @FXML
-    private Tooltip tt_options;
+    private Tooltip usernameTooltip;
+
+    @FXML
+    private Tooltip versionTooltip;
+
     @FXML
     private Label label;
+
     @FXML
     private TextField username;
-    @FXML
-    private Button launch;
+
     @FXML
     private ComboBox<String> version;
+
+    @FXML
+    private Button launch;
+
     @FXML
     private Button minimize;
+
     @FXML
     private Button exit;
+
     @FXML
     private Button options;
 
@@ -296,17 +309,17 @@ public class LauncherMainController extends AbstractGUIController {
     private void setToolTips() {
         Image infoIMG = new Image(getClass().getResourceAsStream("/images/m_info.png"));
 
-        tt_username.setText(resourceBundle.getString("mainscreen.tooltip.username"));
-        tt_username.setGraphic(new ImageView(infoIMG));
+        usernameTooltip.setText(resourceBundle.getString("mainscreen.tooltip.username"));
+        usernameTooltip.setGraphic(new ImageView(infoIMG));
 
-        tt_version.setText(resourceBundle.getString("mainscreen.tooltip.version"));
-        tt_version.setGraphic(new ImageView(infoIMG));
+        versionTooltip.setText(resourceBundle.getString("mainscreen.tooltip.version"));
+        versionTooltip.setGraphic(new ImageView(infoIMG));
 
-        tt_options.setText(resourceBundle.getString("mainscreen.tooltip.options"));
-        tt_options.setGraphic(new ImageView(infoIMG));
+        optionsTooltip.setText(resourceBundle.getString("mainscreen.tooltip.options"));
+        optionsTooltip.setGraphic(new ImageView(infoIMG));
 
-        tt_play.setText(resourceBundle.getString("mainscreen.tooltip.play"));
-        tt_play.setGraphic(new ImageView(infoIMG));
+        playTooltip.setText(resourceBundle.getString("mainscreen.tooltip.play"));
+        playTooltip.setGraphic(new ImageView(infoIMG));
     }
 
     @FXML

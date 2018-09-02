@@ -58,13 +58,13 @@
                                prefHeight="26.0" prefWidth="200.0" promptText="Username"
                                styleClass="main_username">
                         <tooltip>
-                            <Tooltip fx:id="tt_username" prefWidth="300.0" wrapText="true"/>
+                            <Tooltip fx:id="usernameTooltip" prefWidth="300.0" wrapText="true"/>
                         </tooltip>
                     </TextField>
                     <ComboBox id="version" fx:id="version" layoutX="25.0" layoutY="111.0" prefHeight="25.0"
                               prefWidth="200.0" promptText="Select A Version" styleClass="whiteTextTheme">
                         <tooltip>
-                            <Tooltip fx:id="tt_version" prefWidth="300.0" text="Empty Tooltip"
+                            <Tooltip fx:id="versionTooltip" prefWidth="300.0" text="Empty Tooltip"
                                      wrapText="true"/>
                         </tooltip>
                     </ComboBox>
@@ -72,14 +72,14 @@
                             mnemonicParsing="false" onAction="#launchMineCraft" prefHeight="26.0"
                             prefWidth="90.0" styleClass="whiteTextTheme" text="Play">
                         <tooltip>
-                            <Tooltip fx:id="tt_play" prefWidth="300.0" wrapText="true"/>
+                            <Tooltip fx:id="playTooltip" prefWidth="300.0" wrapText="true"/>
                         </tooltip>
                     </Button>
                     <Button fx:id="options" layoutX="25.0" layoutY="152.0" mnemonicParsing="false"
                             onAction="#launchOptions" prefHeight="25.0" prefWidth="90.0"
                             styleClass="whiteTextTheme" text="Options">
                         <tooltip>
-                            <Tooltip fx:id="tt_options" prefWidth="300.0" text="Empty Tooltip"
+                            <Tooltip fx:id="optionsTooltip" prefWidth="300.0" text="Empty Tooltip"
                                      wrapText="true"/>
                         </tooltip>
                     </Button>
