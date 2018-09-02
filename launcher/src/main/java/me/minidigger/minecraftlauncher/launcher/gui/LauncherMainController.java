@@ -26,20 +26,6 @@
 
 package me.minidigger.minecraftlauncher.launcher.gui;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-
-import java.io.IOException;
-import java.net.URL;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -64,11 +50,26 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
+import me.minidigger.minecraftlauncher.api.ServerListEntry;
 import me.minidigger.minecraftlauncher.launcher.LauncherMain;
 import me.minidigger.minecraftlauncher.launcher.LauncherSettings;
 import me.minidigger.minecraftlauncher.launcher.Status;
 import me.minidigger.minecraftlauncher.launcher.tasks.AvatarLoaderTask;
 import me.minidigger.minecraftlauncher.launcher.tasks.VersionCheckerTask;
+import org.checkerframework.checker.nullness.qual.NonNull;
+
+import java.io.IOException;
+import java.net.URL;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * @author ammar
@@ -202,7 +203,7 @@ public class LauncherMainController extends AbstractGUIController {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(() -> {
             //add server
-            List<String> ip = new ArrayList<>(API.getServersIPList());
+            List<String> ip = API.getServersIPList().stream().map(ServerListEntry::getIp).collect(Collectors.toList());
             if (ip.isEmpty() || !ip.contains(LauncherSettings.serverIP)) {
                 API.addServerToServersDat(LauncherSettings.serverName, LauncherSettings.serverIP);
             }

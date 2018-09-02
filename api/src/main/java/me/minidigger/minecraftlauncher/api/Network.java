@@ -83,7 +83,8 @@ class Network {
         try {
             URL url = new URL(minecraftAssetsUrl + "/" + folder + "/" + _hash);
             File file = new File(Utils.getMineCraftAssetsObjectsLocation() + "/" + folder + "/" + _hash);
-            if (file.exists() && Utils.getSHA_1(file.toString()).equals(_hash)) {
+            String sha1sum = Utils.getSha1Sum(file.toPath()) + ""; // TODO: fix this shit
+            if (file.exists() && sha1sum.equals(_hash)) {
                 //do not download..
                 logger.debug("File Exists!");
                 logger.debug("Hash Verified!");

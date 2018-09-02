@@ -27,28 +27,28 @@
 package me.minidigger.minecraftlauncher.api;
 
 import net.kyori.nbt.CompoundTag;
-import net.kyori.nbt.Tag;
+import net.kyori.nbt.ListTag;
 import net.kyori.nbt.TagIO;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 /**
  * @author ammar
@@ -85,36 +85,47 @@ class Utils {
         return getMinecraftDataDirectory().resolve("libraries");
     }
 
-    public static List<String> getMineCraftServerDatNBTIP() {
-        List<String> ip = new ArrayList<>();
+    @NonNull
+    public static List<ServerListEntry> getMinecraftClientServerList() {
+        Path serversFile = getMinecraftServersList();
+
+        if(Files.notExists(serversFile))
+            return Collections.emptyList();
+
+        CompoundTag tag;
         try {
-            CompoundTag root = TagIO.readPath(getMinecraftServersList());
-            for (Tag server : root.getList("servers")) {
-                if (server instanceof CompoundTag) {
-                    CompoundTag serverNBT = (CompoundTag) server;
-                    ip.add(serverNBT.getString("ip"));
-                }
-            }
+            tag = TagIO.readPath(serversFile);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Failed to read {}", serversFile, e);
+            return Collections.emptyList();
         }
-        return ip;
+
+        List<ServerListEntry> servers = new ArrayList<>();
+        ListTag serversList = tag.getList("servers");
+        serversList.stream()
+                .filter(CompoundTag.class::isInstance)
+                .map(CompoundTag.class::cast)
+                .map(ServerListEntry::fromNbt)
+                .forEach(servers::add);
+
+        return servers;
     }
 
-    public static List<String> getMineCraftServerDatNBTName() {
-        List<String> name = new ArrayList<>();
+    public static void setMinecraftClientServerList(@NonNull List<ServerListEntry> servers) {
+        Path serversFile = getMinecraftServersList();
+
+        CompoundTag tag = new CompoundTag();
+        ListTag serversTag = new ListTag();
+
+        servers.stream().map(ServerListEntry::toNbt).forEach(serversTag::add);
+
+        tag.put("servers", serversTag);
+
         try {
-            CompoundTag root = TagIO.readPath(getMinecraftServersList());
-            for (Tag server : root.getList("servers")) {
-                if (server instanceof CompoundTag) {
-                    CompoundTag serverNBT = (CompoundTag) server;
-                    name.add(serverNBT.getString("name"));
-                }
-            }
+            TagIO.writePath(tag, serversFile);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Failed to write {}", serversFile, e);
         }
-        return name;
     }
 
     public static void injectPatchy() {
@@ -230,34 +241,28 @@ class Utils {
         }
     }
 
-    @SuppressWarnings("empty-statement")
-    public static String getSHA_1(String _path) {
+    @Nullable
+    public static String getSha1Sum(@NonNull Path path) {
         try {
-
+            InputStream fis = Files.newInputStream(path, StandardOpenOption.READ);
             MessageDigest md = MessageDigest.getInstance("SHA1");
-            FileInputStream fis = new FileInputStream(_path);
             byte[] dataBytes = new byte[1024];
 
             int nread;
-
-            while ((nread = fis.read(dataBytes)) != -1) {
+            while((nread = fis.read(dataBytes)) != -1)
                 md.update(dataBytes, 0, nread);
-            }
-            ;
 
-            byte[] mdbytes = md.digest();
+            byte[] digestBytes = md.digest();
 
-            //convert the byte to hex format
             StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < mdbytes.length; i++) {
-                sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16).substring(1));
-            }
+            for(byte b : digestBytes)
+                sb.append(Integer.toString((b & 0xff) + 0x100, 16).substring(1));
 
-            return (sb.toString());
+            return sb.toString();
 
         } catch (NoSuchAlgorithmException | IOException ex) {
-            logger.warn("Failed to get SHA1", ex);
-            return "N/A";
+            logger.error("Failed to get SHA1 {}", path, ex);
+            return null;
         }
     }
 

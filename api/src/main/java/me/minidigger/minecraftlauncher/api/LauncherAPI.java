@@ -27,9 +27,6 @@
 package me.minidigger.minecraftlauncher.api;
 
 import me.minidigger.minecraftlauncher.api.events.LauncherEventHandler;
-import net.kyori.nbt.CompoundTag;
-import net.kyori.nbt.ListTag;
-import net.kyori.nbt.TagIO;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
@@ -37,15 +34,11 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
-import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
@@ -103,41 +96,16 @@ public class LauncherAPI {
         return local.versions_list;
     }
 
-    public List<String> getServersIPList() {
-        return Utils.getMineCraftServerDatNBTIP();
+    @NonNull
+    public List<ServerListEntry> getServersIPList() {
+        return Utils.getMinecraftClientServerList();
     }
 
-    public List<String> getServersNameList() {
-        return Utils.getMineCraftServerDatNBTName();
-    }
-
-    public void addServerToServersDat(String Name, String IP) {
-        CompoundTag root = new CompoundTag();
-        ListTag servers = new ListTag();
-        CompoundTag data = new CompoundTag();
-
-        List<String> names = new ArrayList<>(Utils.getMineCraftServerDatNBTName());
-        List<String> ips = new ArrayList<>(Utils.getMineCraftServerDatNBTIP());
-        data.putString("name", Name);
-        data.putString("ip", IP);
-        servers.add(data);
-        try {
-            for (int i = 0; i < ips.size(); i++) {
-                data = new CompoundTag();
-                data.putString("name", names.get(i));
-                data.putString("ip", ips.get(i));
-                servers.add(data);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        root.put("servers", servers);
-        //logger.debug(root.toString());
-        try {
-            TagIO.writePath(root, Utils.getMinecraftServersList());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void addServerToServersDat(@NonNull String name, @NonNull String ip) {
+        List<ServerListEntry> newList = new ArrayList<>();
+        newList.add(ServerListEntry.of(null, name, ip));
+        newList.addAll(Utils.getMinecraftClientServerList());
+        Utils.setMinecraftClientServerList(newList);
     }
 
     public void syncVersions() {
