@@ -176,7 +176,7 @@ class Local {
             String selectedProfile = (String) jsonObject.get("selectedProfile");
             String clientToken = (String) jsonObject.get("clientToken");
             JSONObject authenticationDatabase = (JSONObject) jsonObject.get("authenticationDatabase");
-            String selectedUser = (String) jsonObject.get("selectedUser");
+            JSONObject selectedUser = (JSONObject) jsonObject.get("selectedUser");
             JSONObject launcherVersion = (JSONObject) jsonObject.get("launcherVersion");
 
             JSONObject params = new JSONObject();
