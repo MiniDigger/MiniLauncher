@@ -141,7 +141,7 @@ public class LauncherProfile {
         private String javaArgs;
 
         @SerializedName("allowedReleaseTypes")
-        private Set<VersionManifest.VersionType> allowedReleaseTypes;
+        private Set<VersionType> allowedReleaseTypes;
 
         @SerializedName("launcherVisibilityOnGameClose")
         private LauncherVisibility launcherVisibilityOnGameClose;
@@ -203,8 +203,8 @@ public class LauncherProfile {
         }
 
         @NonNull
-        public Set<VersionManifest.VersionType> getAllowedReleaseTypes() {
-            return allowedReleaseTypes != null ? allowedReleaseTypes : Collections.singleton(VersionManifest.VersionType.RELEASE);
+        public Set<VersionType> getAllowedReleaseTypes() {
+            return allowedReleaseTypes != null ? allowedReleaseTypes : Collections.singleton(VersionType.RELEASE);
         }
 
         @NonNull

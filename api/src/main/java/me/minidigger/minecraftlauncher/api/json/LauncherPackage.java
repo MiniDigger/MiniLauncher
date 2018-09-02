@@ -29,8 +29,10 @@ package me.minidigger.minecraftlauncher.api.json;
 import com.google.gson.annotations.SerializedName;
 import me.minidigger.minecraftlauncher.api.LauncherAPI;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -44,7 +46,7 @@ public class LauncherPackage {
     private String id;
 
     @SerializedName("type")
-    private VersionManifest.VersionType type;
+    private VersionType type;
 
     @SerializedName("assets")
     private String assets;
@@ -53,7 +55,10 @@ public class LauncherPackage {
     private AssetIndexInfo assetIndex;
 
     @SerializedName("downloads")
-    Map<String, Downloadable> downloads;
+    private Map<String, Downloadable> downloads;
+
+    @SerializedName("libraries")
+    private List<Library> libraries;
 
     @SerializedName("minimumLauncherVersion")
     private int minimumLauncherVersion;
@@ -61,12 +66,79 @@ public class LauncherPackage {
     @SerializedName("arguments")
     private Arguments arguments;
 
+    @SerializedName("minecraftArguments")
+    private String minecraftArguments;
+
+    @SerializedName("logging")
+    private Map<String, Logging> logging;
+
+    @NonNull
+    public String getId() {
+        return id;
+    }
+
+    @NonNull
+    public VersionType getType() {
+        return type;
+    }
+
+    @NonNull
+    public String getAssets() {
+        return assets;
+    }
+
+    @NonNull
+    public AssetIndexInfo getAssetIndex() {
+        return assetIndex;
+    }
+
+    @NonNull
+    public Map<String, Downloadable> getDownloads() {
+        return downloads;
+    }
+
+    @NonNull
+    public List<Library> getLibraries() {
+        return libraries;
+    }
+
+    public int getMinimumLauncherVersion() {
+        return minimumLauncherVersion;
+    }
+
+    // If this isn't present, then minecraftArguments is
+    @Nullable
+    public Arguments getArguments() {
+        return arguments;
+    }
+
+    @Nullable
+    public List<String> getMinecraftArguments() {
+        return minecraftArguments != null ? Arrays.asList(minecraftArguments.split(" ")) : null;
+    }
+
+    // Not present in older versions (TODO: which?)
+    @Nullable
+    public Map<String, Logging> getLogging() {
+        return logging;
+    }
+
     public static class Arguments {
         @SerializedName("game")
         private List<Argument> game;
 
         @SerializedName("jvm")
         private List<Argument> jvm;
+
+        @NonNull
+        public List<Argument> getGame() {
+            return game;
+        }
+
+        @NonNull
+        public List<Argument> getJvm() {
+            return jvm;
+        }
     }
 
     public static class AssetIndexInfo {
@@ -84,17 +156,29 @@ public class LauncherPackage {
 
         @SerializedName("url")
         private URL url;
-    }
 
-    public static class Downloadable {
-        @SerializedName("sha1")
-        private String sha1;
+        @NonNull
+        public String getId() {
+            return id;
+        }
 
-        @SerializedName("size")
-        private long size;
+        @NonNull
+        public String getSha1() {
+            return sha1;
+        }
 
-        @SerializedName("url")
-        private URL url;
+        public long getSize() {
+            return size;
+        }
+
+        public long getTotalSize() {
+            return totalSize;
+        }
+
+        @NonNull
+        public URL getUrl() {
+            return url;
+        }
     }
 
     public static class Library {
@@ -102,7 +186,59 @@ public class LauncherPackage {
         private String name;
 
         @SerializedName("downloads")
-        private List<Artifact> downloads;
+        private Downloads downloads;
+
+        @SerializedName("extract")
+        private ExtractGuide extract;
+
+        @SerializedName("natives")
+        private Map<String, String> natives;
+
+        @SerializedName("rules")
+        private RulesContainer rules;
+
+        @NonNull
+        public String getName() {
+            return name;
+        }
+
+        @NonNull
+        public Downloads getDownloads() {
+            return downloads;
+        }
+
+        @Nullable
+        public ExtractGuide getExtract() {
+            return extract;
+        }
+
+        @Nullable
+        public Map<String, String> getNatives() {
+            return natives;
+        }
+
+        @Nullable
+        public RulesContainer getRules() {
+            return rules;
+        }
+
+        public static class Downloads {
+            @SerializedName("artifact")
+            private Artifact artifact;
+
+            @SerializedName("classifiers")
+            private Map<String, Downloadable> classifiers;
+
+            @NonNull
+            public Artifact getArtifact() {
+                return artifact;
+            }
+
+            @Nullable
+            public Map<String, Downloadable> getClassifiers() {
+                return classifiers;
+            }
+        }
 
         public static class Artifact {
             @SerializedName("path")
@@ -116,6 +252,61 @@ public class LauncherPackage {
 
             @SerializedName("url")
             private URL url;
+
+            @NonNull
+            public String getPath() {
+                return path;
+            }
+
+            @NonNull
+            public String getSha1() {
+                return sha1;
+            }
+
+            public long getSize() {
+                return size;
+            }
+
+            @NonNull
+            public URL getUrl() {
+                return url;
+            }
+        }
+
+        public static class ExtractGuide {
+            @SerializedName("exclude")
+            private List<String> exclude;
+
+            @Nullable
+            public List<String> getExclude() {
+                return exclude;
+            }
+        }
+    }
+
+    public static class Logging {
+        @SerializedName("argument")
+        private String argument;
+
+        @SerializedName("file")
+        private Downloadable file;
+
+        @SerializedName("type")
+        private String type;
+
+        @NonNull
+        public String getArgument() {
+            return argument;
+        }
+
+        @NonNull
+        public Downloadable getFile() {
+            return file;
+        }
+
+        @NonNull
+        public String getType() {
+            return type;
         }
     }
 

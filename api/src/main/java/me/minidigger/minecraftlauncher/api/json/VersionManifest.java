@@ -143,41 +143,4 @@ public class VersionManifest {
             return releaseTime.compareTo(o.releaseTime);
         }
     }
-
-    /**
-     * Minecraft release type
-     */
-    public enum VersionType {
-        @SerializedName("old_alpha")
-        OLD_ALPHA,
-
-        @SerializedName("old_beta")
-        OLD_BETA,
-
-        @SerializedName("release")
-        RELEASE(true),
-
-        @SerializedName("snapshot")
-        SNAPSHOT,
-        ;
-
-        private final boolean stable;
-
-        VersionType(boolean stable) {
-            this.stable = stable;
-        }
-
-        VersionType() {
-            this.stable = false;
-        }
-
-        /**
-         * Returns whether this version type is stable or not
-         *
-         * @return Whether this version type is stable or not
-         */
-        public boolean isStable() {
-            return stable;
-        }
-    }
 }

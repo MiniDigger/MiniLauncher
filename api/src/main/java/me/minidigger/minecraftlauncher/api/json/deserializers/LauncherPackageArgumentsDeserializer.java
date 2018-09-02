@@ -34,14 +34,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import me.minidigger.minecraftlauncher.api.LauncherAPI;
 import me.minidigger.minecraftlauncher.api.json.LauncherPackage;
+import me.minidigger.minecraftlauncher.api.json.RulesContainer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Mark Vainomaa
@@ -59,42 +58,7 @@ public class LauncherPackageArgumentsDeserializer implements JsonDeserializer<Li
                 JsonElement value = object.get("value");
 
                 // Deal with rules
-                Map<String, String> conditions = new HashMap<>();
-                for(JsonElement ruleElement : rules) {
-                    JsonObject rule = ruleElement.getAsJsonObject();
-
-                    // TODO: no idea what to do with this
-                    // But I think that code behaves as this == "allowed"
-                    //String action = rule.get("action").getAsString();
-
-                    JsonObject features;
-                    if((features = rule.getAsJsonObject("features")) != null) {
-                        for(Map.Entry<String, JsonElement> featuresEntry : features.entrySet()) {
-                            JsonElement entryValue = featuresEntry.getValue();
-                            String conditionValue = entryValue.toString(); // TODO: might needs something sexier than toString()
-                            conditions.put("feature." + featuresEntry.getKey(), conditionValue);
-                        }
-                    }
-
-                    JsonObject os;
-                    if((os = rule.getAsJsonObject("os")) != null) {
-                        String osName = os.get("name").getAsString();
-                        Object osVersion = os.getAsJsonPrimitive("version");
-                        Object arch = os.getAsJsonPrimitive("arch");
-
-                        if(osName != null) {
-                            conditions.put("os.name", osName);
-                        }
-
-                        if(osVersion != null) {
-                            conditions.put("os.version", osVersion.toString());
-                        }
-
-                        if(arch != null) {
-                            conditions.put("os.arch", arch.toString());
-                        }
-                    }
-                }
+                RulesContainer rulesContainer = context.deserialize(rules, RulesContainer.class);
 
                 // Collect rule values
                 List<String> values;
@@ -109,7 +73,7 @@ public class LauncherPackageArgumentsDeserializer implements JsonDeserializer<Li
                 }
 
                 // Add to collected arguments
-                collectedArguments.add(new ConditionalArgument(values, conditions));
+                collectedArguments.add(new ConditionalArgument(values, rulesContainer));
             } else {
                 String value = element.getAsString();
                 collectedArguments.add(new BasicArgument(value, true));
@@ -120,7 +84,7 @@ public class LauncherPackageArgumentsDeserializer implements JsonDeserializer<Li
     }
 
     public static class BasicArgument implements LauncherPackage.Argument {
-        private final List<String> value;
+        protected final List<String> value;
         private final boolean allowed;
 
         public BasicArgument(@NonNull String value, boolean allowed) {
@@ -142,25 +106,40 @@ public class LauncherPackageArgumentsDeserializer implements JsonDeserializer<Li
         public boolean isAllowed(@NonNull LauncherAPI launcherAPI) {
             return allowed;
         }
+
+        @Override
+        public String toString() {
+            return "BasicArgument{" +
+                    "value=" + value +
+                    ", allowed=" + allowed +
+                    '}';
+        }
     }
 
     public static class ConditionalArgument extends BasicArgument implements LauncherPackage.Argument {
-        private final Map<String, String> conditions;
+        private final RulesContainer rules;
 
-        public ConditionalArgument(@NonNull String value, @NonNull Map<String, String> conditions) {
+        public ConditionalArgument(@NonNull String value, @NonNull RulesContainer rules) {
             super(value, false);
-            this.conditions = conditions;
+            this.rules = rules;
         }
 
-        public ConditionalArgument(@NonNull List<String> value, @NonNull Map<String, String> conditions) {
+        public ConditionalArgument(@NonNull List<String> value, @NonNull RulesContainer rules) {
             super(value, false);
-            this.conditions = conditions;
+            this.rules = rules;
         }
 
         @Override
         public boolean isAllowed(@NonNull LauncherAPI launcherAPI) {
-            // TODO!
-            return false;
+            return rules.isAllowed(launcherAPI);
+        }
+
+        @Override
+        public String toString() {
+            return "ConditionalArgument{" +
+                    "value=" + value +
+                    ", rules=" + rules +
+                    '}';
         }
     }
 }
