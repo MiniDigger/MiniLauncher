@@ -53,7 +53,7 @@ public class WindowTitleTransformer extends ClassVisitor {
                     public void visitLdcInsn(Object cst) {
                         if (cst instanceof String) {
                             String curr = (String) cst;
-                            if (curr.equals(value)) {
+                            if (curr.contains(value)) {
                                 super.visitLdcInsn(replacement);
                                 return;
                             }

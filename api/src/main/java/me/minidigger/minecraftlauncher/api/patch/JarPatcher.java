@@ -47,25 +47,23 @@ import java.util.function.Function;
 public class JarPatcher {
 
     private Map<String, String> classFileMap = new HashMap<>();
-    private Map<String, String> titleMap = new HashMap<>();
 
     public JarPatcher() {
         classFileMap.put("1.13", "cfs.class");
-        titleMap.put("1.13", "Minecraft 1.13");
     }
 
     public static void main(String[] args) {
         Path jar = Paths.get("C:\\Users\\Martin\\AppData\\Roaming\\.minecraft\\versions\\1.13\\1.13.jar");
-        new JarPatcher().patchWindowTitle(jar, "1.13", "This is so cool");
+        new JarPatcher().patchWindowTitle(jar, "1.13", "Minecraft 1.13 - MiniDigger");
     }
 
 
     public void patchWindowTitle(Path jar, String versionName, String replacement) {
-        if (!classFileMap.containsKey(versionName) || !titleMap.containsKey(versionName)) {
+        if (!classFileMap.containsKey(versionName)) {
             throw new RuntimeException("Can't patch window title: " + versionName + " is not supported");
         }
 
-        patch(jar, classFileMap.get(versionName), (cw) -> new WindowTitleTransformer(cw, titleMap.get(versionName), replacement));
+        patch(jar, classFileMap.get(versionName), (cw) -> new WindowTitleTransformer(cw, "Minecraft", replacement));
     }
 
     private void patch(Path jar, String classFile, Function<ClassWriter, ClassVisitor> transformerSupplier) {
