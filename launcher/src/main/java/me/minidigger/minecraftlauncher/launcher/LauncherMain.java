@@ -26,8 +26,6 @@
 
 package me.minidigger.minecraftlauncher.launcher;
 
-import java.util.ResourceBundle;
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -35,6 +33,8 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
+import java.util.ResourceBundle;
 
 /**
  * @author ammar
