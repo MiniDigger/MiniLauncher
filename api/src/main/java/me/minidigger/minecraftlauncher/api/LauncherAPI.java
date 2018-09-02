@@ -257,9 +257,9 @@ public class LauncherAPI {
 
         //incase the url is empty.. we have to assume that the user has old path system.
         for (int i = 0; i < local.version_manifest_versions_id.size(); i++) {
-            logger.info(runMarker, local.version_manifest_versions_id.get(i));
-            logger.info(runMarker, local.version_manifest_versions_type.get(i));
-            logger.info(runMarker, local.version_manifest_versions_url.get(i));
+            logger.debug(runMarker, local.version_manifest_versions_id.get(i));
+            logger.debug(runMarker, local.version_manifest_versions_type.get(i));
+            logger.debug(runMarker, local.version_manifest_versions_url.get(i));
         }
 
         //download 1.7.10.json_libs
