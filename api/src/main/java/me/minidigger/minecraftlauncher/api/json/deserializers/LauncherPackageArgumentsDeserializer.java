@@ -33,8 +33,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import me.minidigger.minecraftlauncher.api.LauncherAPI;
-import me.minidigger.minecraftlauncher.api.json.LauncherPackage;
-import me.minidigger.minecraftlauncher.api.json.RulesContainer;
+import me.minidigger.minecraftlauncher.api.json.launcher.LauncherPackage;
+import me.minidigger.minecraftlauncher.api.json.launcher.RulesContainer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.lang.reflect.Type;

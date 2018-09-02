@@ -24,26 +24,45 @@
  * SOFTWARE.
  */
 
-package me.minidigger.minecraftlauncher.api.json;
+package me.minidigger.minecraftlauncher.api.json.launcher;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Map;
-
 /**
- * Game assets index object
+ * Minecraft release type
  *
  * @author Mark Vainomaa
  */
-public class AssetIndex {
-    @SerializedName("objects")
-    private Map<String, AssetInfo> objects;
+public enum VersionType {
+    @SerializedName("old_alpha")
+    OLD_ALPHA,
 
-    public static class AssetInfo {
-        @SerializedName("hash")
-        private String hash;
+    @SerializedName("old_beta")
+    OLD_BETA,
 
-        @SerializedName("size")
-        private long size;
+    @SerializedName("release")
+    RELEASE(true),
+
+    @SerializedName("snapshot")
+    SNAPSHOT,
+    ;
+
+    private final boolean stable;
+
+    VersionType(boolean stable) {
+        this.stable = stable;
+    }
+
+    VersionType() {
+        this.stable = false;
+    }
+
+    /**
+     * Returns whether this version type is stable or not
+     *
+     * @return Whether this version type is stable or not
+     */
+    public boolean isStable() {
+        return stable;
     }
 }

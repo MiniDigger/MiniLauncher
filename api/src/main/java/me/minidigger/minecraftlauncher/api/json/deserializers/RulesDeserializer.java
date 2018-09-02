@@ -31,7 +31,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import me.minidigger.minecraftlauncher.api.json.RulesContainer;
+import me.minidigger.minecraftlauncher.api.json.launcher.RulesContainer;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;

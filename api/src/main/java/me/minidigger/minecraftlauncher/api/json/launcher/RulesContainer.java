@@ -24,45 +24,40 @@
  * SOFTWARE.
  */
 
-package me.minidigger.minecraftlauncher.api.json;
+package me.minidigger.minecraftlauncher.api.json.launcher;
 
-import com.google.gson.annotations.SerializedName;
+import me.minidigger.minecraftlauncher.api.LauncherAPI;
+import org.checkerframework.checker.nullness.qual.NonNull;
+
+import java.util.Collections;
+import java.util.Map;
 
 /**
- * Minecraft release type
+ * Launcher profile rules container
  *
  * @author Mark Vainomaa
  */
-public enum VersionType {
-    @SerializedName("old_alpha")
-    OLD_ALPHA,
+public final class RulesContainer {
+    private final Map<String, String> rules;
 
-    @SerializedName("old_beta")
-    OLD_BETA,
-
-    @SerializedName("release")
-    RELEASE(true),
-
-    @SerializedName("snapshot")
-    SNAPSHOT,
-    ;
-
-    private final boolean stable;
-
-    VersionType(boolean stable) {
-        this.stable = stable;
+    public RulesContainer(@NonNull Map<String, String> rules) {
+        this.rules = Collections.unmodifiableMap(rules);
     }
 
-    VersionType() {
-        this.stable = false;
+    @NonNull
+    public Map<String, String> getRules() {
+        return rules;
     }
 
-    /**
-     * Returns whether this version type is stable or not
-     *
-     * @return Whether this version type is stable or not
-     */
-    public boolean isStable() {
-        return stable;
+    public boolean isAllowed(@NonNull LauncherAPI launcherAPI) {
+        // TODO
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return "RulesContainer{" +
+                "rules=" + rules +
+                '}';
     }
 }

@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-package me.minidigger.minecraftlauncher.api.json;
+package me.minidigger.minecraftlauncher.api.json.launcher;
 
 import com.google.gson.annotations.SerializedName;
 import org.checkerframework.checker.nullness.qual.NonNull;

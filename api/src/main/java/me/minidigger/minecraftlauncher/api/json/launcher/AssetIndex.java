@@ -24,40 +24,26 @@
  * SOFTWARE.
  */
 
-package me.minidigger.minecraftlauncher.api.json;
+package me.minidigger.minecraftlauncher.api.json.launcher;
 
-import me.minidigger.minecraftlauncher.api.LauncherAPI;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import com.google.gson.annotations.SerializedName;
 
-import java.util.Collections;
 import java.util.Map;
 
 /**
- * Launcher profile rules container
+ * Game assets index object
  *
  * @author Mark Vainomaa
  */
-public final class RulesContainer {
-    private final Map<String, String> rules;
+public class AssetIndex {
+    @SerializedName("objects")
+    private Map<String, AssetInfo> objects;
 
-    public RulesContainer(@NonNull Map<String, String> rules) {
-        this.rules = Collections.unmodifiableMap(rules);
-    }
+    public static class AssetInfo {
+        @SerializedName("hash")
+        private String hash;
 
-    @NonNull
-    public Map<String, String> getRules() {
-        return rules;
-    }
-
-    public boolean isAllowed(@NonNull LauncherAPI launcherAPI) {
-        // TODO
-        return false;
-    }
-
-    @Override
-    public String toString() {
-        return "RulesContainer{" +
-                "rules=" + rules +
-                '}';
+        @SerializedName("size")
+        private long size;
     }
 }
