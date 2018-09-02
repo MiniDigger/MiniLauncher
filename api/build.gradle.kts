@@ -10,6 +10,7 @@ val checkerQualVersion = "2.5.4"
 val slf4jVersion = "1.8.0-beta2"
 val gsonVersion = "2.8.5"
 val okHttpVersion = "3.11.0"
+val asmVersion = "6.2.1"
 
 dependencies {
     api("commons-io:commons-io:$commonsIoVersion")
@@ -20,4 +21,7 @@ dependencies {
     api("org.slf4j:slf4j-api:$slf4jVersion")
     api("com.google.code.gson:gson:$gsonVersion")
     api("com.squareup.okhttp3:okhttp:$okHttpVersion")
+    api("org.ow2.asm:asm:$asmVersion")
+    api("org.ow2.asm:asm-util:$asmVersion")
+    api("org.ow2.asm:asm-commons:$asmVersion")
 }

@@ -63,8 +63,9 @@ public interface LauncherEventHandler {
 
     /**
      * This method is invoked when the game couldn't start
+     * @param exitCode the exit code of the game process
      */
-    default void onGameCorrupted(){
+    default void onGameCorrupted(int exitCode){
     }
 
     /**

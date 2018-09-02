@@ -402,14 +402,14 @@ public class LauncherMainController extends AbstractGUIController {
     }
 
     @Override
-    public void onGameCorrupted() {
+    public void onGameCorrupted(int exitCode) {
         Platform.runLater(() -> {
             launcherStatus.setText(resourceBundle.getString("status.corrupted"));
 
             Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle(resourceBundle.getString("alert.corruption.title"));
             alert.setHeaderText(MessageFormat.format(resourceBundle.getString("alert.corruption.header"), version.getValue()));
-            alert.setContentText(resourceBundle.getString("alert.corruption.content"));
+            alert.setContentText(MessageFormat.format(resourceBundle.getString("alert.corruption.content"), exitCode));
             alert.initStyle(StageStyle.UTILITY);
 
             DialogPane dialogPane = alert.getDialogPane();

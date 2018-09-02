@@ -507,7 +507,7 @@ public class LauncherAPI {
                 //process.waitFor();
                 if (process.exitValue() != 0) {
                     //something went wrong.
-                    eventHandler.onGameCorrupted();
+                    eventHandler.onGameCorrupted(process.exitValue());
                     logger.error("Minecraft Corruption found!");
                 }
             } catch (Exception ex) {

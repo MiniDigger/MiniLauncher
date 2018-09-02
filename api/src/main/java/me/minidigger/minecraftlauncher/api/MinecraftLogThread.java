@@ -48,6 +48,7 @@ public class MinecraftLogThread extends Thread {
 
     @Override
     public void run() {
+        logger.info("Starting to log output...");
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
             String buffer;
             while ((buffer = reader.readLine()) != null) {
@@ -56,6 +57,6 @@ public class MinecraftLogThread extends Thread {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-
+        logger.info("Shutting down");
     }
 }
