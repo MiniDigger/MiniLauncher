@@ -35,7 +35,6 @@ import com.google.gson.JsonParseException;
 import me.minidigger.minecraftlauncher.api.LauncherAPI;
 import me.minidigger.minecraftlauncher.api.json.LauncherPackage;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -80,14 +79,19 @@ public class LauncherPackageArgumentsDeserializer implements JsonDeserializer<Li
                     JsonObject os;
                     if((os = rule.getAsJsonObject("os")) != null) {
                         String osName = os.get("name").getAsString();
-                        String osVersion = os.get("version").getAsString();
+                        Object osVersion = os.getAsJsonPrimitive("version");
+                        Object arch = os.getAsJsonPrimitive("arch");
 
                         if(osName != null) {
                             conditions.put("os.name", osName);
                         }
 
                         if(osVersion != null) {
-                            conditions.put("os.version", osVersion);
+                            conditions.put("os.version", osVersion.toString());
+                        }
+
+                        if(arch != null) {
+                            conditions.put("os.arch", arch.toString());
                         }
                     }
                 }
