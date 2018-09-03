@@ -26,6 +26,21 @@
 
 package me.minidigger.minecraftlauncher.launcher.gui;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
+import java.io.IOException;
+import java.net.URL;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -56,20 +71,6 @@ import me.minidigger.minecraftlauncher.launcher.LauncherSettings;
 import me.minidigger.minecraftlauncher.launcher.Status;
 import me.minidigger.minecraftlauncher.launcher.tasks.AvatarLoaderTask;
 import me.minidigger.minecraftlauncher.launcher.tasks.VersionCheckerTask;
-import org.checkerframework.checker.nullness.qual.NonNull;
-
-import java.io.IOException;
-import java.net.URL;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * @author ammar
@@ -103,6 +104,9 @@ public class LauncherMainController extends AbstractGUIController {
     private Tooltip usernameTooltip;
 
     @FXML
+    private Tooltip passwordTooltip;
+
+    @FXML
     private Tooltip versionTooltip;
 
     @FXML
@@ -110,6 +114,9 @@ public class LauncherMainController extends AbstractGUIController {
 
     @FXML
     private TextField username;
+
+    @FXML
+    private TextField password;
 
     @FXML
     private ComboBox<String> version;
@@ -197,6 +204,7 @@ public class LauncherMainController extends AbstractGUIController {
         launch.setDisable(true);
         version.setDisable(true);
         username.setDisable(true);
+        password.setDisable(true);
 
         new AvatarLoaderTask((image) -> playerAvatarImage.setImage(image)).start();
 
@@ -396,6 +404,7 @@ public class LauncherMainController extends AbstractGUIController {
         }
 
         username.setDisable(false);
+        password.setDisable(false);
         options.setDisable(false);
         launch.setDisable(false);
         version.setDisable(false);
@@ -417,6 +426,7 @@ public class LauncherMainController extends AbstractGUIController {
             alert.showAndWait();
 
             username.setDisable(false);
+            password.setDisable(false);
             options.setDisable(false);
             launch.setDisable(false);
             version.setDisable(false);
