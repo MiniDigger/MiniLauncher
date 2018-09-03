@@ -62,16 +62,16 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
-import me.minidigger.minecraftlauncer.renderer.FunctionHelper;
-import me.minidigger.minecraftlauncer.renderer.SkinCanvas;
-import me.minidigger.minecraftlauncer.renderer.SkinCanvasSupport;
-import me.minidigger.minecraftlauncer.renderer.animation.SkinAniRunning;
-import me.minidigger.minecraftlauncer.renderer.animation.SkinAniWavingArms;
+import me.minidigger.minecraftlauncer.renderer.animation.animations.RunningAnimation;
+import me.minidigger.minecraftlauncer.renderer.animation.animations.WavingArmsAnimation;
+import me.minidigger.minecraftlauncer.renderer.canvas.SkinCanvas;
+import me.minidigger.minecraftlauncer.renderer.canvas.SkinCanvasSupport;
+import me.minidigger.minecraftlauncer.renderer.util.FunctionHelper;
 import me.minidigger.minecraftlauncher.api.ServerListEntry;
 import me.minidigger.minecraftlauncher.launcher.LauncherMain;
 import me.minidigger.minecraftlauncher.launcher.LauncherSettings;
@@ -140,6 +140,9 @@ public class LauncherMainController extends AbstractGUIController {
     @FXML
     private Button options;
 
+    @FXML
+    private Pane formPane;
+
     static public Stage getApplicationOptionStage() {
         return LauncherMainController.applicationOptionStage;
     }
@@ -168,6 +171,25 @@ public class LauncherMainController extends AbstractGUIController {
             LauncherSettings.firstStart = false;
             LauncherSettings.userSettingsSave();
         }
+
+        playerAvatarImage.setOnMouseClicked(event -> {
+            formPane.getChildren().clear();
+            formPane.getChildren().add(createSkinCanvas());
+        });
+    }
+
+    public static SkinCanvas createSkinCanvas() {
+        try {
+            SkinCanvas canvas = new SkinCanvas(LauncherSettings.playerUsername, 250, 200, true);
+            canvas.getAnimationPlayer().addSkinAnimation(
+                new WavingArmsAnimation(100, 500, 90, canvas));
+//                    new RunningAnimation(100, 800, 30, canvas));
+            FunctionHelper.alwaysB(Consumer<SkinCanvas>::accept, canvas, new SkinCanvasSupport.Mouse(.5));
+            return canvas;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public void showFirstTimeMessage() {
@@ -259,18 +281,8 @@ public class LauncherMainController extends AbstractGUIController {
 
     @FXML
     private void launchMinimize(ActionEvent event) {
-//        Stage stage = LauncherMain.getApplicationMainStage();
-//        stage.setIconified(true);
-
-        Scene scene = new Scene(createSkinCanvas(), 750, 500, Color.web("#666970"));
-        LauncherMain.getApplicationMainStage().setScene(scene);
-    }
-
-    public static SkinCanvas createSkinCanvas() {
-        SkinCanvas canvas = new SkinCanvas(SkinCanvas.STEVE, 400, 400, true);
-        canvas.getAnimationplayer().addSkinAnimation(new SkinAniWavingArms(100, 2000, 7.5, canvas), new SkinAniRunning(100, 100, 30, canvas));
-        FunctionHelper.alwaysB(Consumer<SkinCanvas>::accept, canvas, new SkinCanvasSupport.Mouse(.5), new SkinCanvasSupport.Drag("2222"));
-        return canvas;
+        Stage stage = LauncherMain.getApplicationMainStage();
+        stage.setIconified(true);
     }
 
     @FXML
