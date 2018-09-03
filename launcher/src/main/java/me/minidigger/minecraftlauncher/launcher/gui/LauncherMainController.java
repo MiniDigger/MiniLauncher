@@ -37,6 +37,7 @@ import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -61,10 +62,16 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
+import me.minidigger.minecraftlauncer.renderer.FunctionHelper;
+import me.minidigger.minecraftlauncer.renderer.SkinCanvas;
+import me.minidigger.minecraftlauncer.renderer.SkinCanvasSupport;
+import me.minidigger.minecraftlauncer.renderer.animation.SkinAniRunning;
+import me.minidigger.minecraftlauncer.renderer.animation.SkinAniWavingArms;
 import me.minidigger.minecraftlauncher.api.ServerListEntry;
 import me.minidigger.minecraftlauncher.launcher.LauncherMain;
 import me.minidigger.minecraftlauncher.launcher.LauncherSettings;
@@ -252,8 +259,18 @@ public class LauncherMainController extends AbstractGUIController {
 
     @FXML
     private void launchMinimize(ActionEvent event) {
-        Stage stage = LauncherMain.getApplicationMainStage();
-        stage.setIconified(true);
+//        Stage stage = LauncherMain.getApplicationMainStage();
+//        stage.setIconified(true);
+
+        Scene scene = new Scene(createSkinCanvas(), 750, 500, Color.web("#666970"));
+        LauncherMain.getApplicationMainStage().setScene(scene);
+    }
+
+    public static SkinCanvas createSkinCanvas() {
+        SkinCanvas canvas = new SkinCanvas(SkinCanvas.STEVE, 400, 400, true);
+        canvas.getAnimationplayer().addSkinAnimation(new SkinAniWavingArms(100, 2000, 7.5, canvas), new SkinAniRunning(100, 100, 30, canvas));
+        FunctionHelper.alwaysB(Consumer<SkinCanvas>::accept, canvas, new SkinCanvasSupport.Mouse(.5), new SkinCanvasSupport.Drag("2222"));
+        return canvas;
     }
 
     @FXML
