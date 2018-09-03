@@ -37,7 +37,6 @@ import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -67,11 +66,11 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
+import me.minidigger.minecraftlauncer.renderer.SkinCanvas;
+import me.minidigger.minecraftlauncer.renderer.SkinCanvasMouseHandler;
+import me.minidigger.minecraftlauncer.renderer.animation.animations.MagmaArmsAnimation;
 import me.minidigger.minecraftlauncer.renderer.animation.animations.RunningAnimation;
 import me.minidigger.minecraftlauncer.renderer.animation.animations.WavingArmsAnimation;
-import me.minidigger.minecraftlauncer.renderer.canvas.SkinCanvas;
-import me.minidigger.minecraftlauncer.renderer.canvas.SkinCanvasSupport;
-import me.minidigger.minecraftlauncer.renderer.util.FunctionHelper;
 import me.minidigger.minecraftlauncher.api.ServerListEntry;
 import me.minidigger.minecraftlauncher.launcher.LauncherMain;
 import me.minidigger.minecraftlauncher.launcher.LauncherSettings;
@@ -173,23 +172,20 @@ public class LauncherMainController extends AbstractGUIController {
         }
 
         playerAvatarImage.setOnMouseClicked(event -> {
+            LauncherSettings.playerUsername = username.getText();
+            new AvatarLoaderTask((image) -> playerAvatarImage.setImage(image)).start();
             formPane.getChildren().clear();
-            formPane.getChildren().add(createSkinCanvas());
+            try {
+                SkinCanvas canvas = new SkinCanvas(LauncherSettings.playerUsername, 250, 200, true);
+                canvas.getAnimationPlayer().addSkinAnimation(
+//                new MagmaArmsAnimation(100, 500, 90, canvas));
+//                new WavingArmsAnimation(100, 500, 90, canvas));
+                    new RunningAnimation(100, 800, 30, canvas));
+                formPane.getChildren().add(canvas);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         });
-    }
-
-    public static SkinCanvas createSkinCanvas() {
-        try {
-            SkinCanvas canvas = new SkinCanvas(LauncherSettings.playerUsername, 250, 200, true);
-            canvas.getAnimationPlayer().addSkinAnimation(
-                new WavingArmsAnimation(100, 500, 90, canvas));
-//                    new RunningAnimation(100, 800, 30, canvas));
-            FunctionHelper.alwaysB(Consumer<SkinCanvas>::accept, canvas, new SkinCanvasSupport.Mouse(.5));
-            return canvas;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     public void showFirstTimeMessage() {

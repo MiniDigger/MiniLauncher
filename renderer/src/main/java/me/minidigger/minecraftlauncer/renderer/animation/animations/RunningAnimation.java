@@ -3,7 +3,7 @@ package me.minidigger.minecraftlauncer.renderer.animation.animations;
 import javafx.util.Duration;
 import me.minidigger.minecraftlauncer.renderer.SkinTransition;
 import me.minidigger.minecraftlauncer.renderer.animation.SkinAnimation;
-import me.minidigger.minecraftlauncer.renderer.canvas.SkinCanvas;
+import me.minidigger.minecraftlauncer.renderer.SkinCanvas;
 import me.minidigger.minecraftlauncer.renderer.util.FunctionHelper;
 
 import static me.minidigger.minecraftlauncer.renderer.SkinData.lArm;

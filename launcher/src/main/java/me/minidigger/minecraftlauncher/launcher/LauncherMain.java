@@ -26,15 +26,22 @@
 
 package me.minidigger.minecraftlauncher.launcher;
 
+import java.util.ResourceBundle;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
-import java.util.ResourceBundle;
+import me.minidigger.minecraftlauncer.renderer.SkinCanvas;
+import me.minidigger.minecraftlauncer.renderer.SkinCanvasMouseHandler;
+import me.minidigger.minecraftlauncer.renderer.model.SkinCube;
 
 /**
  * @author ammar
@@ -47,6 +54,8 @@ public class LauncherMain extends Application {
 
     private double xOffset = 0;
     private double yOffset = 0;
+
+    private boolean dragStartedOnSkin = false;
 
     static public Stage getApplicationMainStage() {
         return LauncherMain.applicationMainStage;
@@ -82,14 +91,46 @@ public class LauncherMain extends Application {
         stage.setResizable(false);
         LauncherSettings.setTheme(scene);
 
-        scene.setOnMousePressed(event -> {
+        SkinCanvasMouseHandler mouseHandler = new SkinCanvasMouseHandler(.5);
+
+        scene.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
+            if (isSkin(event.getPickResult().getIntersectedNode())) {
+                dragStartedOnSkin = true;
+                mouseHandler.press(event);
+                return;
+            }
+            dragStartedOnSkin = false;
             xOffset = stage.getX() - event.getScreenX();
             yOffset = stage.getY() - event.getScreenY();
         });
 
-        scene.setOnMouseDragged(event -> {
+        scene.addEventHandler(MouseEvent.MOUSE_DRAGGED, event -> {
+            if (dragStartedOnSkin) {
+                mouseHandler.drag(event);
+                return;
+            }
             stage.setX(event.getScreenX() + xOffset);
             stage.setY(event.getScreenY() + yOffset);
         });
+
+        scene.addEventHandler(ScrollEvent.SCROLL, event -> {
+            if (dragStartedOnSkin) {
+                mouseHandler.scroll(event);
+                return;
+            }
+        });
+    }
+
+    private boolean isSkin(Node node) {
+        if (node == null) {
+            return false;
+        } else if (node instanceof SkinCube || node instanceof SkinCanvas) {
+            return true;
+        } else if (node instanceof Pane) {
+            return false;//TODO check pane
+        } else {
+            System.out.println("check " + node.getClass().getName());
+            return false;//TODO check pane
+        }
     }
 }

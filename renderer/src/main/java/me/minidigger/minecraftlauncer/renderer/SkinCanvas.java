@@ -1,4 +1,4 @@
-package me.minidigger.minecraftlauncer.renderer.canvas;
+package me.minidigger.minecraftlauncer.renderer;
 
 import java.io.IOException;
 
@@ -121,7 +121,6 @@ public class SkinCanvas extends Group {
             }
         }
     }
-
 
     private Group createPlayerModel() {
         head.setTranslateY(-(bodyInside.getHeight() + headInside.getHeight()) / 2);
