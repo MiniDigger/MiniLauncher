@@ -26,7 +26,7 @@
 
 package me.minidigger.minecraftlauncher.api.json.launcher;
 
-import com.google.gson.annotations.SerializedName;
+import com.squareup.moshi.Json;
 import me.minidigger.minecraftlauncher.api.LauncherAPI;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -42,34 +42,34 @@ import java.util.Map;
  * @author Mark Vainomaa
  */
 public class LauncherPackage {
-    @SerializedName("id")
+    @Json(name = "id")
     private String id;
 
-    @SerializedName("type")
+    @Json(name = "type")
     private VersionType type;
 
-    @SerializedName("assets")
+    @Json(name = "assets")
     private String assets;
 
-    @SerializedName("assetIndex")
+    @Json(name = "assetIndex")
     private AssetIndexInfo assetIndex;
 
-    @SerializedName("downloads")
+    @Json(name = "downloads")
     private Map<String, Downloadable> downloads;
 
-    @SerializedName("libraries")
+    @Json(name = "libraries")
     private List<Library> libraries;
 
-    @SerializedName("minimumLauncherVersion")
+    @Json(name = "minimumLauncherVersion")
     private int minimumLauncherVersion;
 
-    @SerializedName("arguments")
+    @Json(name = "arguments")
     private Arguments arguments;
 
-    @SerializedName("minecraftArguments")
+    @Json(name = "minecraftArguments")
     private String minecraftArguments;
 
-    @SerializedName("logging")
+    @Json(name = "logging")
     private Map<String, Logging> logging;
 
     @NonNull
@@ -124,10 +124,10 @@ public class LauncherPackage {
     }
 
     public static class Arguments {
-        @SerializedName("game")
+        @Json(name = "game")
         private List<Argument> game;
 
-        @SerializedName("jvm")
+        @Json(name = "jvm")
         private List<Argument> jvm;
 
         @NonNull
@@ -142,19 +142,19 @@ public class LauncherPackage {
     }
 
     public static class AssetIndexInfo {
-        @SerializedName("id")
+        @Json(name = "id")
         private String id;
 
-        @SerializedName("sha1")
+        @Json(name = "sha1")
         private String sha1;
 
-        @SerializedName("size")
+        @Json(name = "size")
         private long size;
 
-        @SerializedName("totalSize")
+        @Json(name = "totalSize")
         private long totalSize;
 
-        @SerializedName("url")
+        @Json(name = "url")
         private URL url;
 
         @NonNull
@@ -182,19 +182,19 @@ public class LauncherPackage {
     }
 
     public static class Library {
-        @SerializedName("name")
+        @Json(name = "name")
         private String name;
 
-        @SerializedName("downloads")
+        @Json(name = "downloads")
         private Downloads downloads;
 
-        @SerializedName("extract")
+        @Json(name = "extract")
         private ExtractGuide extract;
 
-        @SerializedName("natives")
+        @Json(name = "natives")
         private Map<String, String> natives;
 
-        @SerializedName("rules")
+        @Json(name = "rules")
         private RulesContainer rules;
 
         @NonNull
@@ -223,10 +223,10 @@ public class LauncherPackage {
         }
 
         public static class Downloads {
-            @SerializedName("artifact")
+            @Json(name = "artifact")
             private Artifact artifact;
 
-            @SerializedName("classifiers")
+            @Json(name = "classifiers")
             private Map<String, Downloadable> classifiers;
 
             @NonNull
@@ -241,16 +241,16 @@ public class LauncherPackage {
         }
 
         public static class Artifact {
-            @SerializedName("path")
+            @Json(name = "path")
             private String path;
 
-            @SerializedName("sha1")
+            @Json(name = "sha1")
             private String sha1;
 
-            @SerializedName("size")
+            @Json(name = "size")
             private long size;
 
-            @SerializedName("url")
+            @Json(name = "url")
             private URL url;
 
             @NonNull
@@ -274,7 +274,7 @@ public class LauncherPackage {
         }
 
         public static class ExtractGuide {
-            @SerializedName("exclude")
+            @Json(name = "exclude")
             private List<String> exclude;
 
             @Nullable
@@ -285,13 +285,13 @@ public class LauncherPackage {
     }
 
     public static class Logging {
-        @SerializedName("argument")
+        @Json(name = "argument")
         private String argument;
 
-        @SerializedName("file")
+        @Json(name = "file")
         private Downloadable file;
 
-        @SerializedName("type")
+        @Json(name = "type")
         private String type;
 
         @NonNull

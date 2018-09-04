@@ -26,7 +26,7 @@
 
 package me.minidigger.minecraftlauncher.api.json.launcher;
 
-import com.google.gson.annotations.SerializedName;
+import com.squareup.moshi.Json;
 
 import java.util.Map;
 
@@ -36,14 +36,14 @@ import java.util.Map;
  * @author Mark Vainomaa
  */
 public class AssetIndex {
-    @SerializedName("objects")
+    @Json(name = "objects")
     private Map<String, AssetInfo> objects;
 
     public static class AssetInfo {
-        @SerializedName("hash")
+        @Json(name = "hash")
         private String hash;
 
-        @SerializedName("size")
+        @Json(name = "size")
         private long size;
     }
 }

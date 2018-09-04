@@ -26,7 +26,7 @@
 
 package me.minidigger.minecraftlauncher.api.json.launcher;
 
-import com.google.gson.annotations.SerializedName;
+import com.squareup.moshi.Json;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.net.URL;
@@ -40,10 +40,10 @@ import java.util.List;
  */
 public class VersionManifest {
 
-    @SerializedName("latest")
+    @Json(name = "latest")
     private LatestInfo latest;
 
-    @SerializedName("versions")
+    @Json(name = "versions")
     private List<VersionInfo> versions;
 
     /**
@@ -72,10 +72,10 @@ public class VersionManifest {
      * Latest Minecraft version info in {@link VersionManifest}
      */
     public static class LatestInfo {
-        @SerializedName("release")
+        @Json(name = "release")
         private String release;
 
-        @SerializedName("snapshot")
+        @Json(name = "snapshot")
         private String snapshot;
 
         @NonNull
@@ -93,19 +93,19 @@ public class VersionManifest {
      * Minecraft Version info in {@link VersionManifest}
      */
     public static class VersionInfo implements Comparable<VersionInfo> {
-        @SerializedName("id")
+        @Json(name = "id")
         private String id;
 
-        @SerializedName("type")
+        @Json(name = "type")
         private VersionType type;
 
-        @SerializedName("url")
+        @Json(name = "url")
         private URL url;
 
-        @SerializedName("time")
+        @Json(name = "time")
         private Date time;
 
-        @SerializedName("releaseTime")
+        @Json(name = "releaseTime")
         private Date releaseTime;
 
         /**

@@ -26,7 +26,7 @@
 
 package me.minidigger.minecraftlauncher.api.json.launcher;
 
-import com.google.gson.annotations.SerializedName;
+import com.squareup.moshi.Json;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -49,22 +49,22 @@ public class LauncherProfile {
      *
      * Profile was generated using latest Mojang Java based launcher
      */
-    @SerializedName("clientToken")
+    @Json(name = "clientToken")
     private UUID clientToken;
 
-    @SerializedName("selectedUser")
+    @Json(name = "selectedUser")
     private String selectedUser;
 
-    @SerializedName("selectedProfile")
+    @Json(name = "selectedProfile")
     private String selectedProfile;
 
-    @SerializedName("profiles")
+    @Json(name = "profiles")
     private Map<String, LauncherProfile> profiles;
 
-    @SerializedName("authenticationDatabase")
+    @Json(name = "authenticationDatabase")
     private Map<String, AuthenticationDatabaseEntry> authenticationDatabase;
 
-    @SerializedName("launcherVersion")
+    @Json(name = "launcherVersion")
     private Version launcherVersion;
 
     @NonNull
@@ -98,13 +98,13 @@ public class LauncherProfile {
     }
 
     public static class Version {
-        @SerializedName("name")
+        @Json(name = "name")
         private String name;
 
-        @SerializedName("format")
+        @Json(name = "format")
         private int format;
 
-        @SerializedName("profilesFormat")
+        @Json(name = "profilesFormat")
         private int profilesFormat;
 
         @NonNull
@@ -123,37 +123,37 @@ public class LauncherProfile {
 
     public static class LaunchProfile {
         // Always present
-        @SerializedName("name")
+        @Json(name = "name")
         private String name;
 
         // Absent if "Use Latest Version" is set
-        @SerializedName("lastVersionId")
+        @Json(name = "lastVersionId")
         private String lastVersionId;
 
-        @SerializedName("gameDir")
+        @Json(name = "gameDir")
         private String gameDir;
 
-        @SerializedName("javaDir")
+        @Json(name = "javaDir")
         private String javaDir;
 
         // Why not string list... :(
-        @SerializedName("javaArgs")
+        @Json(name = "javaArgs")
         private String javaArgs;
 
-        @SerializedName("allowedReleaseTypes")
+        @Json(name = "allowedReleaseTypes")
         private Set<VersionType> allowedReleaseTypes;
 
-        @SerializedName("launcherVisibilityOnGameClose")
+        @Json(name = "launcherVisibilityOnGameClose")
         private LauncherVisibility launcherVisibilityOnGameClose;
 
         public enum LauncherVisibility {
-            @SerializedName("close launcher when game starts")
+            @Json(name = "close launcher when game starts")
             CLOSE_ON_GAME_START,
 
-            @SerializedName("hide launcher and re-open when game closes")
+            @Json(name = "hide launcher and re-open when game closes")
             HIDE_UNTIL_GAME_CLOSE,
 
-            @SerializedName("keep the launcher open")
+            @Json(name = "keep the launcher open")
             KEEP_OPEN,
         }
 
@@ -218,19 +218,19 @@ public class LauncherProfile {
     }
 
     public static class AuthenticationDatabaseEntry {
-        @SerializedName("displayName")
+        @Json(name = "displayName")
         private String displayName;
 
-        @SerializedName("accessToken")
+        @Json(name = "accessToken")
         private String accessToken;
 
-        @SerializedName("userid")
+        @Json(name = "userid")
         private String userid;
 
-        @SerializedName("uuid")
+        @Json(name = "uuid")
         private UUID uuid;
 
-        @SerializedName("username")
+        @Json(name = "username")
         private String username;
 
         @NonNull

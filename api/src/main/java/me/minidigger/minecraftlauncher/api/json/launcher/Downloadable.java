@@ -26,7 +26,7 @@
 
 package me.minidigger.minecraftlauncher.api.json.launcher;
 
-import com.google.gson.annotations.SerializedName;
+import com.squareup.moshi.Json;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -38,16 +38,16 @@ import java.net.URL;
  * @author Mark Vainomaa
  */
 public class Downloadable {
-    @SerializedName("id")
+    @Json(name = "id")
     private String id;
 
-    @SerializedName("sha1")
+    @Json(name = "sha1")
     private String sha1;
 
-    @SerializedName("size")
+    @Json(name = "size")
     private long size;
 
-    @SerializedName("url")
+    @Json(name = "url")
     private URL url;
 
     @Nullable

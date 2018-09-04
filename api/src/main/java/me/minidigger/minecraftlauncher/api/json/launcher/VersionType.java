@@ -26,7 +26,7 @@
 
 package me.minidigger.minecraftlauncher.api.json.launcher;
 
-import com.google.gson.annotations.SerializedName;
+import com.squareup.moshi.Json;
 
 /**
  * Minecraft release type
@@ -34,16 +34,16 @@ import com.google.gson.annotations.SerializedName;
  * @author Mark Vainomaa
  */
 public enum VersionType {
-    @SerializedName("old_alpha")
+    @Json(name = "old_alpha")
     OLD_ALPHA,
 
-    @SerializedName("old_beta")
+    @Json(name = "old_beta")
     OLD_BETA,
 
-    @SerializedName("release")
+    @Json(name = "release")
     RELEASE(true),
 
-    @SerializedName("snapshot")
+    @Json(name = "snapshot")
     SNAPSHOT,
     ;
 
