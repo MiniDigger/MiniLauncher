@@ -4,12 +4,12 @@ import me.minidigger.minecraftlauncher.mojangapi.AuthenticationEndpoint;
 
 public class TokenRequest {
 
-	private String accessToken;
-	private String clientToken;
+    private String accessToken;
+    private String clientToken;
 
-	public TokenRequest(String accessToken) {
-		super();
-		this.accessToken = accessToken;
-		this.clientToken = AuthenticationEndpoint.clientToken.toString();
-	}
+    public TokenRequest(String accessToken) {
+        super();
+        this.accessToken = accessToken;
+        this.clientToken = AuthenticationEndpoint.clientToken.toString();
+    }
 }
