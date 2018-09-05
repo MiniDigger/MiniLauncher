@@ -63,11 +63,8 @@ public class LauncherPackage {
     @SerializedName("minimumLauncherVersion")
     private int minimumLauncherVersion;
 
-    @SerializedName("arguments")
+    @SerializedName(value = "arguments", alternate = "minecraftArguments")
     private Arguments arguments;
-
-    @SerializedName("minecraftArguments")
-    private String minecraftArguments;
 
     @SerializedName("logging")
     private Map<String, Logging> logging;
@@ -106,15 +103,9 @@ public class LauncherPackage {
         return minimumLauncherVersion;
     }
 
-    // If this isn't present, then minecraftArguments is
-    @Nullable
+    @NonNull
     public Arguments getArguments() {
         return arguments;
-    }
-
-    @Nullable
-    public List<String> getMinecraftArguments() {
-        return minecraftArguments != null ? Arrays.asList(minecraftArguments.split(" ")) : null;
     }
 
     // Not present in older versions (TODO: which?)

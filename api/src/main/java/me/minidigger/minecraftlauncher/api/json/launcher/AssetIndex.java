@@ -27,6 +27,7 @@
 package me.minidigger.minecraftlauncher.api.json.launcher;
 
 import com.google.gson.annotations.SerializedName;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Map;
 
@@ -45,5 +46,19 @@ public class AssetIndex {
 
         @SerializedName("size")
         private long size;
+
+        @NonNull
+        public String getHash() {
+            return hash;
+        }
+
+        public long getSize() {
+            return size;
+        }
+    }
+
+    @NonNull
+    public Map<String, AssetInfo> getObjects() {
+        return objects;
     }
 }

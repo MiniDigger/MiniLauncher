@@ -26,120 +26,67 @@
 
 package me.minidigger.minecraftlauncher.api.json.deserializers;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import me.minidigger.minecraftlauncher.api.LauncherAPI;
 import me.minidigger.minecraftlauncher.api.json.launcher.LauncherPackage;
-import me.minidigger.minecraftlauncher.api.json.launcher.RulesContainer;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Mark Vainomaa
  */
-public class LauncherPackageArgumentsDeserializer implements JsonDeserializer<List<LauncherPackage.Argument>> {
+public class LauncherPackageArgumentsDeserializer implements JsonDeserializer<LauncherPackage.Arguments> {
     @Override
-    public List<LauncherPackage.Argument> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        List<LauncherPackage.Argument> collectedArguments = new ArrayList<>();
-        JsonArray base = json.getAsJsonArray();
+    public LauncherPackage.Arguments deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+        LauncherPackage.Arguments args = new LauncherPackage.Arguments();
 
-        for(JsonElement element : base) {
-            if(element.isJsonObject()) {
-                JsonObject object = element.getAsJsonObject();
-                JsonArray rules = object.getAsJsonArray("rules");
-                JsonElement value = object.get("value");
+        List<LauncherPackage.Argument> gameArgs = Collections.emptyList();
+        List<LauncherPackage.Argument> jvmArgs = Collections.emptyList();
 
-                // Deal with rules
-                RulesContainer rulesContainer = context.deserialize(rules, RulesContainer.class);
+        // Legacy string arguments?
+        if(json.isJsonPrimitive()) {
+            // Game arguments should be always present
+            gameArgs = Arrays.stream(json.getAsString().split(" "))
+                    .map(LauncherPackageArgumentListDeserializer.BasicArgument::new)
+                    .collect(Collectors.toList());
 
-                // Collect rule values
-                List<String> values;
-                if(value.isJsonArray()) {
-                    // String array
-                    values = new ArrayList<>();
-                    for(JsonElement valueElement : value.getAsJsonArray()) {
-                        values.add(valueElement.getAsString());
-                    }
-                } else {
-                    values = Collections.singletonList(value.getAsString());
-                }
+            // No jvm args
+        } else if(json.isJsonObject()) {
+            JsonObject base = json.getAsJsonObject();
 
-                // Add to collected arguments
-                collectedArguments.add(new ConditionalArgument(values, rulesContainer));
-            } else {
-                String value = element.getAsString();
-                collectedArguments.add(new BasicArgument(value, true));
-            }
+            // New advanced (and cancerous...) arguments instead :o
+            if(base.has("game"))
+                gameArgs = context.deserialize(base.get("game"), LauncherPackageArgumentListDeserializer.ARGUMENT_LIST_TYPE.getType());
+
+            if(base.has("jvm"))
+                jvmArgs = context.deserialize(base.get("jvm"), LauncherPackageArgumentListDeserializer.ARGUMENT_LIST_TYPE.getType());
+        } else {
+            throw new IllegalStateException("Invalid json type: " + json);
         }
 
-        return collectedArguments;
+        setFieldValue(args, "game", gameArgs);
+        setFieldValue(args, "jvm", jvmArgs);
+
+        return args;
     }
 
-    public static class BasicArgument implements LauncherPackage.Argument {
-        protected final List<String> value;
-        private final boolean allowed;
-
-        public BasicArgument(@NonNull String value, boolean allowed) {
-            this(Collections.singletonList(value), allowed);
-        }
-
-        public BasicArgument(@NonNull List<String> value, boolean allowed) {
-            this.value = value;
-            this.allowed = allowed;
-        }
-
-        @NonNull
-        @Override
-        public List<String> getValue() {
-            return value;
-        }
-
-        @Override
-        public boolean isAllowed(@NonNull LauncherAPI launcherAPI) {
-            return allowed;
-        }
-
-        @Override
-        public String toString() {
-            return "BasicArgument{" +
-                    "value=" + value +
-                    ", allowed=" + allowed +
-                    '}';
-        }
-    }
-
-    public static class ConditionalArgument extends BasicArgument implements LauncherPackage.Argument {
-        private final RulesContainer rules;
-
-        public ConditionalArgument(@NonNull String value, @NonNull RulesContainer rules) {
-            super(value, false);
-            this.rules = rules;
-        }
-
-        public ConditionalArgument(@NonNull List<String> value, @NonNull RulesContainer rules) {
-            super(value, false);
-            this.rules = rules;
-        }
-
-        @Override
-        public boolean isAllowed(@NonNull LauncherAPI launcherAPI) {
-            return rules.isAllowed(launcherAPI);
-        }
-
-        @Override
-        public String toString() {
-            return "ConditionalArgument{" +
-                    "value=" + value +
-                    ", rules=" + rules +
-                    '}';
+    private static void setFieldValue(@NonNull Object instance, @NonNull String fieldName, @Nullable Object value) {
+        try {
+            Field field = instance.getClass().getField(fieldName);
+            field.setAccessible(true);
+            field.set(instance, value);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }
