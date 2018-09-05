@@ -27,11 +27,7 @@ public abstract class AbstractEndpoint {
     protected static Moshi moshi;
 
     static {
-        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("10.4.16.11", 8080));
-        Authenticator proxyAuthenticator = (route, response) -> response.request().newBuilder()
-                .header("Proxy-Authorization", Credentials.basic("tbf", "ji90ok")).build();
-
-        client = new OkHttpClient.Builder().proxy(proxy).proxyAuthenticator(proxyAuthenticator).build();
+        client = new OkHttpClient.Builder().build();
 
         moshi = new Moshi.Builder().add(new StatusAdapter()).add(new UUIDAdapter()).build();
     }
