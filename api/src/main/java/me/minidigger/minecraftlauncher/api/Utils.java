@@ -26,6 +26,7 @@
 
 package me.minidigger.minecraftlauncher.api;
 
+import me.minidigger.minecraftlauncher.api.platform.EnvironmentInfo;
 import net.kyori.nbt.CompoundTag;
 import net.kyori.nbt.ListTag;
 import net.kyori.nbt.TagIO;
@@ -39,7 +40,6 @@ import java.io.InputStream;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
@@ -48,7 +48,6 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * @author ammar
@@ -56,33 +55,27 @@ import java.util.Locale;
 class Utils {
     private final static Logger logger = LoggerFactory.getLogger(Utils.class);
     private final static SecureRandom random = new SecureRandom();
-    private static OperatingSystem currentOS;
-    private static Path minecraftDataDirectory;
 
     private Utils() {}
 
-    @NonNull
+    @Deprecated
     public static Path getMinecraftDataDirectory() {
-        if(minecraftDataDirectory == null)
-            throw new IllegalStateException("Unsupported OS");
-        
-        return minecraftDataDirectory;
+        return EnvironmentInfo.getMinecraftDataDirectory();
     }
 
+    @Deprecated
     public static Path getMinecraftServersList() {
-        return minecraftDataDirectory.resolve("servers.dat");
+        return EnvironmentInfo.getMinecraftServersList();
     }
 
+    @Deprecated
     public static Path getMineCraftVersionsLocation() {
-        return getMinecraftDataDirectory().resolve("versions");
+        return EnvironmentInfo.getMinecraftVersionsDirectory();
     }
 
-    public static Path getMineCraftTmpLocation() {
-        return getMinecraftDataDirectory().resolve("tmp");
-    }
-
+    @Deprecated
     public static Path getMineCraftLibrariesLocation() {
-        return getMinecraftDataDirectory().resolve("libraries");
+        return EnvironmentInfo.getMinecraftLibrariesDirectory();
     }
 
     @NonNull
@@ -229,16 +222,9 @@ class Utils {
         return getMineCraftLibrariesLocation().resolve("" + _path);
     }
 
+
     public static String getArgsDiv() {
-        switch(currentOS) {
-            case LINUX:
-            case MAC:
-                return ":";
-            case WINDOWS:
-                return ";";
-            default:
-                throw new IllegalStateException("Unsupported OS");
-        }
+        return EnvironmentInfo.getClasspathArgsDivider();
     }
 
     @Nullable
@@ -318,36 +304,11 @@ class Utils {
 
     }
 
-    public static OperatingSystem getOS() {
-        return currentOS;
+    public static EnvironmentInfo.OperatingSystem getOS() {
+        return EnvironmentInfo.getCurrentOperatingSystem();
     }
 
     public static String nextSessionId() {
         return new BigInteger(130, random).toString(32);
-    }
-
-    public enum OperatingSystem {
-        LINUX,
-        MAC,
-        WINDOWS,
-        UNSUPPORTED,
-    }
-
-    static {
-        // Cache current OS and data directory
-        String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
-
-        if ((OS.contains("mac")) || (OS.contains("darwin"))) {
-            currentOS = OperatingSystem.MAC;
-            minecraftDataDirectory = Paths.get(System.getProperty("user.home") + "Library/Application Support/minecraft");
-        } else if (OS.contains("win")) {
-            currentOS = OperatingSystem.WINDOWS;
-            minecraftDataDirectory = Paths.get(System.getenv("APPDATA"),  ".minecraft");
-        } else if (OS.contains("nux")) {
-            currentOS = OperatingSystem.LINUX;
-            minecraftDataDirectory = Paths.get(System.getProperty("user.home"), ".minecraft");
-        } else {
-            currentOS = OperatingSystem.UNSUPPORTED;
-        }
     }
 }
