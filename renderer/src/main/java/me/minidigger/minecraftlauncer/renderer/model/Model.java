@@ -1,8 +1,7 @@
 package me.minidigger.minecraftlauncer.renderer.model;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 import javafx.scene.shape.TriangleMesh;
+import me.minidigger.minecraftlauncer.renderer.util.ArrayUtilities;
 
 public class Model extends TriangleMesh {
 
@@ -74,12 +73,12 @@ public class Model extends TriangleMesh {
         };
 
         int copy[] = faces.clone();
-        ArrayUtils.reverse(copy);
+        ArrayUtilities.reverseIntArray(copy);
         for (int i = 0; i < copy.length; i += 2) {
             int tmp = copy[i];
             copy[i] = copy[i + 1];
             copy[i + 1] = tmp;
         }
-        return ArrayUtils.addAll(faces, copy);
+        return ArrayUtilities.mergeIntArrays(faces, copy);
     }
 }
