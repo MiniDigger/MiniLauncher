@@ -45,26 +45,26 @@ import org.slf4j.LoggerFactory;
 public class LauncherSettings {
     private final static Logger logger = LoggerFactory.getLogger(LauncherSettings.class);
 
-    static public final String updateURL = "https://raw.githubusercontent.com/MiniDigger/MinecraftLauncher/master/_html_/latestVersion";
-    static public final String serverIP = "localhost";
-    static public final String serverName = "Localhost";
-    static public String launcherVersion = "2.0";
-    static public String playerUsername = "";
-    static public String playerVersion = "-1";
-    static public boolean firstStart = true;
-    static public boolean refreshVersionList = false;
-    static public boolean bypassBlacklist = true;
-    static public boolean keepLauncherOpen = false;
-    static public boolean showDebugStatus = false;
-    static public boolean fastStartUp = false;
-    static public String selectedTheme = "";
+    public static final String updateURL = "https://raw.githubusercontent.com/MiniDigger/MinecraftLauncher/master/_html_/latestVersion";
+    public static final String serverIP = "localhost";
+    public static final String serverName = "Localhost";
+    public static String launcherVersion = "2.0";
+    public static String playerUsername = "";
+    public static String playerVersion = "-1";
+    public static boolean firstStart = true;
+    public static boolean refreshVersionList = false;
+    public static boolean bypassBlacklist = true;
+    public static boolean keepLauncherOpen = false;
+    public static boolean showDebugStatus = false;
+    public static boolean fastStartUp = false;
+    public static String selectedTheme = "";
 
-    static public String resolutionWidth = "854";
-    static public String resolutionHeight = "480";
-    static public String ramAllocationMin = "1024";
-    static public String ramAllocationMax = "1024";
-    static public String javaPath = "";
-    static public String jvmArguments = "";
+    public static String resolutionWidth = "854";
+    public static String resolutionHeight = "480";
+    public static String ramAllocationMin = "1024";
+    public static String ramAllocationMax = "1024";
+    public static String javaPath = "";
+    public static String jvmArguments = "";
 
     public static void userSettingsSave() {
         if (LauncherSettings.resolutionWidth.equals("") || LauncherSettings.resolutionWidth.equals("0")) {
