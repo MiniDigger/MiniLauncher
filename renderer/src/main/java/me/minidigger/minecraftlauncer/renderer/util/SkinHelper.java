@@ -22,34 +22,44 @@ public interface SkinHelper {
         }
 
         WritableImage newSkin = new WritableImage((int) srcSkin.getWidth(), (int) srcSkin.getHeight() * 2);
-        PixelCopyer copyer = new PixelCopyer(srcSkin, newSkin);
+        PixelCopier copyer = new PixelCopier(srcSkin, newSkin);
         // HEAD & HAT
         copyer.copy(0 / 64F, 0 / 32F, 0 / 64F, 0 / 64F, 64 / 64F, 16 / 32F);
+
         // LEFT-LEG
         x32Tox64(copyer, 0 / 64F, 16 / 32F, 16 / 64F, 48 / 64F, 4 / 64F, 12 / 32F, 4 / 64F);
+
         // RIGHT-LEG
         copyer.copy(0 / 64F, 16 / 32F, 0 / 64F, 16 / 64F, 16 / 64F, 16 / 32F);
+
         // BODY
         copyer.copy(16 / 64F, 16 / 32F, 16 / 64F, 16 / 64F, 24 / 64F, 16 / 32F);
+
         // LEFT-ARM
         x32Tox64(copyer, 40 / 64F, 16 / 32F, 32 / 64F, 48 / 64F, 4 / 64F, 12 / 32F, 4 / 64F);
+
         // RIGHT-ARM
         copyer.copy(40 / 64F, 16 / 32F, 40 / 64F, 16 / 64F, 16 / 64F, 16 / 32F);
 
         return newSkin;
     }
 
-    static void x32Tox64(PixelCopyer copyer, float srcX, float srcY, float toX, float toY, float width, float height, float depth) {
+    static void x32Tox64(PixelCopier copyer, float srcX, float srcY, float toX, float toY, float width, float height, float depth) {
         // TOP
         copyer.copy(srcX + depth, srcY, toX + depth, toY, width, depth * 2, true, false);
+
         // BOTTOM
         copyer.copy(srcX + depth + width, srcY, toX + depth + width, toY, width, depth * 2, true, false);
+
         // INS
         copyer.copy(srcX, srcY + depth * 2, toX + width + depth, toY + depth, depth, height, true, false);
+
         // OUTS
         copyer.copy(srcX + width + depth, srcY + depth * 2, toX, toY + depth, depth, height, true, false);
+
         // FRONT
         copyer.copy(srcX + depth, srcY + depth * 2, toX + depth, toY + depth, width, height, true, false);
+
         // BACK
         copyer.copy(srcX + width + depth * 2, srcY + depth * 2, toX + width + depth * 2, toY + depth, width, height, true, false);
     }

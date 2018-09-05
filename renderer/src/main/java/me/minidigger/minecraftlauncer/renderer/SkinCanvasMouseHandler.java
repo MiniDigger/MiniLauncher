@@ -29,9 +29,11 @@ public class SkinCanvasMouseHandler {
                 if (e.isShiftDown()) {
                     zRotation.setAngle(zRotation.getAngle() - (e.getSceneY() - lastY) * sensitivity);
                 }
+
                 if (e.isAltDown()) {
                     yRotation.setAngle(yRotation.getAngle() + (e.getSceneX() - lastX) * sensitivity);
                 }
+
                 if (e.isControlDown()) {
                     xRotation.setAngle(xRotation.getAngle() + (e.getSceneY() - lastY) * sensitivity);
                 }

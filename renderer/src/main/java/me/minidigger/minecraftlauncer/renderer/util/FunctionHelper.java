@@ -10,23 +10,22 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 
 public interface FunctionHelper {
-
+    @SafeVarargs
     static <T> void always(Consumer<T> consumer, T... ts) {
         Arrays.asList(ts).forEach(consumer);
     }
 
+    @SafeVarargs
     static <A, B> void alwaysA(BiConsumer<A, B> consumer, A a, B... bs) {
         Arrays.asList(bs).forEach(b -> consumer.accept(a, b));
     }
 
+    @SafeVarargs
     static <A, B> void alwaysB(BiConsumer<A, B> consumer, B b, A... as) {
         Arrays.asList(as).forEach(a -> consumer.accept(a, b));
     }
 
-    static <A, B> BiConsumer<B, A> exchange(BiConsumer<A, B> consumer) {
-        return (b, a) -> consumer.accept(a, b);
-    }
-
+    @SafeVarargs
     static <T> Consumer<T> link(Consumer<T>... consumers) {
         return t -> {
             for (Consumer<T> consumer : consumers) {
@@ -35,12 +34,17 @@ public interface FunctionHelper {
         };
     }
 
+    @SafeVarargs
     static <T extends Event> EventHandler<T> link(EventHandler<T>... handlers) {
         return t -> {
             for (EventHandler<T> handler : handlers) {
                 handler.handle(t);
             }
         };
+    }
+
+    static <A, B> BiConsumer<B, A> exchange(BiConsumer<A, B> consumer) {
+        return (b, a) -> consumer.accept(a, b);
     }
 
     static <A, B> Consumer<A> link1(Function<A, B> function, Consumer<B> consumer) {
@@ -58,5 +62,4 @@ public interface FunctionHelper {
     static <A, B> Supplier<B> link1(Supplier<A> supplier, Function<A, B> function) {
         return () -> function.apply(supplier.get());
     }
-
 }

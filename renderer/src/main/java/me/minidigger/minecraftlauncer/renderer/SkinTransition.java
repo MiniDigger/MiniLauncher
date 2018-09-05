@@ -9,7 +9,6 @@ import javafx.beans.value.WritableValue;
 import javafx.util.Duration;
 
 public class SkinTransition extends Transition {
-
     private Function<Double, Double> expression;
     private List<WritableValue<Number>> observables;
     private int count;
@@ -18,6 +17,7 @@ public class SkinTransition extends Transition {
         return count;
     }
 
+    @SafeVarargs
     public SkinTransition(Duration duration, Function<Double, Double> expression, WritableValue<Number>... observables) {
         setCycleDuration(duration);
         this.expression = expression;
@@ -29,6 +29,7 @@ public class SkinTransition extends Transition {
         if (frac == 0 || frac == 1) {
             count++;
         }
+
         double val = expression.apply(frac);
         observables.forEach(w -> w.setValue(val));
     }
@@ -38,5 +39,4 @@ public class SkinTransition extends Transition {
         count = 0;
         super.play();
     }
-
 }

@@ -73,7 +73,7 @@ public class Model extends TriangleMesh {
                 3, 5, 6, 2, 7, 1    //P3,T2, P6,T5, P7,T6
         };
 
-        int copy[] = ArrayUtils.clone(faces);
+        int copy[] = faces.clone();
         ArrayUtils.reverse(copy);
         for (int i = 0; i < copy.length; i += 2) {
             int tmp = copy[i];

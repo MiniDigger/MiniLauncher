@@ -45,30 +45,35 @@ public class SkinData {
             new Rotate(0, 0, headInside.getHeight() / 2, 0, Rotate.Z_AXIS),
             headOuter, headInside
     );
+
     public static final SkinGroup body = new SkinGroup(
             new Rotate(0, Rotate.X_AXIS),
             new Rotate(0, Rotate.Y_AXIS),
             new Rotate(0, Rotate.Z_AXIS),
             bodyOuter, bodyInside
     );
+
     public static final SkinGroup lArm = new SkinGroup(
             new Rotate(0, 0, -lArmInside.getHeight() / 2, 0, Rotate.X_AXIS),
             new Rotate(0, Rotate.Y_AXIS),
             new Rotate(0, +lArmInside.getWidth() / 2, -lArmInside.getHeight() / 2, 0, Rotate.Z_AXIS),
             lArmOuter, lArmInside
     );
+
     public static final SkinGroup rArm = new SkinGroup(
             new Rotate(0, 0, -rArmInside.getHeight() / 2, 0, Rotate.X_AXIS),
             new Rotate(0, Rotate.Y_AXIS),
             new Rotate(0, -rArmInside.getWidth() / 2, -rArmInside.getHeight() / 2, 0, Rotate.Z_AXIS),
             rArmOuter, rArmInside
     );
+
     public static final SkinGroup lLeg = new SkinGroup(
             new Rotate(0, 0, -lLegInside.getHeight() / 2, 0, Rotate.X_AXIS),
             new Rotate(0, Rotate.Y_AXIS),
             new Rotate(0, 0, -lLegInside.getHeight() / 2, 0, Rotate.Z_AXIS),
             lLegOuter, lLegInside
     );
+
     public static final SkinGroup rLeg = new SkinGroup(
             new Rotate(0, 0, -rLegInside.getHeight() / 2, 0, Rotate.X_AXIS),
             new Rotate(0, Rotate.Y_AXIS),

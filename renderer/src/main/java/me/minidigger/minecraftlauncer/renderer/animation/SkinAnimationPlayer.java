@@ -1,14 +1,12 @@
 package me.minidigger.minecraftlauncer.renderer.animation;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Random;
-
 import javafx.animation.AnimationTimer;
 
-public class SkinAnimationPlayer {
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.concurrent.ThreadLocalRandom;
 
-    protected final Random random = new Random();
+public class SkinAnimationPlayer {
     protected LinkedList<SkinAnimation> animations = new LinkedList<>();
     protected SkinAnimation playing;
     protected boolean running;
@@ -18,7 +16,7 @@ public class SkinAnimationPlayer {
         @Override
         public void handle(long now) {
             if (playing == null || !playing.isPlaying() && now - lastPlayTime > interval) {
-                int nextAni = random.nextInt(weightedSum);
+                int nextAni = ThreadLocalRandom.current().nextInt(weightedSum);
                 SkinAnimation tmp = null;
                 for (SkinAnimation animation : animations) {
                     nextAni -= animation.getWeight();
@@ -90,9 +88,11 @@ public class SkinAnimationPlayer {
         if (running) {
             animationTimer.stop();
         }
+
         if (playing != null) {
             playing.stop();
         }
+
         running = false;
     }
 }

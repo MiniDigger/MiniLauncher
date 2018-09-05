@@ -42,5 +42,4 @@ public class SkinGroup extends Group {
     public Rotate getZRotate() {
         return zRotate;
     }
-
 }

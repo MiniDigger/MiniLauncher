@@ -5,12 +5,12 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 
-public class PixelCopyer {
+public class PixelCopier {
 
     private Image srcImage;
     private WritableImage newImage;
 
-    public PixelCopyer(Image srcImage, WritableImage newImage) {
+    public PixelCopier(Image srcImage, WritableImage newImage) {
         this.srcImage = srcImage;
         this.newImage = newImage;
     }
@@ -56,5 +56,4 @@ public class PixelCopyer {
             }
         }
     }
-
 }

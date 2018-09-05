@@ -71,17 +71,21 @@ public class SkinCanvas extends Group {
     }
 
     public void updateSkin(Image skin, boolean isSlim) {
-        if (SkinHelper.isNoRequest(skin) && SkinHelper.isSkin(skin)) {
-            this.skin = SkinHelper.x32Tox64(skin);
-            int multiple = Math.max((int) (1024 / skin.getWidth()), 1);
-            if (multiple > 1) {
-                this.skin = SkinHelper.enlarge(this.skin, multiple);
-            }
-            if (this.isSlim != isSlim) {
-                updateSkinModel(isSlim);
-            }
-            bindMaterial(root);
+        if (!SkinHelper.isNoRequest(skin) || !SkinHelper.isSkin(skin))
+            return;
+
+        this.skin = SkinHelper.x32Tox64(skin);
+        int multiple = Math.max((int) (1024 / skin.getWidth()), 1);
+
+        if (multiple > 1) {
+            this.skin = SkinHelper.enlarge(this.skin, multiple);
         }
+
+        if (this.isSlim != isSlim) {
+            updateSkinModel(isSlim);
+        }
+
+        bindMaterial(root);
     }
 
     private void updateSkinModel(boolean isSlim) {
@@ -91,6 +95,7 @@ public class SkinCanvas extends Group {
 
         FunctionHelper.alwaysB(Node::setTranslateX, -(bodyInside.getWidth() + lArmInside.getWidth()) / 2, lArm);
         FunctionHelper.alwaysB(Node::setTranslateX, +(bodyInside.getWidth() + rArmInside.getWidth()) / 2, rArm);
+
         if (isSlim) {
             lArmInside.setModel(ALEX_LEFT_ARM.getModel());
             rArmInside.setModel(ALEX_RIGHT_ARM.getModel());
@@ -144,6 +149,7 @@ public class SkinCanvas extends Group {
                 lLeg,
                 rLeg
         );
+
         updateSkin(skin, false);
 
         return root;
@@ -171,5 +177,4 @@ public class SkinCanvas extends Group {
     public Image getSkin() {
         return skin;
     }
-
 }

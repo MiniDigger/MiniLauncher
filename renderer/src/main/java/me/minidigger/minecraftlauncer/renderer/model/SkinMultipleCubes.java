@@ -87,6 +87,7 @@ public class SkinMultipleCubes extends Group {
         int start_x = (int) (startX * skin.getWidth()), start_y = (int) (startY * skin.getHeight()),
                 interval = (int) Math.max(skin.getWidth() / 64, 1),
                 width_interval = width * interval, height_interval = height * interval, depth_interval = depth * interval;
+
         // FRONT
         getChildren().add(new Face(skin, start_x + depth_interval, start_y + depth_interval, width, height, interval, false, false,
                 () -> new Box(length, length, thick), (b, p) -> {
@@ -94,6 +95,7 @@ public class SkinMultipleCubes extends Group {
             b.setTranslateY(-((height - 1) / 2.0 - p.getY()) * b.getHeight());
             b.setTranslateZ((depth * length + thick) / 2.0);
         }));
+
         // BACK
         getChildren().add(new Face(skin, start_x + width_interval + depth_interval * 2, start_y + depth_interval, width, height, interval, true, false,
                 () -> new Box(length, length, thick), (b, p) -> {
@@ -101,6 +103,7 @@ public class SkinMultipleCubes extends Group {
             b.setTranslateY(-((height - 1) / 2.0 - p.getY()) * b.getHeight());
             b.setTranslateZ(-(depth * length + thick) / 2.0);
         }));
+
         // LEFT
         getChildren().add(new Face(skin, start_x + width_interval + depth_interval, start_y + depth_interval, depth, height, interval, false, false,
                 () -> new Box(thick, length, length), (b, p) -> {
@@ -108,6 +111,7 @@ public class SkinMultipleCubes extends Group {
             b.setTranslateY(-((height - 1) / 2.0 - p.getY()) * b.getHeight());
             b.setTranslateZ(((depth - 1) / 2.0 - p.getX()) * b.getDepth());
         }));
+
         // RIGHT
         getChildren().add(new Face(skin, start_x, start_y + depth_interval, depth, height, interval, true, false,
                 () -> new Box(thick, length, length), (b, p) -> {
@@ -115,6 +119,7 @@ public class SkinMultipleCubes extends Group {
             b.setTranslateY(-((height - 1) / 2.0 - p.getY()) * b.getHeight());
             b.setTranslateZ(((depth - 1) / 2.0 - p.getX()) * b.getDepth());
         }));
+
         // TOP
         getChildren().add(new Face(skin, start_x + depth_interval, start_y, width, depth, interval, false, false,
                 () -> new Box(length, thick, length), (b, p) -> {
@@ -122,6 +127,7 @@ public class SkinMultipleCubes extends Group {
             b.setTranslateY(-(height * length + thick) / 2.0);
             b.setTranslateZ(-((depth - 1) / 2.0 - p.getY()) * b.getDepth());
         }));
+
         // BOTTOM
         getChildren().add(new Face(skin, start_x + width_interval + depth_interval, start_y, width, depth, interval, false, false,
                 () -> new Box(length, thick, length), (b, p) -> {
@@ -130,5 +136,4 @@ public class SkinMultipleCubes extends Group {
             b.setTranslateZ(-((depth - 1) / 2.0 - p.getY()) * b.getDepth());
         }));
     }
-
 }

@@ -53,5 +53,4 @@ public class SkinCube extends MeshView {
         this.model = model;
         setMesh(model);
     }
-
 }
