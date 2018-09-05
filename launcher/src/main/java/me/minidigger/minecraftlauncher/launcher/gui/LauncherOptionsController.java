@@ -29,6 +29,8 @@ package me.minidigger.minecraftlauncher.launcher.gui;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import sun.applet.Main;
+
 import java.awt.*;
 import java.io.File;
 import java.net.URL;
@@ -68,7 +70,6 @@ import me.minidigger.minecraftlauncher.launcher.Status;
  */
 public class LauncherOptionsController extends AbstractGUIController {
 
-    private static ResourceBundle resourceBundle = ResourceBundle.getBundle("minilauncher");
     private final static Logger logger = LoggerFactory.getLogger(LauncherOptionsController.class);
 
     @FXML
@@ -197,7 +198,7 @@ public class LauncherOptionsController extends AbstractGUIController {
     @FXML
     private void _optionsExit(ActionEvent event) {
         saveOptionsData();
-        Stage stage = LauncherMainController.getApplicationOptionStage();
+        Stage stage = MainScreenController.applicationOptionStage;
         stage.close();
     }
 
@@ -416,7 +417,7 @@ public class LauncherOptionsController extends AbstractGUIController {
         LauncherSettings.selectedTheme = themeType.getValue().toLowerCase();
         LauncherSettings.userSettingsSave();
 
-        Stage gui_options = LauncherMainController.getApplicationOptionStage();
+        Stage gui_options = MainScreenController.applicationOptionStage;
         Stage gui_main = LauncherMain.getApplicationMainStage();
 
         LauncherSettings.setTheme(gui_options.getScene());
@@ -435,7 +436,7 @@ public class LauncherOptionsController extends AbstractGUIController {
             themeType.setDisable(true);
             LauncherSettings.selectedTheme = "";
         }
-        Stage gui_options = LauncherMainController.getApplicationOptionStage();
+        Stage gui_options = MainScreenController.applicationOptionStage;
         Stage gui_main = LauncherMain.getApplicationMainStage();
 
         LauncherSettings.setTheme(gui_options.getScene());

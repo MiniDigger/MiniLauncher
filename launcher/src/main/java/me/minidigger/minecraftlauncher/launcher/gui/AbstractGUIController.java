@@ -28,6 +28,8 @@ package me.minidigger.minecraftlauncher.launcher.gui;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.util.ResourceBundle;
+
 import javafx.application.Platform;
 import javafx.fxml.Initializable;
 import me.minidigger.minecraftlauncher.api.LauncherAPI;
@@ -36,6 +38,7 @@ import me.minidigger.minecraftlauncher.launcher.Status;
 
 public abstract class AbstractGUIController implements Initializable, LauncherEventHandler {
 
+    protected static ResourceBundle resourceBundle = ResourceBundle.getBundle("minilauncher");
     protected LauncherAPI API;
 
     public AbstractGUIController(){

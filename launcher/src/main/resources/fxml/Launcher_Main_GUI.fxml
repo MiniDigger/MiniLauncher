@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.Tooltip?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -45,37 +40,8 @@
             <Pane prefWidth="5.0" styleClass="top_title_bar" BorderPane.alignment="CENTER" />
         </right>
         <center>
-            <Pane prefHeight="450.0" prefWidth="450.0" styleClass="colorOverlay" BorderPane.alignment="CENTER">
-                <Pane fx:id="formPane" layoutX="96.0" layoutY="107.0" prefHeight="206.0" prefWidth="250.0" styleClass="main_login_area">
-                    <TextField fx:id="username" layoutX="25.0" layoutY="36.0" onKeyTyped="#kt_username" prefHeight="26.0" prefWidth="200.0" promptText="Username/E-Mail" styleClass="main_username">
-                        <tooltip>
-                            <Tooltip fx:id="usernameTooltip" prefWidth="300.0" wrapText="true" />
-                        </tooltip>
-                    </TextField>
-                    <TextField fx:id="password" layoutX="25.0" layoutY="75.0" onKeyTyped="#kt_username" prefHeight="26.0" prefWidth="200.0" promptText="Password" styleClass="main_username">
-                        <tooltip>
-                            <Tooltip fx:id="passwordTooltip" prefWidth="300.0" wrapText="true" />
-                        </tooltip>
-                    </TextField>
-                    <ComboBox id="version" fx:id="version" layoutX="25.0" layoutY="111.0" prefHeight="25.0" prefWidth="200.0" promptText="Select A Version" styleClass="whiteTextTheme">
-                        <tooltip>
-                            <Tooltip fx:id="versionTooltip" prefWidth="300.0" text="Empty Tooltip" wrapText="true" />
-                        </tooltip>
-                    </ComboBox>
-                    <Button id="launch" fx:id="launch" layoutX="135.0" layoutY="151.0" mnemonicParsing="false" onAction="#launchMineCraft" prefHeight="26.0" prefWidth="90.0" styleClass="whiteTextTheme" text="Play">
-                        <tooltip>
-                            <Tooltip fx:id="playTooltip" prefWidth="300.0" wrapText="true" />
-                        </tooltip>
-                    </Button>
-                    <Button fx:id="options" layoutX="25.0" layoutY="152.0" mnemonicParsing="false" onAction="#launchOptions" prefHeight="25.0" prefWidth="90.0" styleClass="whiteTextTheme" text="Options">
-                        <tooltip>
-                            <Tooltip fx:id="optionsTooltip" prefWidth="300.0" text="Empty Tooltip" wrapText="true" />
-                        </tooltip>
-                    </Button>
-                </Pane>
-                <ImageView fx:id="playerAvatarImage" fitHeight="100.0" fitWidth="100.0" layoutX="171.0" layoutY="28.0" pickOnBounds="true" preserveRatio="true" styleClass="avatar_image">
-                    <Image url="@/images/steve.png" />
-                </ImageView>
+            <Pane fx:id="contentPane" prefHeight="450.0" prefWidth="450.0" styleClass="colorOverlay" BorderPane.alignment="CENTER">
+                <!-- content -->
             </Pane>
         </center>
     </BorderPane>
