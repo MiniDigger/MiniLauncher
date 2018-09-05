@@ -1,4 +1,4 @@
-package test;
+package me.minidigger.minecraftlauncher.mojangapi.test;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
