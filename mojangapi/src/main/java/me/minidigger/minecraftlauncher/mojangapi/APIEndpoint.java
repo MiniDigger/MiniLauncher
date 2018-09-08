@@ -1,13 +1,13 @@
 package me.minidigger.minecraftlauncher.mojangapi;
 
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Types;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.Types;
 
 import me.minidigger.minecraftlauncher.mojangapi.model.PlayerProfile;
 import me.minidigger.minecraftlauncher.mojangapi.model.SalesStatType;

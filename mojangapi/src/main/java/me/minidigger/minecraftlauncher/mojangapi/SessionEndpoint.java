@@ -1,12 +1,12 @@
 package me.minidigger.minecraftlauncher.mojangapi;
 
-import java.awt.Image;
+import com.squareup.moshi.JsonAdapter;
+
+import java.awt.*;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-
-import com.squareup.moshi.JsonAdapter;
 
 import me.minidigger.minecraftlauncher.mojangapi.model.PlayerProfile;
 

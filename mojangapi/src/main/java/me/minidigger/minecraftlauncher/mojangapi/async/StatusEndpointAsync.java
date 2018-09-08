@@ -8,7 +8,7 @@ import me.minidigger.minecraftlauncher.mojangapi.model.Status;
 
 public class StatusEndpointAsync extends AbstractAsyncEndpoint {
 
-	public static CompletableFuture<Map<String, Status>> check() {
-		return get(StatusEndpoint::check);
-	}
+    public static CompletableFuture<Map<String, Status>> check() {
+        return get(StatusEndpoint::check);
+    }
 }

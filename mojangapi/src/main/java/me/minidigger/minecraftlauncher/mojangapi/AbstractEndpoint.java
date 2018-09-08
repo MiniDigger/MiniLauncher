@@ -1,18 +1,14 @@
 package me.minidigger.minecraftlauncher.mojangapi;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 
+import java.io.IOException;
+import java.lang.reflect.Type;
+
 import me.minidigger.minecraftlauncher.mojangapi.adapter.StatusAdapter;
 import me.minidigger.minecraftlauncher.mojangapi.adapter.UUIDAdapter;
-import okhttp3.Authenticator;
 import okhttp3.Call;
-import okhttp3.Credentials;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;

@@ -1,9 +1,9 @@
 package me.minidigger.minecraftlauncher.mojangapi;
 
+import com.squareup.moshi.JsonAdapter;
+
 import java.io.IOException;
 import java.util.UUID;
-
-import com.squareup.moshi.JsonAdapter;
 
 import me.minidigger.minecraftlauncher.mojangapi.model.AuthRequest;
 import me.minidigger.minecraftlauncher.mojangapi.model.AuthResponse;

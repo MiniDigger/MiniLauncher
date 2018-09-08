@@ -1,12 +1,12 @@
 package me.minidigger.minecraftlauncher.mojangapi;
 
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Types;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.Types;
 
 import me.minidigger.minecraftlauncher.mojangapi.model.Status;
 
