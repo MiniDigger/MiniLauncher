@@ -36,13 +36,13 @@ import me.minidigger.minecraftlauncer.renderer.animation.animations.RunningAnima
 import me.minidigger.minecraftlauncher.api.ServerListEntry;
 import me.minidigger.minecraftlauncher.launcher.LauncherMain;
 import me.minidigger.minecraftlauncher.launcher.LauncherSettings;
-import me.minidigger.minecraftlauncher.launcher.Status;
 import me.minidigger.minecraftlauncher.launcher.tasks.AvatarLoaderTask;
 import me.minidigger.minecraftlauncher.launcher.tasks.VersionCheckerTask;
 
-public class MainScreenController extends AbstractGUIController {
+public class MainFragmentController extends FragmentController {
 
     public static Stage applicationOptionStage;
+
     private double xOffset = 0;
     private double yOffset = 0;
 
@@ -72,11 +72,6 @@ public class MainScreenController extends AbstractGUIController {
     private Button options;
     @FXML
     private Pane formPane;
-
-    @Override
-    public void setStatus(Status finalizing) {
-
-    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -228,7 +223,7 @@ public class MainScreenController extends AbstractGUIController {
             });
             stage.show();
         } catch (IOException ex) {
-            Logger.getLogger(LauncherMainController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FrameController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -310,11 +305,6 @@ public class MainScreenController extends AbstractGUIController {
         if (!event.getCharacter().matches("[A-Za-z0-9\b_]")) {
             //Toolkit.getDefaultToolkit().beep();
             event.consume();
-
         }
-    }
-
-    public void setStatusText(String text){
-//        launcherStatus.setText(text);//TODO
     }
 }

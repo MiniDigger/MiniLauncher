@@ -510,7 +510,7 @@ public class LauncherAPI {
             new MinecraftLogThread(process.getInputStream());
 
             try {
-                process.waitFor(10, TimeUnit.SECONDS);
+                process.waitFor(5, TimeUnit.SECONDS);
                 //process.waitFor();
                 if (process.exitValue() != 0) {
                     //something went wrong.

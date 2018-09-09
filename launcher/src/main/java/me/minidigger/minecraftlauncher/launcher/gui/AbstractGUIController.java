@@ -26,11 +26,8 @@
 
 package me.minidigger.minecraftlauncher.launcher.gui;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-
 import java.util.ResourceBundle;
 
-import javafx.application.Platform;
 import javafx.fxml.Initializable;
 import me.minidigger.minecraftlauncher.api.LauncherAPI;
 import me.minidigger.minecraftlauncher.api.events.LauncherEventHandler;
@@ -43,32 +40,9 @@ public abstract class AbstractGUIController implements Initializable, LauncherEv
 
     public AbstractGUIController(){
         API = new LauncherAPI();
-        API.setEventHandler(this);
     }
 
-    @Override
-    public void onDownload(@NonNull DownloadingStatus downloadingStatus) {
-        // TODO: direct log message passing is not supported
-        Platform.runLater(() -> {
-            switch(downloadingStatus) {
-                case ASSETS:
-                    setStatus(Status.DOWNLOADING_GAME_ASSETS);
-                    break;
-                case LAUNCHER_META:
-                    setStatus(Status.DOWNLOADING_LAUNCHER_META);
-                    break;
-                case LIBRARIES:
-                    setStatus(Status.DOWNLOADING_LIBRARIES);
-                    break;
-                case MINECRAFT:
-                    setStatus(Status.DOWNLOADING_MINECRAFT);
-                    break;
-                case NATIVES:
-                    setStatus(Status.FINALIZING);
-                    break;
-            }
-        });
-    }
+    public abstract void setStatus(Status status);
 
-    public abstract void setStatus(Status finalizing);
+    public abstract void setStatusText(String text);
 }

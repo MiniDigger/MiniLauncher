@@ -29,8 +29,6 @@ package me.minidigger.minecraftlauncher.launcher.gui;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sun.applet.Main;
-
 import java.awt.*;
 import java.io.File;
 import java.net.URL;
@@ -198,7 +196,7 @@ public class LauncherOptionsController extends AbstractGUIController {
     @FXML
     private void _optionsExit(ActionEvent event) {
         saveOptionsData();
-        Stage stage = MainScreenController.applicationOptionStage;
+        Stage stage = MainFragmentController.applicationOptionStage;
         stage.close();
     }
 
@@ -405,7 +403,7 @@ public class LauncherOptionsController extends AbstractGUIController {
         validate(event);
     }
 
-    private void validate(KeyEvent event){
+    private void validate(KeyEvent event) {
         if (!event.getCharacter().matches("[0-9\b]")) {
             Toolkit.getDefaultToolkit().beep();
             event.consume();
@@ -417,7 +415,7 @@ public class LauncherOptionsController extends AbstractGUIController {
         LauncherSettings.selectedTheme = themeType.getValue().toLowerCase();
         LauncherSettings.userSettingsSave();
 
-        Stage gui_options = MainScreenController.applicationOptionStage;
+        Stage gui_options = MainFragmentController.applicationOptionStage;
         Stage gui_main = LauncherMain.getApplicationMainStage();
 
         LauncherSettings.setTheme(gui_options.getScene());
@@ -436,7 +434,7 @@ public class LauncherOptionsController extends AbstractGUIController {
             themeType.setDisable(true);
             LauncherSettings.selectedTheme = "";
         }
-        Stage gui_options = MainScreenController.applicationOptionStage;
+        Stage gui_options = MainFragmentController.applicationOptionStage;
         Stage gui_main = LauncherMain.getApplicationMainStage();
 
         LauncherSettings.setTheme(gui_options.getScene());
@@ -592,5 +590,10 @@ public class LauncherOptionsController extends AbstractGUIController {
     @Override
     public void setStatus(Status status) {
         optionStatus.setText(MessageFormat.format(resourceBundle.getString("status.generic"), status));
+    }
+
+    @Override
+    public void setStatusText(String text) {
+        optionStatus.setText(text);
     }
 }

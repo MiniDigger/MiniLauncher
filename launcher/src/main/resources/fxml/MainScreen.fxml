@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.image.ImageView?>
 
-<Pane xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="me.minidigger.minecraftlauncher.launcher.gui.MainScreenController">
+<Pane xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="me.minidigger.minecraftlauncher.launcher.gui.MainFragmentController">
     <Pane fx:id="formPane" layoutX="96.0" layoutY="107.0" prefHeight="206.0" prefWidth="250.0"
           styleClass="main_login_area">
         <TextField fx:id="username" layoutX="25.0" layoutY="36.0" onKeyTyped="#kt_username" prefHeight="26.0"

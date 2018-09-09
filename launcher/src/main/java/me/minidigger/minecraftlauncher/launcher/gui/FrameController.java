@@ -29,6 +29,7 @@ package me.minidigger.minecraftlauncher.launcher.gui;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -42,6 +43,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -60,12 +62,13 @@ import me.minidigger.minecraftlauncher.launcher.tasks.VersionCheckerTask;
 /**
  * @author ammar
  */
-public class LauncherMainController extends AbstractGUIController {
+public class FrameController extends AbstractGUIController {
 
     private List<String> backgroundList = new ArrayList<>();
+    private FragmentController currentFragment;
 
     enum Screen {
-        MAIN, OPTION, SKIN;
+        MAIN, OPTION, SKIN
     }
 
     @FXML
@@ -105,9 +108,15 @@ public class LauncherMainController extends AbstractGUIController {
             case SKIN:
                 throw new UnsupportedOperationException("Not implemented");
         }
-        try {
+        try (InputStream fxmlStream = getClass().getResource(fxml).openStream()) {
             contentPane.getChildren().clear();
-            contentPane.getChildren().add(FXMLLoader.load(getClass().getResource(fxml)));
+
+            FXMLLoader loader = new FXMLLoader();
+            Node node = loader.load(fxmlStream);
+            currentFragment = loader.getController();
+            currentFragment.setMainFrame(this);
+
+            contentPane.getChildren().add(node);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -161,26 +170,6 @@ public class LauncherMainController extends AbstractGUIController {
     }
 
     @Override
-    public void onGameStart(@NonNull StartStatus status) {
-        Platform.runLater(() -> {
-            switch (status) {
-                case VALIDATING:
-                    launcherStatus.setText(MessageFormat.format(resourceBundle.getString("status.validating"), LauncherSettings.playerVersion));
-                    break;
-                case DOWNLOADING_NATIVES:
-                    launcherStatus.setText(resourceBundle.getString("status.downloading_natives"));
-                    break;
-                case PATCHING_NETTY:
-                    launcherStatus.setText(resourceBundle.getString("status.patching_netty"));
-                    break;
-                case STARTING:
-                    launcherStatus.setText(MessageFormat.format(resourceBundle.getString("status.starting"), LauncherSettings.playerVersion));
-                    break;
-            }
-        });
-    }
-
-    @Override
     public void setStatus(Status status) {
         launcherStatus.setText(MessageFormat.format(resourceBundle.getString("status.generic"), status));
     }
@@ -191,5 +180,75 @@ public class LauncherMainController extends AbstractGUIController {
 //            LauncherSettings.playerVersion = version.getValue();
 //        }
 //        LauncherSettings.userSettingsSave();//TODO
+    }
+
+    /*
+     * event handler
+     */
+
+    @Override
+    public void setStatusText(String text) {
+        launcherStatus.setText(text);
+    }
+
+    @Override
+    public void onGameStart(@NonNull StartStatus status) {
+        currentFragment.onGameStart(status);
+        Platform.runLater(() -> {
+            switch (status) {
+                case VALIDATING:
+                    setStatusText(MessageFormat.format(resourceBundle.getString("status.validating"), LauncherSettings.playerVersion));
+                    break;
+                case DOWNLOADING_NATIVES:
+                    setStatusText(resourceBundle.getString("status.downloading_natives"));
+                    break;
+                case PATCHING_NETTY:
+                    setStatusText(resourceBundle.getString("status.patching_netty"));
+                    break;
+                case STARTING:
+                    setStatusText(MessageFormat.format(resourceBundle.getString("status.starting"), LauncherSettings.playerVersion));
+                    break;
+            }
+        });
+    }
+
+    @Override
+    public void onGameStarted() {
+        currentFragment.onGameStarted();
+    }
+
+    @Override
+    public void onGameCorrupted(int exitCode) {
+        currentFragment.onGameCorrupted(exitCode);
+    }
+
+    @Override
+    public void onDownloadComplete() {
+        currentFragment.onDownloadComplete();
+    }
+
+    @Override
+    public void onDownload(@NonNull DownloadingStatus downloadingStatus) {
+        currentFragment.onDownload(downloadingStatus);
+        // TODO: direct log message passing is not supported
+        Platform.runLater(() -> {
+            switch (downloadingStatus) {
+                case ASSETS:
+                    setStatus(Status.DOWNLOADING_GAME_ASSETS);
+                    break;
+                case LAUNCHER_META:
+                    setStatus(Status.DOWNLOADING_LAUNCHER_META);
+                    break;
+                case LIBRARIES:
+                    setStatus(Status.DOWNLOADING_LIBRARIES);
+                    break;
+                case MINECRAFT:
+                    setStatus(Status.DOWNLOADING_MINECRAFT);
+                    break;
+                case NATIVES:
+                    setStatus(Status.FINALIZING);
+                    break;
+            }
+        });
     }
 }
