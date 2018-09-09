@@ -49,6 +49,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -57,6 +58,7 @@ import javafx.util.Duration;
 import me.minidigger.minecraftlauncher.launcher.LauncherMain;
 import me.minidigger.minecraftlauncher.launcher.LauncherSettings;
 import me.minidigger.minecraftlauncher.launcher.Status;
+import me.minidigger.minecraftlauncher.launcher.tasks.AvatarLoaderTask;
 import me.minidigger.minecraftlauncher.launcher.tasks.VersionCheckerTask;
 
 /**
@@ -66,6 +68,7 @@ public class FrameController extends AbstractGUIController {
 
     private List<String> backgroundList = new ArrayList<>();
     private FragmentController currentFragment;
+    private Screen currentScreen;
 
     enum Screen {
         MAIN, OPTION, SKIN
@@ -81,10 +84,16 @@ public class FrameController extends AbstractGUIController {
     private Label launcherStatus;
     @FXML
     private Pane contentPane;
+    @FXML
+    private Pane outerPane;
+    @FXML
+    private ImageView playerAvatarImage;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         runBackground();
+
+        loadAvatar();
 
         new VersionCheckerTask((status) -> launcherStatus.setText(status)).start();
 
@@ -94,29 +103,92 @@ public class FrameController extends AbstractGUIController {
             LauncherSettings.userSettingsSave();
         }
 
+        playerAvatarImage.setOnMouseClicked(event -> {
+            if (currentScreen == Screen.MAIN) {
+//        LauncherSettings.playerUsername = username.getText();//TODO fixme
+//        new AvatarLoaderTask((image) -> playerAvatarImage.setImage(image)).start();
+                load(Screen.SKIN);
+            } else {
+                currentFragment.onClose();
+                load(Screen.MAIN);
+            }
+        });
+
         load(Screen.MAIN);
     }
 
+    public void loadAvatar() {
+        new AvatarLoaderTask((image) -> playerAvatarImage.setImage(image)).start();
+    }
+
     public void load(Screen screen) {
-        String fxml = "";
+        currentScreen = screen;
+
+        String fxml;
+        int width;
+        int height;
+        int layoutX;
+        int layoutY;
+        boolean smallAvatar;
+
         switch (screen) {
             case MAIN:
-                fxml = "/fxml/MainScreen.fxml";
+                fxml = "/fxml/MainFragment.fxml";
+                width = 250;
+                height = 206;
+                layoutX = 121;
+                layoutY = 123;
+                smallAvatar = false;
                 break;
             case OPTION:
-                throw new UnsupportedOperationException("Not implemented");
+                fxml = "/fxml/OptionFragment.fxml";
+                width = 400;
+                height = 400;
+                layoutX = 45;
+                layoutY = 40;
+                smallAvatar = true;
+                break;
             case SKIN:
-                throw new UnsupportedOperationException("Not implemented");
+                fxml = "/fxml/SkinFragment.fxml";
+                width = 250;
+                height = 206;
+                layoutX = 117;
+                layoutY = 123;
+                smallAvatar = true;
+                break;
+            default:
+                throw new IllegalStateException();
         }
+
         try (InputStream fxmlStream = getClass().getResource(fxml).openStream()) {
-            contentPane.getChildren().clear();
+            outerPane.getChildren().clear();
 
             FXMLLoader loader = new FXMLLoader();
             Node node = loader.load(fxmlStream);
             currentFragment = loader.getController();
             currentFragment.setMainFrame(this);
 
-            contentPane.getChildren().add(node);
+            outerPane.setPrefWidth(width);
+            outerPane.setPrefHeight(height);
+
+            outerPane.setLayoutX(layoutX);
+            outerPane.setLayoutY(layoutY);
+
+            outerPane.getChildren().add(node);
+
+            if (smallAvatar) {
+                playerAvatarImage.setLayoutX(231);
+                playerAvatarImage.setLayoutY(18);
+
+                playerAvatarImage.setFitHeight(50);
+                playerAvatarImage.setFitWidth(50);
+            } else {
+                playerAvatarImage.setLayoutX(196);
+                playerAvatarImage.setLayoutY(28);
+
+                playerAvatarImage.setFitHeight(100);
+                playerAvatarImage.setFitWidth(100);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

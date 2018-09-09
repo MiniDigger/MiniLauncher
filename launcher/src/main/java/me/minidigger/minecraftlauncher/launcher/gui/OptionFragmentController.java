@@ -53,6 +53,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -66,12 +67,14 @@ import me.minidigger.minecraftlauncher.launcher.Status;
  *
  * @author Mathew
  */
-public class LauncherOptionsController extends AbstractGUIController {
+public class OptionFragmentController extends FragmentController {
 
-    private final static Logger logger = LoggerFactory.getLogger(LauncherOptionsController.class);
+    private final static Logger logger = LoggerFactory.getLogger(OptionFragmentController.class);
 
     @FXML
     private Button optionsExit;
+    @FXML
+    private Pane outerPane;
     @FXML
     private Button optionsClose;
     @FXML
@@ -188,16 +191,9 @@ public class LauncherOptionsController extends AbstractGUIController {
         executor.shutdown();
     }
 
-    @FXML
-    private void _optionsClose(ActionEvent event) {
-        _optionsExit(event);
-    }
-
-    @FXML
-    private void _optionsExit(ActionEvent event) {
+    @Override
+    public void onClose() {
         saveOptionsData();
-        Stage stage = MainFragmentController.applicationOptionStage;
-        stage.close();
     }
 
     @FXML
@@ -415,11 +411,8 @@ public class LauncherOptionsController extends AbstractGUIController {
         LauncherSettings.selectedTheme = themeType.getValue().toLowerCase();
         LauncherSettings.userSettingsSave();
 
-        Stage gui_options = MainFragmentController.applicationOptionStage;
-        Stage gui_main = LauncherMain.getApplicationMainStage();
-
-        LauncherSettings.setTheme(gui_options.getScene());
-        LauncherSettings.setTheme(gui_main.getScene());
+        Stage stage = LauncherMain.getApplicationMainStage();
+        LauncherSettings.setTheme(stage.getScene());
     }
 
     @FXML

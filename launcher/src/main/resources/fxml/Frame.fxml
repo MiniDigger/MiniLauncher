@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" fx:id="mainBackground" prefHeight="500.0" prefWidth="500.0" styleClass="main_scene" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="me.minidigger.minecraftlauncher.launcher.gui.FrameController">
+    <BorderPane prefHeight="500.0" prefWidth="500.0">
+        <top>
+            <Pane prefHeight="25.0" prefWidth="200.0" styleClass="top_title_bar" BorderPane.alignment="CENTER">
+                <Label layoutX="15.0" layoutY="3.0" styleClass="label-black" text="Minecraft Launcher" />
+                <Button fx:id="exit" layoutX="474.0" layoutY="4.0" minHeight="18.0" minWidth="18.0" mnemonicParsing="false" onAction="#launchExit" prefHeight="18.0" prefWidth="18.0" styleClass="exit_button">
+                    <font>
+                        <Font size="9.0" />
+                    </font>
+                </Button>
+                <Button fx:id="minimize" layoutX="451.0" layoutY="4.0" minHeight="18.0" minWidth="18.0" mnemonicParsing="false" onAction="#launchMinimize" prefHeight="18.0" prefWidth="18.0" styleClass="minimize_button">
+                    <font>
+                        <Font size="9.0" />
+                    </font>
+                </Button>
+            </Pane>
+        </top>
+        <bottom>
+            <Pane prefHeight="20.0" prefWidth="200.0" styleClass="top_title_bar" BorderPane.alignment="CENTER">
+                <Label fx:id="launcherStatus" layoutX="7.0" layoutY="1.0" prefHeight="17.0" prefWidth="485.0" styleClass="label-black" text="Status: Checking..." />
+            </Pane>
+        </bottom>
+        <left>
+            <Pane prefWidth="5.0" styleClass="top_title_bar" BorderPane.alignment="CENTER" />
+        </left>
+        <right>
+            <Pane prefWidth="5.0" styleClass="top_title_bar" BorderPane.alignment="CENTER" />
+        </right>
+        <center>
+            <Pane fx:id="contentPane" prefHeight="450.0" prefWidth="450.0" styleClass="colorOverlay" BorderPane.alignment="CENTER">
+                <Pane fx:id="outerPane" layoutX="96.0" layoutY="107.0" prefHeight="206.0" prefWidth="250.0" styleClass="main_login_area">
+                    <Label text="ERROR!" />
+                </Pane>
+                <ImageView fx:id="playerAvatarImage" fitHeight="100.0" fitWidth="100.0" layoutX="196.0" layoutY="28.0" pickOnBounds="true" preserveRatio="true" styleClass="avatar_image">
+                    <Image url="@/images/steve.png" />
+                </ImageView>
+            </Pane>
+        </center>
+    </BorderPane>
+</AnchorPane>

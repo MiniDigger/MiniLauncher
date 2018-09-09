@@ -47,8 +47,6 @@ public class MainFragmentController extends FragmentController {
     private double yOffset = 0;
 
     @FXML
-    private ImageView playerAvatarImage;
-    @FXML
     private Tooltip optionsTooltip;
     @FXML
     private Tooltip playTooltip;
@@ -70,15 +68,11 @@ public class MainFragmentController extends FragmentController {
     private Button launch;
     @FXML
     private Button options;
-    @FXML
-    private Pane formPane;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setToolTips();
         setTextBoxMax();
-
-        new AvatarLoaderTask((image) -> playerAvatarImage.setImage(image)).start();
 
         username.setText(LauncherSettings.playerUsername);
 
@@ -89,22 +83,6 @@ public class MainFragmentController extends FragmentController {
                 version.setValue(LauncherSettings.playerVersion);
             }
         }
-
-        playerAvatarImage.setOnMouseClicked(event -> {
-            LauncherSettings.playerUsername = username.getText();
-            new AvatarLoaderTask((image) -> playerAvatarImage.setImage(image)).start();
-            formPane.getChildren().clear();
-            try {
-                SkinCanvas canvas = new SkinCanvas(LauncherSettings.playerUsername, 250, 200, true);
-                canvas.getAnimationPlayer().addSkinAnimation(
-//                new MagmaArmsAnimation(100, 500, 90, canvas));
-//                new WavingArmsAnimation(100, 500, 90, canvas));
-                        new RunningAnimation(100, 800, 30, canvas));
-                formPane.getChildren().add(canvas);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
     }
 
     @FXML
@@ -133,7 +111,7 @@ public class MainFragmentController extends FragmentController {
         username.setDisable(true);
         password.setDisable(true);
 
-        new AvatarLoaderTask((image) -> playerAvatarImage.setImage(image)).start();
+        getMainFrame().loadAvatar();
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(() -> {
@@ -179,52 +157,7 @@ public class MainFragmentController extends FragmentController {
 
     @FXML
     private void launchOptions(ActionEvent event) {
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/Launcher_Options_GUI.fxml"));
-            Parent optionsGUI = fxmlLoader.load();
-
-            Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.initStyle(StageStyle.UNDECORATED);
-            stage.getIcons().add(new Image(LauncherMain.class.getResourceAsStream("/images/app_icon_1.png")));
-            stage.setTitle(resourceBundle.getString("optionscreen.title"));
-            stage.setMinWidth(400);
-            stage.setMinHeight(500);
-            stage.setMaxWidth(400);
-            stage.setMaxHeight(500);
-            stage.setResizable(false);
-
-            Scene sceneOptions = new Scene(optionsGUI);
-            stage.setScene(sceneOptions);
-            LauncherSettings.setTheme(sceneOptions);
-            applicationOptionStage = stage;
-
-            sceneOptions.setOnMousePressed(event_ -> {
-                xOffset = stage.getX() - event_.getScreenX();
-                yOffset = stage.getY() - event_.getScreenY();
-            });
-
-            sceneOptions.setOnMouseDragged(event_ -> {
-                stage.setX(event_.getScreenX() + xOffset);
-                stage.setY(event_.getScreenY() + yOffset);
-            });
-
-            stage.setOnHiding(event_ -> {
-                //if (LauncherSettings.refreshVersionList == true) { //Just refesh it anyway.
-                version.getItems().removeAll(version.getItems());
-                for (Object ob : API.getInstalledVersionsList()) {
-                    version.getItems().addAll(ob.toString());
-                }
-
-                if (!LauncherSettings.playerVersion.equals("-1")) {
-                    version.setValue(LauncherSettings.playerVersion);
-                }
-                //}
-            });
-            stage.show();
-        } catch (IOException ex) {
-            Logger.getLogger(FrameController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        getMainFrame().load(FrameController.Screen.OPTION);
     }
 
     @Override
@@ -306,5 +239,10 @@ public class MainFragmentController extends FragmentController {
             //Toolkit.getDefaultToolkit().beep();
             event.consume();
         }
+    }
+
+    @Override
+    public void onClose() {
+
     }
 }

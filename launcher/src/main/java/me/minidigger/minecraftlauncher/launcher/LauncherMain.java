@@ -69,7 +69,7 @@ public class LauncherMain extends Application {
     public void start(Stage stage) throws Exception {
         LauncherSettings.userSettingsLoad();
 
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/Launcher_Main_GUI.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/fxml/Frame.fxml"));
         Scene scene = new Scene(root);
         initApplicationSettings(stage, scene);
 

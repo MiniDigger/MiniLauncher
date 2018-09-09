@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.Pane?>
+<Pane prefHeight="209.0" prefWidth="253.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="me.minidigger.minecraftlauncher.launcher.gui.SkinFragmentController">
+    <Pane fx:id="mainPane">
+    </Pane>
+</Pane>
