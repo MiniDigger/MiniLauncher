@@ -26,20 +26,25 @@
 
 package me.minidigger.minecraftlauncher.launcher.gui;
 
+import org.to2mbn.jmccc.mcdownloader.MinecraftDownloader;
+import org.to2mbn.jmccc.mcdownloader.MinecraftDownloaderBuilder;
+import org.to2mbn.jmccc.option.MinecraftDirectory;
+
 import java.util.ResourceBundle;
 
 import javafx.fxml.Initializable;
-import me.minidigger.minecraftlauncher.api.LauncherAPI;
-import me.minidigger.minecraftlauncher.api.events.LauncherEventHandler;
 import me.minidigger.minecraftlauncher.launcher.Status;
 
-public abstract class AbstractGUIController implements Initializable, LauncherEventHandler {
+public abstract class AbstractGUIController implements Initializable {
 
     protected static ResourceBundle resourceBundle = ResourceBundle.getBundle("minilauncher");
-    protected LauncherAPI API;
+
+    protected MinecraftDownloader minecraftDownloader;
+    protected MinecraftDirectory minecraftDirectory;
 
     public AbstractGUIController(){
-        API = new LauncherAPI();
+        minecraftDownloader = MinecraftDownloaderBuilder.buildDefault();
+        minecraftDirectory = new MinecraftDirectory("/minilauncher/");
     }
 
     public abstract void setStatus(Status status);

@@ -35,8 +35,6 @@ import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Hashtable;
 import java.util.ResourceBundle;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -61,6 +59,8 @@ import javafx.stage.StageStyle;
 import me.minidigger.minecraftlauncher.launcher.LauncherMain;
 import me.minidigger.minecraftlauncher.launcher.LauncherSettings;
 import me.minidigger.minecraftlauncher.launcher.Status;
+import me.minidigger.minecraftlauncher.launcher.tasks.MinecraftDownloaderTask;
+import me.minidigger.minecraftlauncher.launcher.tasks.VersionListUpdaterTask;
 
 /**
  * FXML Controller class
@@ -161,34 +161,8 @@ public class OptionFragmentController extends FragmentController {
 
         loadOptionsData();
 
-        ExecutorService executor = Executors.newCachedThreadPool();
-        executor.submit(() -> {
-            optionStatus.setText(resourceBundle.getString("status.getting_latest_version"));
-            optionsSelectVersion.setDisable(true);
-            optionsSelectVersionInstall.setDisable(true);
-            API.downloadVersionManifest();
-
-            for (Object ob : API.getInstallableVersionsList()) {
-                String[] prsntAry = ob.toString().split(" % ");
-                optionsSelectVersion.getItems().addAll(prsntAry[0]);
-                VersionHashTable.put(prsntAry[0], prsntAry[1]);
-            }
-
-            if (!API.getInstalledVersionsList().isEmpty()) {
-                for (String ob_ : API.getInstalledVersionsList()) {
-                    if (!VersionHashTable.containsKey(ob_)) {
-                        optionsSelectVersion.getItems().addAll(ob_);
-                        VersionHashTable.put(ob_, "Unknown");
-                    }
-                }
-            }
-
-            optionsSelectVersion.setDisable(false);
-            optionsSelectVersionInstall.setDisable(false);
-
-            Platform.runLater(() -> setStatus(Status.IDLE));
-        });
-        executor.shutdown();
+        new VersionListUpdaterTask(minecraftDownloader, optionsSelectVersion, optionsSelectVersionInstall,
+                optionStatus, VersionHashTable, ()-> onDownloadComplete()).start();
     }
 
     @Override
@@ -280,20 +254,13 @@ public class OptionFragmentController extends FragmentController {
         optionsClose.setDisable(true);
         optionsSelectVersion.setDisable(true);
 
-        if (optionsSelectVersionForce.isSelected()) {
-            logger.info("Selected!");
-        } else {
-            logger.info("NOT Selected!");
-        }
-
-        API.setEventHandler(this);
-
-        ExecutorService executor = Executors.newCachedThreadPool();
-        executor.submit(() -> {
-            API.downloadMinecraft(optionsSelectVersion.getValue(), optionsSelectVersionForce.isSelected());
-            return null;
-        });
-        executor.shutdown();
+        new MinecraftDownloaderTask(optionsSelectVersionForce.isSelected(), optionsSelectVersion.getValue(),
+                minecraftDownloader, minecraftDirectory, this::setStatusText, (version) -> {
+            optionsSelectVersionInstall.setDisable(false);
+            optionsExit.setDisable(false);
+            optionsClose.setDisable(false);
+            optionsSelectVersion.setDisable(false);
+        }).start();
     }
 
     @FXML
@@ -552,7 +519,6 @@ public class OptionFragmentController extends FragmentController {
         LauncherSettings.fastStartUp = !LauncherSettings.fastStartUp;
     }
 
-    @Override
     public void onDownloadComplete() {
         Platform.runLater(() -> {
             setStatus(Status.DOWNLOAD_COMPLETE);

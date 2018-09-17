@@ -14,7 +14,6 @@ public abstract class FragmentController extends AbstractGUIController {
 
     public void setMainFrame(FrameController frameController) {
         this.mainFrame = frameController;
-        API.setEventHandler(mainFrame);
     }
 
     @Override

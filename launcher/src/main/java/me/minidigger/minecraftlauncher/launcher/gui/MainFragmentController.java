@@ -1,22 +1,12 @@
 package me.minidigger.minecraftlauncher.launcher.gui;
 
-import java.io.IOException;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.List;
 import java.util.ResourceBundle;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -27,16 +17,10 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.Pane;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import me.minidigger.minecraftlauncer.renderer.SkinCanvas;
-import me.minidigger.minecraftlauncer.renderer.animation.animations.RunningAnimation;
-import me.minidigger.minecraftlauncher.api.ServerListEntry;
-import me.minidigger.minecraftlauncher.launcher.LauncherMain;
 import me.minidigger.minecraftlauncher.launcher.LauncherSettings;
-import me.minidigger.minecraftlauncher.launcher.tasks.AvatarLoaderTask;
+import me.minidigger.minecraftlauncher.launcher.tasks.MinecraftStartTask;
 import me.minidigger.minecraftlauncher.launcher.tasks.VersionCheckerTask;
 
 public class MainFragmentController extends FragmentController {
@@ -76,7 +60,7 @@ public class MainFragmentController extends FragmentController {
 
         username.setText(LauncherSettings.playerUsername);
 
-        version.getItems().addAll(API.getInstalledVersionsList());
+        version.getItems().addAll(minecraftDownloader.);
 
         for (String ob : API.getInstalledVersionsList()) {
             if (ob.equals(LauncherSettings.playerVersion)) {
@@ -113,46 +97,7 @@ public class MainFragmentController extends FragmentController {
 
         getMainFrame().loadAvatar();
 
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.submit(() -> {
-            //add server
-            List<String> ip = API.getServersIPList().stream().map(ServerListEntry::getIp).collect(Collectors.toList());
-            if (ip.isEmpty() || !ip.contains(LauncherSettings.serverIP)) {
-                API.addServerToServersDat(LauncherSettings.serverName, LauncherSettings.serverIP);
-            }
-
-            API.downloadProfile(username.getText());
-            API.syncVersions();
-
-            if (!LauncherSettings.fastStartUp) { //NOT faststartup
-                API.downloadMinecraft(version.getValue(), false);
-            }
-
-            API.setMinMemory(Integer.parseInt(LauncherSettings.ramAllocationMin));
-            API.setMemory(Integer.parseInt(LauncherSettings.ramAllocationMax));
-            API.setHeight(Integer.parseInt(LauncherSettings.resolutionHeight));
-            API.setWidth(Integer.parseInt(LauncherSettings.resolutionWidth));
-
-            if (!LauncherSettings.javaPath.equals("")) {
-                API.setJavaPath(LauncherSettings.javaPath);
-            }
-            if (!LauncherSettings.jvmArguments.equals("")) {
-                API.setJVMArgument(LauncherSettings.jvmArguments);
-            }
-            if (!LauncherSettings.playerUsername.equals("")) {
-                API.setVersionData(MessageFormat.format(resourceBundle.getString("versiondata.name"), LauncherSettings.playerUsername));
-            } else {
-                API.setVersionData(resourceBundle.getString("versiondata.default"));
-            }
-
-            boolean nettyPatch = LauncherSettings.bypassBlacklist;
-            if (LauncherSettings.fastStartUp) {
-                API.runMinecraft(username.getText(), version.getValue(), false, nettyPatch);
-            } else {
-                API.runMinecraft(username.getText(), version.getValue(), true, nettyPatch);
-            }
-        });
-        executor.shutdown();
+        new MinecraftStartTask(this::onGameCorrupted, this::onGameStarted).start();
     }
 
     @FXML
@@ -160,7 +105,6 @@ public class MainFragmentController extends FragmentController {
         getMainFrame().load(FrameController.Screen.OPTION);
     }
 
-    @Override
     public void onGameStarted() {
         LauncherSettings.playerUsername = username.getText();
         LauncherSettings.playerVersion = version.getValue();
@@ -180,15 +124,14 @@ public class MainFragmentController extends FragmentController {
         version.setDisable(false);
     }
 
-    @Override
-    public void onGameCorrupted(int exitCode) {
+    public void onGameCorrupted() {
         Platform.runLater(() -> {
             setStatusText(resourceBundle.getString("status.corrupted"));
 
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle(resourceBundle.getString("alert.corruption.title"));
             alert.setHeaderText(MessageFormat.format(resourceBundle.getString("alert.corruption.header"), version.getValue()));
-            alert.setContentText(MessageFormat.format(resourceBundle.getString("alert.corruption.content"), exitCode));
+            alert.setContentText(resourceBundle.getString("alert.corruption.content"));
             alert.initStyle(StageStyle.UTILITY);
 
             DialogPane dialogPane = alert.getDialogPane();
