@@ -4,9 +4,9 @@ val ehcacheVersion = "3.1.1"
 val cacheapiVersion = "1.0.0"
 
 dependencies {
-    implementation("org.to2mbn:jmccc")
+    implementation(project(":JMCCC/jmccc"))
     implementation("org.tukaani:xz:$xzVersion")
-    implementation("org.apache.httpcomponents:httpasyncclient$httpasyncclientVersion")
+    implementation("org.apache.httpcomponents:httpasyncclient:$httpasyncclientVersion")
     implementation("org.ehcache.modules:ehcache-impl:$ehcacheVersion")
     implementation("javax.cache:cache-api:$cacheapiVersion")
 }

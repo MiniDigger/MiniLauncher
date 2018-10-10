@@ -1,3 +1,3 @@
 dependencies {
-    implementation("org.to2mbn:jmccc")
+    implementation(project(":JMCCC/jmccc"))
 }

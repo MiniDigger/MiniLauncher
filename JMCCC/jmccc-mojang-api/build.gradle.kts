@@ -1,3 +1,4 @@
 dependencies {
-  implementation("org.to2mbn:jmccc-yggdrasil-authenticator")
+  implementation(project(":JMCCC/jmccc"))
+  implementation(project(":JMCCC/jmccc-yggdrasil-authenticator"))
 }
