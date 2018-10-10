@@ -23,6 +23,7 @@ public abstract class FragmentController extends AbstractGUIController {
 
     public void setStatusText(String text) {
         mainFrame.setStatusText(text);
+        System.out.println("[STATUS] " + text);
     }
 
     public abstract void onClose();

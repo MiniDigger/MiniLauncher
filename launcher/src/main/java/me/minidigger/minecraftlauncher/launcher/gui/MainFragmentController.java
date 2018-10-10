@@ -22,6 +22,7 @@ import javafx.stage.StageStyle;
 import me.minidigger.minecraftlauncher.launcher.LauncherSettings;
 import me.minidigger.minecraftlauncher.launcher.tasks.MinecraftStartTask;
 import me.minidigger.minecraftlauncher.launcher.tasks.VersionCheckerTask;
+import me.minidigger.minecraftlauncher.launcher.tasks.VersionListUpdaterTask;
 
 public class MainFragmentController extends FragmentController {
 
@@ -60,13 +61,14 @@ public class MainFragmentController extends FragmentController {
 
         username.setText(LauncherSettings.playerUsername);
 
-//        version.getItems().addAll(minecraftDownloader.); //TODO fix version selector
-
-//        for (String ob : API.getInstalledVersionsList()) {
-//            if (ob.equals(LauncherSettings.playerVersion)) {
-//                version.setValue(LauncherSettings.playerVersion);
-//            }
-//        }
+        new VersionListUpdaterTask(minecraftDownloader, version, this::setStatusText, null, null, null, () -> {
+            for (String ob : version.getItems()) {
+                if (ob.equals(LauncherSettings.playerVersion)) {
+                    Platform.runLater(() -> version.setValue(LauncherSettings.playerVersion));
+                }
+            }
+            System.out.println("done");
+        }).start();
     }
 
     @FXML

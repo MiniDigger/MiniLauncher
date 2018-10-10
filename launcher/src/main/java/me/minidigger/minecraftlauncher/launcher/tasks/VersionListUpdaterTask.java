@@ -11,7 +11,6 @@ import java.util.Hashtable;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
-import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 
 public class VersionListUpdaterTask extends Thread {
@@ -19,22 +18,25 @@ public class VersionListUpdaterTask extends Thread {
     private static ResourceBundle resourceBundle = ResourceBundle.getBundle("minilauncher");
     private MinecraftDownloader minecraftDownloader;
 
+    public static Hashtable<String, String> VersionHashTable;
+
     private ComboBox<String> optionsSelectVersion;
-    private Button optionsSelectVersionInstall;
     private Consumer<String> statusConsumer;
-    private Hashtable<String, String> VersionHashTable;
+    private Runnable enable;
+    private Runnable disable;
     private Runnable callback;
 
-    public VersionListUpdaterTask(MinecraftDownloader minecraftDownloader, ComboBox<String> optionsSelectVersion,
-                                  Button optionsSelectVersionInstall, Consumer<String> statusConsumer,
-                                  Hashtable<String, String> versionHashTable, Runnable callback) {
+    public VersionListUpdaterTask(MinecraftDownloader minecraftDownloader, ComboBox<String> optionsSelectVersion, Consumer<String> statusConsumer,
+                                  Hashtable<String, String> versionHashTable, Runnable enable, Runnable disable, Runnable callback) {
         this.minecraftDownloader = minecraftDownloader;
         this.optionsSelectVersion = optionsSelectVersion;
-        this.optionsSelectVersionInstall = optionsSelectVersionInstall;
         this.statusConsumer = statusConsumer;
+        this.enable = enable;
+        this.disable = disable;
         this.callback = callback;
-        VersionHashTable = versionHashTable;
-
+        if (versionHashTable != null) {
+            VersionHashTable = versionHashTable;
+        }
         setName("VersionListUpdaterTask");
     }
 
@@ -45,7 +47,7 @@ public class VersionListUpdaterTask extends Thread {
             public <R> DownloadCallback<R> taskStart(DownloadTask<R> task) {
                 statusConsumer.accept(resourceBundle.getString("status.getting_latest_version"));
                 optionsSelectVersion.setDisable(true);
-                optionsSelectVersionInstall.setDisable(true);
+                if(disable != null) disable.run();
 
                 return new JMCCCCallback<>(statusConsumer, resourceBundle);
             }
@@ -58,7 +60,7 @@ public class VersionListUpdaterTask extends Thread {
                 }
 
                 optionsSelectVersion.setDisable(false);
-                optionsSelectVersionInstall.setDisable(false);
+                if(enable != null) enable.run();
 
                 callback.run();
             }

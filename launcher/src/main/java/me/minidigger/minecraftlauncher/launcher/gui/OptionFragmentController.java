@@ -51,7 +51,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -153,8 +152,11 @@ public class OptionFragmentController extends FragmentController {
 
         loadOptionsData();
 
-        new VersionListUpdaterTask(minecraftDownloader, optionsSelectVersion, optionsSelectVersionInstall,
-                this::setStatusText, VersionHashTable, this::onDownloadComplete).start();
+        new VersionListUpdaterTask(minecraftDownloader, optionsSelectVersion,
+                this::setStatusText, VersionHashTable,
+                () -> optionsSelectVersionInstall.setDisable(false),
+                () -> optionsSelectVersionInstall.setDisable(true),
+                () -> System.out.println("done")).start();
     }
 
     @Override
@@ -248,6 +250,7 @@ public class OptionFragmentController extends FragmentController {
                 minecraftDownloader, minecraftDirectory, this::setStatusText, (version) -> {
             optionsSelectVersionInstall.setDisable(false);
             optionsSelectVersion.setDisable(false);
+            onDownloadComplete();
         }).start();
     }
 

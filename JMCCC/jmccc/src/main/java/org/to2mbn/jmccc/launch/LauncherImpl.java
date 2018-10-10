@@ -173,6 +173,10 @@ class LauncherImpl implements Launcher {
 							break;
 						}
 					}
+
+					if(entry.getName().contains("META-INF")){
+						excluded = true;
+					}
 				}
 
 				if (!excluded) {
