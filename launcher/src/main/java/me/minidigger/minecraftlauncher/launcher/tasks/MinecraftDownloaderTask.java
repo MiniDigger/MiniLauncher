@@ -52,33 +52,7 @@ public class MinecraftDownloaderTask extends Thread {
         minecraftDownloader.downloadIncrementally(minecraftDirectory, version, new CombinedDownloadCallback<Version>() {
             @Override
             public <R> DownloadCallback<R> taskStart(DownloadTask<R> task) {
-                return new CallbackAdapter<R>() {
-
-                    @Override
-                    public void done(R result) {
-                        statusConsumer.accept(resourceBundle.getString("status.done"));
-                    }
-
-                    @Override
-                    public void failed(Throwable e) {
-                        statusConsumer.accept(resourceBundle.getString("status.download_failed"));
-                    }
-
-                    @Override
-                    public void cancelled() {
-                        statusConsumer.accept(resourceBundle.getString("status.cancelled"));
-                    }
-
-                    @Override
-                    public void updateProgress(long done, long total) {
-                        statusConsumer.accept(String.format(resourceBundle.getString("status.progress"), done, total));
-                    }
-
-                    @Override
-                    public void retry(Throwable e, int current, int max) {
-                        statusConsumer.accept(String.format(resourceBundle.getString("status.retry"), current, max));
-                    }
-                };
+                return new JMCCCCallback<>(statusConsumer, resourceBundle);
             }
 
             @Override

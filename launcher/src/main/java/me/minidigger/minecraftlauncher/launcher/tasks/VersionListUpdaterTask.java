@@ -3,7 +3,6 @@ package me.minidigger.minecraftlauncher.launcher.tasks;
 import org.to2mbn.jmccc.mcdownloader.CacheOption;
 import org.to2mbn.jmccc.mcdownloader.MinecraftDownloader;
 import org.to2mbn.jmccc.mcdownloader.RemoteVersionList;
-import org.to2mbn.jmccc.mcdownloader.download.concurrent.CallbackAdapter;
 import org.to2mbn.jmccc.mcdownloader.download.concurrent.CombinedDownloadCallback;
 import org.to2mbn.jmccc.mcdownloader.download.concurrent.DownloadCallback;
 import org.to2mbn.jmccc.mcdownloader.download.tasks.DownloadTask;
@@ -14,7 +13,6 @@ import java.util.function.Consumer;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
 
 public class VersionListUpdaterTask extends Thread {
 
@@ -49,33 +47,7 @@ public class VersionListUpdaterTask extends Thread {
                 optionsSelectVersion.setDisable(true);
                 optionsSelectVersionInstall.setDisable(true);
 
-                return new CallbackAdapter<R>() {
-
-                    @Override
-                    public void done(R result) {
-                        statusConsumer.accept(resourceBundle.getString("status.done"));
-                    }
-
-                    @Override
-                    public void failed(Throwable e) {
-                        statusConsumer.accept(resourceBundle.getString("status.download_failed"));
-                    }
-
-                    @Override
-                    public void cancelled() {
-                        statusConsumer.accept(resourceBundle.getString("status.cancelled"));
-                    }
-
-                    @Override
-                    public void updateProgress(long done, long total) {
-                        statusConsumer.accept(String.format(resourceBundle.getString("status.progress"), done, total));
-                    }
-
-                    @Override
-                    public void retry(Throwable e, int current, int max) {
-                        statusConsumer.accept(String.format(resourceBundle.getString("status.retry"), current, max));
-                    }
-                };
+                return new JMCCCCallback<>(statusConsumer, resourceBundle);
             }
 
             @Override
