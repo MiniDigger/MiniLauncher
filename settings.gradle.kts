@@ -2,7 +2,6 @@ rootProject.name = "MinecraftLauncher"
 
 include("renderer")
 include("launcher")
-include("mojangapi")
 
 include("JMCCC")
 include("JMCCC/jmccc")
