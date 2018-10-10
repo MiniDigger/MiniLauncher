@@ -5,6 +5,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.control.PasswordField?>
 
 <Pane prefHeight="209.0" prefWidth="253.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="me.minidigger.minecraftlauncher.launcher.gui.MainFragmentController">
     <TextField fx:id="username" layoutX="25.0" layoutY="36.0" onKeyTyped="#kt_username" prefHeight="26.0" prefWidth="200.0" promptText="Username/E-Mail" styleClass="main_username">
@@ -12,11 +13,11 @@
             <Tooltip fx:id="usernameTooltip" prefWidth="300.0" wrapText="true" />
         </tooltip>
     </TextField>
-    <TextField fx:id="password" layoutX="25.0" layoutY="75.0" onKeyTyped="#kt_username" prefHeight="26.0" prefWidth="200.0" promptText="Password" styleClass="main_username">
+    <PasswordField fx:id="password" layoutX="25.0" layoutY="75.0" onKeyTyped="#kt_password" prefHeight="26.0" prefWidth="200.0" promptText="Password" styleClass="main_username">
         <tooltip>
             <Tooltip fx:id="passwordTooltip" prefWidth="300.0" wrapText="true" />
         </tooltip>
-    </TextField>
+    </PasswordField>
     <ComboBox id="version" fx:id="version" layoutX="25.0" layoutY="111.0" prefHeight="25.0" prefWidth="200.0" promptText="Select A Version" styleClass="whiteTextTheme">
         <tooltip>
             <Tooltip fx:id="versionTooltip" prefWidth="300.0" text="Empty Tooltip" wrapText="true" />

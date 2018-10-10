@@ -1,5 +1,9 @@
 package me.minidigger.minecraftlauncher.launcher.gui;
 
+import org.to2mbn.jmccc.auth.AuthenticationException;
+import org.to2mbn.jmccc.auth.Authenticator;
+import org.to2mbn.jmccc.auth.OfflineAuthenticator;
+import org.to2mbn.jmccc.auth.yggdrasil.YggdrasilAuthenticator;
 import org.to2mbn.jmccc.version.parsing.Versions;
 
 import java.io.IOException;
@@ -116,15 +120,35 @@ public class MainFragmentController extends FragmentController {
         LauncherSettings.playerVersion = version.getValue();
         LauncherSettings.userSettingsSave();
 
-        options.setDisable(true);
-        launch.setDisable(true);
-        version.setDisable(true);
-        username.setDisable(true);
-        password.setDisable(true);
+        disable(true);
 
         getMainFrame().loadAvatar();
 
-        new MinecraftStartTask(this::onGameCorrupted, this::onGameStarted, minecraftDirectory).start();
+
+        Authenticator authenticator;
+        if (password.getText() == null || password.getText().equals("")) {
+            authenticator = new OfflineAuthenticator(LauncherSettings.playerUsername);
+        } else {
+            try {
+                authenticator = YggdrasilAuthenticator.password(LauncherSettings.playerUsername, password.getText());
+            } catch (AuthenticationException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle(resourceBundle.getString("alert.invalidpw.title"));
+                alert.setHeaderText(MessageFormat.format(resourceBundle.getString("alert.invalidpw.header"), version.getValue()));
+                alert.setContentText(resourceBundle.getString("alert.invalidpw.content").replace("{msg}", e.getMessage()));
+                alert.initStyle(StageStyle.UTILITY);
+
+                DialogPane dialogPane = alert.getDialogPane();
+                dialogPane.getStylesheets().add("/css/purple.css");
+                alert.showAndWait();
+
+                disable(false);
+
+                e.printStackTrace();
+                return;
+            }
+        }
+        new MinecraftStartTask(this::onGameCorrupted, this::onGameStarted, authenticator, minecraftDirectory).start();
     }
 
     @FXML
@@ -144,11 +168,7 @@ public class MainFragmentController extends FragmentController {
             new VersionCheckerTask(this::setStatusText).start();
         }
 
-        username.setDisable(false);
-        password.setDisable(false);
-        options.setDisable(false);
-        launch.setDisable(false);
-        version.setDisable(false);
+        disable(false);
     }
 
     public void onGameCorrupted() {
@@ -165,11 +185,7 @@ public class MainFragmentController extends FragmentController {
             dialogPane.getStylesheets().add("/css/purple.css");
             alert.showAndWait();
 
-            username.setDisable(false);
-            password.setDisable(false);
-            options.setDisable(false);
-            launch.setDisable(false);
-            version.setDisable(false);
+            disable(false);
         });
     }
 
@@ -195,7 +211,7 @@ public class MainFragmentController extends FragmentController {
     private void setTextBoxMax() {
         username.lengthProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.intValue() > oldValue.intValue()) {
-                if (username.getText().length() > 16) {
+                if (username.getText().length() > 16 && !username.getText().contains("@")) {
                     username.setText(username.getText().substring(0, 16));
                     //Toolkit.getDefaultToolkit().beep();
                 }
@@ -205,14 +221,27 @@ public class MainFragmentController extends FragmentController {
 
     @FXML
     private void kt_username(KeyEvent event) {
-        if (!event.getCharacter().matches("[A-Za-z0-9\b_]")) {
+        if (!event.getCharacter().matches("[A-Za-z0-9_.@]")) {
             //Toolkit.getDefaultToolkit().beep();
             event.consume();
         }
     }
 
+    @FXML
+    private void kt_password(KeyEvent event) {
+
+    }
+
     @Override
     public void onClose() {
 
+    }
+
+    private void disable(boolean b) {
+        username.setDisable(b);
+        password.setDisable(b);
+        options.setDisable(b);
+        launch.setDisable(b);
+        version.setDisable(b);
     }
 }
