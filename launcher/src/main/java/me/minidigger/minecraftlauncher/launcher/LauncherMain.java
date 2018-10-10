@@ -42,6 +42,7 @@ import javafx.stage.StageStyle;
 import me.minidigger.minecraftlauncer.renderer.SkinCanvas;
 import me.minidigger.minecraftlauncer.renderer.SkinCanvasMouseHandler;
 import me.minidigger.minecraftlauncer.renderer.model.SkinCube;
+import me.minidigger.minecraftlauncher.launcher.tasks.DiscordIntegrationTask;
 
 /**
  * @author ammar
@@ -75,6 +76,8 @@ public class LauncherMain extends Application {
 
         stage.setScene(scene);
         stage.show();
+
+        new DiscordIntegrationTask().start();
     }
 
     public void initApplicationSettings(Stage stage, Scene scene) {
