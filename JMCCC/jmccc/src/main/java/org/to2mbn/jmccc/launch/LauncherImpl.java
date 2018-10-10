@@ -30,7 +30,7 @@ import org.to2mbn.jmccc.version.parsing.Versions;
 class LauncherImpl implements Launcher {
 
 	private boolean nativeFastCheck = false;
-	private boolean printDebugCommandline = false;
+	private boolean printDebugCommandline = true;
 	private boolean useDaemonThreads = false;
 
 	public LauncherImpl() {
@@ -137,7 +137,7 @@ class LauncherImpl implements Launcher {
 		tokens.put("auth_uuid", UUIDUtils.unsign(auth.getUUID()));
 		tokens.put("user_type", auth.getUserType());
 		tokens.put("user_properties", new JSONObject(auth.getProperties()).toString());
-		tokens.put("version_name", version.getVersion());
+		tokens.put("version_name", version.getVersion() + "/" + auth.getUsername());
 		tokens.put("assets_index_name", version.getAssets());
 		tokens.put("game_directory", option.getRuntimeDirectory().getAbsolutePath());
 
@@ -234,7 +234,7 @@ class LauncherImpl implements Launcher {
 		for (String arg : commandline) {
 			sb.append(arg).append('\n');
 		}
-		System.err.println(sb.toString());
+		System.out.println(sb.toString());
 	}
 
 	private void startStreamPumps(Process process) {

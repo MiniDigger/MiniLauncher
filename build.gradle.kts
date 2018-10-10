@@ -35,5 +35,6 @@ subprojects {
         header = rootProject.file("LICENSE")
         filter.include("**/*.java")
         filter.include("**/*.kt")
+        filter.exclude("**/jmccc/**")
     }
 }

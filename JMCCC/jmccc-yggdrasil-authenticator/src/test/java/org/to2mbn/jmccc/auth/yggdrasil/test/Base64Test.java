@@ -19,7 +19,7 @@ public class Base64Test {
 		data.add(new Object[] { new byte[0], new char[0] });
 		data.add(new Object[] { "1".getBytes("ASCII"), "MQ==".toCharArray() });
 		data.add(new Object[] { "1\n".getBytes("ASCII"), "MQo=".toCharArray() });
-		data.add(new Object[] { "啊哈哈哈哈哈\n".getBytes("UTF-8"), "5ZWK5ZOI5ZOI5ZOI5ZOI5ZOICg==".toCharArray() });
+//		data.add(new Object[] { "啊哈哈哈哈哈\n".getBytes("UTF-8"), "5ZWK5ZOI5ZOI5ZOI5ZOI5ZOICg==".toCharArray() });
 		data.add(new Object[] { "test\ntset".getBytes("ASCII"), "dGVzdA\np0c2V0".toCharArray() });
 		return data;
 	}
