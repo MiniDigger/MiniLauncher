@@ -18,7 +18,7 @@ public class VersionListUpdaterTask extends Thread {
     private static ResourceBundle resourceBundle = ResourceBundle.getBundle("minilauncher");
     private MinecraftDownloader minecraftDownloader;
 
-    public static Hashtable<String, String> VersionHashTable;
+    public static Hashtable<String, String> VersionHashTable = new Hashtable<>();
 
     private ComboBox<String> optionsSelectVersion;
     private Consumer<String> statusConsumer;
@@ -73,7 +73,7 @@ public class VersionListUpdaterTask extends Thread {
 
             @Override
             public void cancelled() {
-
+                System.out.println("cancelled");
             }
         }, CacheOption.CACHE);
     }

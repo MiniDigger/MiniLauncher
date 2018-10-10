@@ -33,8 +33,15 @@ public class MinecraftStartTask extends Thread {
             Authenticator authenticator = new OfflineAuthenticator(LauncherSettings.playerUsername);
             LaunchOption option = new LaunchOption(LauncherSettings.playerVersion, authenticator, minecraftDirectory);
             launcher.launch(option, new ProcessListener() {
+
+                private boolean firstStart = true;
+
                 @Override
                 public void onLog(String log) {
+                    if (firstStart) {
+                        firstStart = false;
+                        onStarted.run();
+                    }
                     System.out.println("[LOG] " + log);
                 }
 

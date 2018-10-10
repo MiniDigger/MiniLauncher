@@ -1,5 +1,8 @@
 package me.minidigger.minecraftlauncher.launcher.gui;
 
+import org.to2mbn.jmccc.version.parsing.Versions;
+
+import java.io.IOException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
@@ -62,6 +65,16 @@ public class MainFragmentController extends FragmentController {
         username.setText(LauncherSettings.playerUsername);
 
         new VersionListUpdaterTask(minecraftDownloader, version, this::setStatusText, null, null, null, () -> {
+            // remove all not downloaded
+            version.getItems().removeIf(((v) -> {
+                try {
+                    return Versions.resolveVersion(minecraftDirectory, v) == null;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return true;
+                }
+            }));
+            // select the right one
             for (String ob : version.getItems()) {
                 if (ob.equals(LauncherSettings.playerVersion)) {
                     Platform.runLater(() -> version.setValue(LauncherSettings.playerVersion));
