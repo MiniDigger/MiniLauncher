@@ -60,22 +60,34 @@ public class MainFragmentController extends FragmentController {
 
         username.setText(LauncherSettings.playerUsername);
 
-        version.getItems().addAll(minecraftDownloader.);
+//        version.getItems().addAll(minecraftDownloader.); //TODO fix version selector
 
-        for (String ob : API.getInstalledVersionsList()) {
-            if (ob.equals(LauncherSettings.playerVersion)) {
-                version.setValue(LauncherSettings.playerVersion);
-            }
-        }
+//        for (String ob : API.getInstalledVersionsList()) {
+//            if (ob.equals(LauncherSettings.playerVersion)) {
+//                version.setValue(LauncherSettings.playerVersion);
+//            }
+//        }
     }
 
     @FXML
     private void launchMineCraft(ActionEvent event) {
-        if (username.getText().equals("")) {
+        if (username.getText() == null || username.getText().equals("")) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle(resourceBundle.getString("alert.username_missing.title"));
             alert.setHeaderText(resourceBundle.getString("alert.username_missing.header"));
             alert.setContentText(resourceBundle.getString("alert.username_missing.content"));
+            alert.initStyle(StageStyle.UTILITY);
+
+            DialogPane dialogPane = alert.getDialogPane();
+            dialogPane.getStylesheets().add("/css/purple.css");
+
+            alert.show();
+            return;
+        } else if (version.getValue() == null || version.getValue().equals("")) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle(resourceBundle.getString("alert.version_missing.title"));
+            alert.setHeaderText(resourceBundle.getString("alert.version_missing.header"));
+            alert.setContentText(resourceBundle.getString("alert.version_missing.content"));
             alert.initStyle(StageStyle.UTILITY);
 
             DialogPane dialogPane = alert.getDialogPane();
@@ -97,7 +109,7 @@ public class MainFragmentController extends FragmentController {
 
         getMainFrame().loadAvatar();
 
-        new MinecraftStartTask(this::onGameCorrupted, this::onGameStarted).start();
+        new MinecraftStartTask(this::onGameCorrupted, this::onGameStarted, minecraftDirectory).start();
     }
 
     @FXML
@@ -111,7 +123,7 @@ public class MainFragmentController extends FragmentController {
         LauncherSettings.userSettingsSave();
 
         if (!LauncherSettings.keepLauncherOpen) {
-            Platform.runLater(() -> setStatusText(resourceBundle.getString("status.minecraft_started")));
+            setStatusText(resourceBundle.getString("status.minecraft_started"));
             System.exit(0);
         } else {
             new VersionCheckerTask(this::setStatusText).start();

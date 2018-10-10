@@ -72,12 +72,6 @@ public class OptionFragmentController extends FragmentController {
     private final static Logger logger = LoggerFactory.getLogger(OptionFragmentController.class);
 
     @FXML
-    private Button optionsExit;
-    @FXML
-    private Pane outerPane;
-    @FXML
-    private Button optionsClose;
-    @FXML
     private RadioButton optionsKeepLauncherOpen;
     @FXML
     private RadioButton optionDisableAutoUpdates;
@@ -109,8 +103,6 @@ public class OptionFragmentController extends FragmentController {
     private TextField optionsJavaVersionInput;
     @FXML
     private TextField optionsJVMArgumentsInput;
-    @FXML
-    private Label optionStatus;
     @FXML
     private RadioButton optionsDebugMode;
     @FXML
@@ -162,7 +154,7 @@ public class OptionFragmentController extends FragmentController {
         loadOptionsData();
 
         new VersionListUpdaterTask(minecraftDownloader, optionsSelectVersion, optionsSelectVersionInstall,
-                optionStatus, VersionHashTable, ()-> onDownloadComplete()).start();
+                this::setStatusText, VersionHashTable, this::onDownloadComplete).start();
     }
 
     @Override
@@ -250,15 +242,11 @@ public class OptionFragmentController extends FragmentController {
         }
 
         optionsSelectVersionInstall.setDisable(true);
-        optionsExit.setDisable(true);
-        optionsClose.setDisable(true);
         optionsSelectVersion.setDisable(true);
 
         new MinecraftDownloaderTask(optionsSelectVersionForce.isSelected(), optionsSelectVersion.getValue(),
                 minecraftDownloader, minecraftDirectory, this::setStatusText, (version) -> {
             optionsSelectVersionInstall.setDisable(false);
-            optionsExit.setDisable(false);
-            optionsClose.setDisable(false);
             optionsSelectVersion.setDisable(false);
         }).start();
     }
@@ -534,8 +522,6 @@ public class OptionFragmentController extends FragmentController {
 
             setStatus(Status.IDLE);
             optionsSelectVersionInstall.setDisable(false);
-            optionsExit.setDisable(false);
-            optionsClose.setDisable(false);
             optionsSelectVersion.setDisable(false);
             optionsSelectFastStart.setSelected(false);
 
@@ -544,15 +530,5 @@ public class OptionFragmentController extends FragmentController {
 
             alert.showAndWait();
         });
-    }
-
-    @Override
-    public void setStatus(Status status) {
-        optionStatus.setText(MessageFormat.format(resourceBundle.getString("status.generic"), status));
-    }
-
-    @Override
-    public void setStatusText(String text) {
-        optionStatus.setText(text);
     }
 }

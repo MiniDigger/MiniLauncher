@@ -29,7 +29,7 @@ public class MinecraftDownloaderTask extends Thread {
     private Consumer<Version> callback;
 
     public MinecraftDownloaderTask(boolean force, String version, MinecraftDownloader minecraftDownloader,
-                                   MinecraftDirectory minecraftDirectory, Consumer<String> statusConsumer,  Consumer<Version> callback) {
+                                   MinecraftDirectory minecraftDirectory, Consumer<String> statusConsumer, Consumer<Version> callback) {
         this.force = force;
         this.version = version;
         this.minecraftDownloader = minecraftDownloader;
@@ -97,6 +97,6 @@ public class MinecraftDownloaderTask extends Thread {
             public void cancelled() {
                 statusConsumer.accept(resourceBundle.getString("status.cancelled"));
             }
-        }, (MinecraftDownloadOption[]) options.toArray());
+        }, options.toArray(new MinecraftDownloadOption[0]));
     }
 }

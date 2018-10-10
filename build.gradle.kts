@@ -20,6 +20,7 @@ allprojects {
 
 subprojects {
     apply(plugin = "kotlin")
+    apply(plugin = "java")
     apply(plugin = "net.minecrell.licenser")
     apply(plugin = "com.github.johnrengelman.shadow")
 

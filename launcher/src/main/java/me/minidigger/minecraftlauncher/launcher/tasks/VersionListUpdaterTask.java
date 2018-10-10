@@ -10,6 +10,7 @@ import org.to2mbn.jmccc.mcdownloader.download.tasks.DownloadTask;
 
 import java.util.Hashtable;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -22,17 +23,17 @@ public class VersionListUpdaterTask extends Thread {
 
     private ComboBox<String> optionsSelectVersion;
     private Button optionsSelectVersionInstall;
-    private Label optionStatus;
+    private Consumer<String> statusConsumer;
     private Hashtable<String, String> VersionHashTable;
     private Runnable callback;
 
     public VersionListUpdaterTask(MinecraftDownloader minecraftDownloader, ComboBox<String> optionsSelectVersion,
-                                  Button optionsSelectVersionInstall, Label optionStatus,
+                                  Button optionsSelectVersionInstall, Consumer<String> statusConsumer,
                                   Hashtable<String, String> versionHashTable, Runnable callback) {
         this.minecraftDownloader = minecraftDownloader;
         this.optionsSelectVersion = optionsSelectVersion;
         this.optionsSelectVersionInstall = optionsSelectVersionInstall;
-        this.optionStatus = optionStatus;
+        this.statusConsumer = statusConsumer;
         this.callback = callback;
         VersionHashTable = versionHashTable;
 
@@ -44,7 +45,7 @@ public class VersionListUpdaterTask extends Thread {
         minecraftDownloader.fetchRemoteVersionList(new CombinedDownloadCallback<RemoteVersionList>() {
             @Override
             public <R> DownloadCallback<R> taskStart(DownloadTask<R> task) {
-                optionStatus.setText(resourceBundle.getString("status.getting_latest_version"));
+                statusConsumer.accept(resourceBundle.getString("status.getting_latest_version"));
                 optionsSelectVersion.setDisable(true);
                 optionsSelectVersionInstall.setDisable(true);
 
@@ -52,27 +53,27 @@ public class VersionListUpdaterTask extends Thread {
 
                     @Override
                     public void done(R result) {
-                        optionStatus.setText(resourceBundle.getString("status.done"));
+                        statusConsumer.accept(resourceBundle.getString("status.done"));
                     }
 
                     @Override
                     public void failed(Throwable e) {
-                        optionStatus.setText(resourceBundle.getString("status.download_failed"));
+                        statusConsumer.accept(resourceBundle.getString("status.download_failed"));
                     }
 
                     @Override
                     public void cancelled() {
-                        optionStatus.setText(resourceBundle.getString("status.cancelled"));
+                        statusConsumer.accept(resourceBundle.getString("status.cancelled"));
                     }
 
                     @Override
                     public void updateProgress(long done, long total) {
-                        optionStatus.setText(String.format(resourceBundle.getString("status.progress"), done, total));
+                        statusConsumer.accept(String.format(resourceBundle.getString("status.progress"), done, total));
                     }
 
                     @Override
                     public void retry(Throwable e, int current, int max) {
-                        optionStatus.setText(String.format(resourceBundle.getString("status.retry"), current, max));
+                        statusConsumer.accept(String.format(resourceBundle.getString("status.retry"), current, max));
                     }
                 };
             }
@@ -92,7 +93,7 @@ public class VersionListUpdaterTask extends Thread {
 
             @Override
             public void failed(Throwable e) {
-                optionStatus.setText(resourceBundle.getString("status.getting_latest_version_failed"));
+                statusConsumer.accept(resourceBundle.getString("status.getting_latest_version_failed"));
                 e.printStackTrace();
             }
 

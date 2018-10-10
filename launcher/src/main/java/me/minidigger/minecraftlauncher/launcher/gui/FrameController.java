@@ -26,8 +26,6 @@
 
 package me.minidigger.minecraftlauncher.launcher.gui;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -260,67 +258,67 @@ public class FrameController extends AbstractGUIController {
 
     @Override
     public void setStatusText(String text) {
-        launcherStatus.setText(text);
+        Platform.runLater(() -> launcherStatus.setText(text));
     }
 
-    @Override
-    public void onGameStart(@NonNull StartStatus status) {
-        currentFragment.onGameStart(status);
-        Platform.runLater(() -> {
-            switch (status) {
-                case VALIDATING:
-                    setStatusText(MessageFormat.format(resourceBundle.getString("status.validating"), LauncherSettings.playerVersion));
-                    break;
-                case DOWNLOADING_NATIVES:
-                    setStatusText(resourceBundle.getString("status.downloading_natives"));
-                    break;
-                case PATCHING_NETTY:
-                    setStatusText(resourceBundle.getString("status.patching_netty"));
-                    break;
-                case STARTING:
-                    setStatusText(MessageFormat.format(resourceBundle.getString("status.starting"), LauncherSettings.playerVersion));
-                    break;
-            }
-        });
-    }
-
-    @Override
-    public void onGameStarted() {
-        currentFragment.onGameStarted();
-    }
-
-    @Override
-    public void onGameCorrupted(int exitCode) {
-        currentFragment.onGameCorrupted(exitCode);
-    }
-
-    @Override
-    public void onDownloadComplete() {
-        currentFragment.onDownloadComplete();
-    }
-
-    @Override
-    public void onDownload(@NonNull DownloadingStatus downloadingStatus) {
-        currentFragment.onDownload(downloadingStatus);
-        // TODO: direct log message passing is not supported
-        Platform.runLater(() -> {
-            switch (downloadingStatus) {
-                case ASSETS:
-                    setStatus(Status.DOWNLOADING_GAME_ASSETS);
-                    break;
-                case LAUNCHER_META:
-                    setStatus(Status.DOWNLOADING_LAUNCHER_META);
-                    break;
-                case LIBRARIES:
-                    setStatus(Status.DOWNLOADING_LIBRARIES);
-                    break;
-                case MINECRAFT:
-                    setStatus(Status.DOWNLOADING_MINECRAFT);
-                    break;
-                case NATIVES:
-                    setStatus(Status.FINALIZING);
-                    break;
-            }
-        });
-    }
+//    @Override
+//    public void onGameStart(@NonNull StartStatus status) {
+//        currentFragment.onGameStart(status);
+//        Platform.runLater(() -> {
+//            switch (status) {
+//                case VALIDATING:
+//                    setStatusText(MessageFormat.format(resourceBundle.getString("status.validating"), LauncherSettings.playerVersion));
+//                    break;
+//                case DOWNLOADING_NATIVES:
+//                    setStatusText(resourceBundle.getString("status.downloading_natives"));
+//                    break;
+//                case PATCHING_NETTY:
+//                    setStatusText(resourceBundle.getString("status.patching_netty"));
+//                    break;
+//                case STARTING:
+//                    setStatusText(MessageFormat.format(resourceBundle.getString("status.starting"), LauncherSettings.playerVersion));
+//                    break;
+//            }
+//        });
+//    }
+//
+//    @Override
+//    public void onGameStarted() {
+//        currentFragment.onGameStarted();
+//    }
+//
+//    @Override
+//    public void onGameCorrupted(int exitCode) {
+//        currentFragment.onGameCorrupted(exitCode);
+//    }
+//
+//    @Override
+//    public void onDownloadComplete() {
+//        currentFragment.onDownloadComplete();
+//    }
+//
+//    @Override
+//    public void onDownload(@NonNull DownloadingStatus downloadingStatus) {
+//        currentFragment.onDownload(downloadingStatus);
+//        // TODO: direct log message passing is not supported
+//        Platform.runLater(() -> {
+//            switch (downloadingStatus) {
+//                case ASSETS:
+//                    setStatus(Status.DOWNLOADING_GAME_ASSETS);
+//                    break;
+//                case LAUNCHER_META:
+//                    setStatus(Status.DOWNLOADING_LAUNCHER_META);
+//                    break;
+//                case LIBRARIES:
+//                    setStatus(Status.DOWNLOADING_LIBRARIES);
+//                    break;
+//                case MINECRAFT:
+//                    setStatus(Status.DOWNLOADING_MINECRAFT);
+//                    break;
+//                case NATIVES:
+//                    setStatus(Status.FINALIZING);
+//                    break;
+//            }
+//        });
+//    }
 }
