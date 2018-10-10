@@ -17,11 +17,13 @@ public class MinecraftStartTask extends Thread {
 
     private Runnable onCorruped;
     private Runnable onStarted;
+    private Authenticator authenticator;
     private MinecraftDirectory minecraftDirectory;
 
-    public MinecraftStartTask(Runnable onCorruped, Runnable onStarted, MinecraftDirectory minecraftDirectory) {
+    public MinecraftStartTask(Runnable onCorruped, Runnable onStarted, Authenticator authenticator, MinecraftDirectory minecraftDirectory) {
         this.onCorruped = onCorruped;
         this.onStarted = onStarted;
+        this.authenticator = authenticator;
         this.minecraftDirectory = minecraftDirectory;
         setName("MinecraftStartTask");
     }
@@ -30,7 +32,6 @@ public class MinecraftStartTask extends Thread {
     public void run() {
         try {
             Launcher launcher = LauncherBuilder.buildDefault();
-            Authenticator authenticator = new OfflineAuthenticator(LauncherSettings.playerUsername);
             LaunchOption option = new LaunchOption(LauncherSettings.playerVersion, authenticator, minecraftDirectory);
             launcher.launch(option, new ProcessListener() {
 
