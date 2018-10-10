@@ -28,7 +28,7 @@ class LaunchArgument {
 		this.defaultVariables = defaultVariables;
 	}
 
-	public String[] generateCommandline() {
+	public List<String> generateCommandline() {
 		List<String> args = new ArrayList<>();
 		Version version = launchOption.getVersion();
 
@@ -54,6 +54,16 @@ class LaunchArgument {
 
 		// natives path
 		args.add("-Djava.library.path=" + nativesPath);
+
+		// launcher brand
+		args.add("-Dminecraft.launcher.brand=" + launchOption.getLauncherBrand());
+		args.add("-Dminecraft.launcher.version=" + launchOption.getLauncherVersion());
+
+//		if(windows) { //TODO fix version switch
+			args.add("-XX:HeapDumpPath=MojangTricksIntelDriversForPerformance_javaw.exe_minecraft.exe.heapdump");
+//		} else if(osx) {
+//			args.add("-XstartOnFirstThread");
+//		}
 
 		// class path
 		// ==========START==========
@@ -113,7 +123,7 @@ class LaunchArgument {
 			}
 		}
 
-		return args.toArray(new String[args.size()]);
+		return args;
 	}
 
 	private List<String> getFormattedMinecraftArguments() {

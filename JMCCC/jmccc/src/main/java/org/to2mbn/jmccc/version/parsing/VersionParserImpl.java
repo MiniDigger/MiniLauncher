@@ -77,7 +77,12 @@ class VersionParserImpl implements VersionParser {
 		String type = "jar";
 
 		if (isNative) {
-			Set<String> excludes = parseExtractExcludes(json.getJSONObject("extract"));
+			Set<String> excludes;
+			if(json.has("extract")){
+				excludes = parseExtractExcludes(json.getJSONObject("extract"));
+			}else {
+				excludes = new LinkedHashSet<>();
+			}
 			return new Native(groupId, artifactId, version, classifier, type, libinfo, url, checksums, excludes);
 		} else {
 			return new Library(groupId, artifactId, version, classifier, type, libinfo, url, checksums);
@@ -125,7 +130,9 @@ class VersionParserImpl implements VersionParser {
 
 			assets = json.optString("assets", assets);
 			mainClass = json.optString("mainClass", mainClass);
-			launchArgs = json.optString("minecraftArguments", launchArgs);
+			if(json.has("arguments")){
+				launchArgs = parseArguments(json.getJSONObject("arguments"));
+			}
 			type = json.optString("type", type);
 
 			Set<Library> currentLibraries = parseLibraries(json.optJSONArray("libraries"), platformDescription);
@@ -167,6 +174,19 @@ class VersionParserImpl implements VersionParser {
 				assets.equals("legacy"),
 				assetIndexInfo,
 				Collections.unmodifiableMap(downloads));
+	}
+
+	private String parseArguments(JSONObject arguments){
+		StringBuilder sb = new StringBuilder();
+		if(arguments.has("game")) {
+			JSONArray game = arguments.getJSONArray("game");
+			game.forEach((o) -> {
+				if(o instanceof String) {
+					sb.append(o).append(" ");
+				}
+			});
+		}
+		return sb.toString();
 	}
 
 	@Override

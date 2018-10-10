@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -58,7 +59,7 @@ class LauncherImpl implements Launcher {
 	}
 
 	private Process launch(LaunchArgument arg, ProcessListener listener) throws LaunchException {
-		String[] commandline = arg.generateCommandline();
+		List<String> commandline = arg.generateCommandline();
 		if (printDebugCommandline) {
 			printDebugCommandline(commandline);
 		}
@@ -223,7 +224,7 @@ class LauncherImpl implements Launcher {
 
 	}
 
-	private void printDebugCommandline(String[] commandline) {
+	private void printDebugCommandline(List<String> commandline) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("jmccc:\n");
 		for (String arg : commandline) {

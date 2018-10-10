@@ -91,6 +91,9 @@ public class LaunchOption implements Serializable {
 	 */
 	private Set<File> extraClasspath = new LinkedHashSet<>();
 
+	private String launcherVersion = "2.0";
+	private String launcherBrand = "Minilauncher";//TODO fix hardcoded launcher brand
+
 	/**
 	 * Resolves the given version and creates a LaunchOption using the default
 	 * java environment.
@@ -132,6 +135,14 @@ public class LaunchOption implements Serializable {
 		this.minecraftDirectory = minecraftDir;
 		this.runtimeDirectory = minecraftDir;
 		this.javaEnvironment = JavaEnvironment.current();
+	}
+
+	public String getLauncherVersion() {
+		return launcherVersion;
+	}
+
+	public String getLauncherBrand() {
+		return launcherBrand;
 	}
 
 	/**
