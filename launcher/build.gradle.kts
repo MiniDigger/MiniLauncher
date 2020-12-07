@@ -6,6 +6,7 @@ dependencies {
     implementation("org.apache.logging.log4j:log4j-core:$log4j2Version")
     implementation("org.apache.logging.log4j:log4j-slf4j-impl:$log4j2Version")
     implementation("com.jagrosh:DiscordIPC:$discordipcVersion")
+    implementation("com.googlecode.json-simple:json-simple:1.1.1")
     implementation(project(":JMCCC/jmccc"))
     implementation(project(":JMCCC/jmccc-mcdownloader"))
     implementation(project(":JMCCC/jmccc-mojang-api"))

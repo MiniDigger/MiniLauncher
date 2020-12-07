@@ -33,4 +33,9 @@
             <Tooltip fx:id="optionsTooltip" prefWidth="300.0" text="Empty Tooltip" wrapText="true" />
         </tooltip>
     </Button>
+    <Button fx:id="msaTest" layoutX="25.0" layoutY="180.0" mnemonicParsing="false" onAction="#launchMsaTest" prefHeight="25.0" prefWidth="90.0" styleClass="whiteTextTheme" text="MSA TEST">
+        <tooltip>
+            <Tooltip fx:id="msaTestTooltip" prefWidth="300.0" text="Empty Tooltip" wrapText="true" />
+        </tooltip>
+    </Button>
 </Pane>

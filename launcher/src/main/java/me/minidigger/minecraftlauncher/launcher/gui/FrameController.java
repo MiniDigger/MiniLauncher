@@ -69,7 +69,7 @@ public class FrameController extends AbstractGUIController {
     private Screen currentScreen;
 
     enum Screen {
-        MAIN, OPTION, SKIN
+        MAIN, OPTION, SKIN, MSA
     }
 
     @FXML
@@ -152,6 +152,14 @@ public class FrameController extends AbstractGUIController {
                 height = 206;
                 layoutX = 117;
                 layoutY = 123;
+                smallAvatar = true;
+                break;
+            case MSA:
+                fxml = "/fxml/MsaFragment.fxml";
+                width = 406;
+                height = 406;
+                layoutX = 45;
+                layoutY = 40;
                 smallAvatar = true;
                 break;
             default:

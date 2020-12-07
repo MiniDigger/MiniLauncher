@@ -75,6 +75,8 @@ public class MainFragmentController extends FragmentController {
     @FXML
     private Tooltip versionTooltip;
     @FXML
+    private Tooltip msaTestTooltip;
+    @FXML
     private Label label;
     @FXML
     private TextField username;
@@ -86,6 +88,8 @@ public class MainFragmentController extends FragmentController {
     private Button launch;
     @FXML
     private Button options;
+    @FXML
+    private Button msaTest;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -182,6 +186,11 @@ public class MainFragmentController extends FragmentController {
         getMainFrame().load(FrameController.Screen.OPTION);
     }
 
+    @FXML
+    private void launchMsaTest(ActionEvent event) {
+        getMainFrame().load(FrameController.Screen.MSA);
+    }
+
     public void onGameStarted() {
         LauncherSettings.playerUsername = username.getText();
         LauncherSettings.playerVersion = version.getValue();
@@ -232,6 +241,9 @@ public class MainFragmentController extends FragmentController {
 
         playTooltip.setText(resourceBundle.getString("mainscreen.tooltip.play"));
         playTooltip.setGraphic(new ImageView(infoIMG));
+
+        msaTestTooltip.setText(resourceBundle.getString("mainscreen.tooltip.msatest"));
+        msaTestTooltip.setGraphic(new ImageView(infoIMG));
     }
 
     private void setTextBoxMax() {
@@ -269,5 +281,6 @@ public class MainFragmentController extends FragmentController {
         options.setDisable(b);
         launch.setDisable(b);
         version.setDisable(b);
+        msaTest.setDisable(b);
     }
 }

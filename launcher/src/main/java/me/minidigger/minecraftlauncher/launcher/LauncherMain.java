@@ -119,7 +119,6 @@ public class LauncherMain extends Application {
         scene.addEventHandler(ScrollEvent.SCROLL, event -> {
             if (dragStartedOnSkin) {
                 mouseHandler.scroll(event);
-                return;
             }
         });
     }

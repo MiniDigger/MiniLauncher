@@ -27,7 +27,7 @@ public class DiscordIntegrationTask extends Thread {
             public void onReady(IPCClient client) {
                 RichPresence.Builder builder = new RichPresence.Builder();
                 builder.setState("Playing on secret-test-server.dyescape.com")
-//                        .setDetails("Frustration level: Over 9000")
+                        .setDetails("Frustration level: Over 9000")
                         .setStartTimestamp(OffsetDateTime.now())
                         .setLargeImage("canary-large", "Discord Canary")
 //                        .setSmallImage("ptb-small", "Discord PTB")
