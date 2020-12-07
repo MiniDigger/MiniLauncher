@@ -4,6 +4,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.to2mbn.jmccc.auth.AuthInfo;
+import org.to2mbn.jmccc.auth.Authenticator;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -16,12 +18,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.UUID;
 
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.layout.Pane;
 import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebView;
+import me.minidigger.minecraftlauncher.launcher.tasks.MinecraftStartTask;
 
 public class MsaFragmentController extends FragmentController {
 
@@ -247,7 +251,21 @@ public class MsaFragmentController extends FragmentController {
             HttpClient.newBuilder().build().sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(resp -> {
                 if (resp.statusCode() >= 200 && resp.statusCode() < 300) {
                     String body = resp.body();
-                    System.out.println("profile:" + body);
+                    try {
+                        System.out.println("profile:" + body);
+                        JSONObject jsonObject = (JSONObject) new JSONParser().parse(body);
+                        String name = (String) jsonObject.get("name");
+                        String uuid = (String) jsonObject.get("id");
+                        String uuidDashes = uuid .replaceFirst(
+                                "(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)", "$1-$2-$3-$4-$5"
+                        );
+
+                        // hack, not actually working, need to get the right values
+                        Authenticator auth = () -> new AuthInfo(name, mcAccessToken, UUID.fromString(uuidDashes), Map.of(), "mojang");
+                        new MinecraftStartTask(() -> System.out.println("corrupt!"), () -> System.out.println("started!"), auth, minecraftDirectory).start();
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
                 } else {
                     String body = resp.body();
                     System.out.println("profile: " + resp.statusCode() + ": " + body);
