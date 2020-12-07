@@ -11,3 +11,7 @@ dependencies {
     implementation(project(":JMCCC/jmccc-mojang-api"))
     implementation(project(":JMCCC/jmccc-yggdrasil-authenticator"))
 }
+
+application {
+    mainClassName = "me.minidigger.minecraftlauncher.launcher.LauncherMain"
+}
