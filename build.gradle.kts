@@ -10,6 +10,8 @@ plugins {
 }
 
 allprojects {
+    apply(plugin = "application")
+
     group = "me.minidigger"
     version = "0.0.1-SNAPSHOT"
 
@@ -19,12 +21,15 @@ allprojects {
         jcenter()
         maven("https://oss.sonatype.org/content/repositories/snapshots/")
     }
+
+    application {
+        mainClassName = "me.minidigger.minecraftlauncher.launcher.LauncherMain"
+    }
 }
 
 subprojects {
     apply(plugin = "kotlin")
     apply(plugin = "java")
-    apply(plugin = "application")
     apply(plugin = "net.minecrell.licenser")
     apply(plugin = "com.github.johnrengelman.shadow")
     apply(plugin = "org.openjfx.javafxplugin")
